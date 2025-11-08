@@ -111,6 +111,13 @@ const handler = NextAuth({
       console.log("User signed out:", message);
     },
   },
+  callbacks: {
+  async redirect({ url, baseUrl }) {
+    // Always redirect to production domain
+    return baseUrl;
+  },
+}
+
 });
 
 export { handler as GET, handler as POST };
