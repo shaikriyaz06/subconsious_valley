@@ -102,7 +102,7 @@ export default function About() {
                 <Button
                   size="lg"
                   className="bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white cursor-pointer"
-                  onClick={() => router.push('/#contact-section')}
+                  onClick={() => router.push("/#contact-section")}
                 >
                   {t("start_your_transformation")}
                   <ArrowRight className="ml-2 h-5 w-5" />
@@ -319,6 +319,56 @@ export default function About() {
         </div>
       </section>
 
+      {/* Awards and Recognition */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-4xl lg:text-5xl font-bold mb-6">
+              <span className="bg-gradient-to-r from-teal-600 to-emerald-600 bg-clip-text text-transparent">
+                {t("awards_recognition")}
+              </span>
+            </h2>
+          </motion.div>
+
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+            >
+              <div className="prose prose-lg max-w-none">
+                <p className="text-lg text-slate-700 leading-relaxed mb-6">
+                 {t("awards_desc")}
+                </p>
+                <p className="text-lg text-slate-700 leading-relaxed">
+                   {t("awards_desc_2")}
+                </p>
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+            >
+              <img
+                src="https://cdn.subconsciousvalley.workers.dev/AWARDS.png"
+                alt="Professional Excellence Awards for Global Wellness Innovation 2025"
+                className="rounded-2xl shadow-2xl w-full"
+              />
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
       {/* Our Values */}
       <section className="py-20 bg-gradient-to-br from-slate-50 to-teal-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -390,23 +440,23 @@ export default function About() {
               {journey.map((milestone, index) => (
                 <motion.div
                   key={milestone.year}
-                  initial={{ 
-                    opacity: 0, 
+                  initial={{
+                    opacity: 0,
                     x: index % 2 === 0 ? -100 : 100,
                     rotateY: index % 2 === 0 ? -15 : 15,
-                    z: -50
+                    z: -50,
                   }}
-                  whileInView={{ 
-                    opacity: 1, 
+                  whileInView={{
+                    opacity: 1,
                     x: 0,
                     rotateY: 0,
-                    z: 0
+                    z: 0,
                   }}
-                  transition={{ 
-                    duration: 1, 
+                  transition={{
+                    duration: 1,
                     delay: index * 0.3,
                     type: "spring",
-                    stiffness: 100
+                    stiffness: 100,
                   }}
                   viewport={{ once: true }}
                   className={`relative flex items-center ${
@@ -420,11 +470,11 @@ export default function About() {
                     }`}
                   >
                     <motion.div
-                      whileHover={{ 
+                      whileHover={{
                         rotateY: index % 2 === 0 ? 5 : -5,
                         rotateX: -2,
                         z: 20,
-                        scale: 1.02
+                        scale: 1.02,
                       }}
                       transition={{ type: "spring", stiffness: 300 }}
                       className="group cursor-pointer"
@@ -435,18 +485,22 @@ export default function About() {
                         <div className="absolute inset-0 bg-gradient-to-br from-white via-slate-50 to-slate-100 rounded-xl" />
                         <CardContent className="relative p-8 z-10">
                           <div className="flex items-center mb-6">
-                            <motion.div 
+                            <motion.div
                               className="w-16 h-16 bg-gradient-to-br from-teal-500 to-emerald-600 rounded-2xl flex items-center justify-center mr-4 shadow-xl"
                               whileHover={{ rotateZ: 360 }}
                               transition={{ duration: 0.6 }}
                             >
-                              <span className="text-white font-bold text-lg">{milestone.year.slice(-2)}</span>
+                              <span className="text-white font-bold text-lg">
+                                {milestone.year.slice(-2)}
+                              </span>
                             </motion.div>
                             <div>
                               <Badge className="bg-gradient-to-r from-teal-500 to-emerald-600 text-white mb-2 shadow-lg">
                                 {milestone.year}
                               </Badge>
-                              <div className="text-xs text-slate-500 uppercase tracking-wider">Milestone {index + 1}</div>
+                              <div className="text-xs text-slate-500 uppercase tracking-wider">
+                                Milestone {index + 1}
+                              </div>
                             </div>
                           </div>
                           <h3 className="text-2xl font-bold mb-4 text-slate-800 group-hover:text-teal-700 transition-colors">
@@ -457,14 +511,16 @@ export default function About() {
                           </p>
                           <div className="mt-6 flex items-center text-teal-600">
                             <div className="w-12 h-0.5 bg-gradient-to-r from-teal-500 to-emerald-500 mr-3" />
-                            <span className="text-sm font-medium">Achievement Unlocked</span>
+                            <span className="text-sm font-medium">
+                              Achievement Unlocked
+                            </span>
                           </div>
                         </CardContent>
                       </Card>
                     </motion.div>
                   </div>
 
-                  <motion.div 
+                  <motion.div
                     className="absolute left-1/2 transform -translate-x-1/2 w-8 h-8 bg-gradient-to-br from-teal-500 to-emerald-600 rounded-full border-4 border-white shadow-2xl z-20"
                     whileHover={{ scale: 1.3, rotateZ: 180 }}
                     transition={{ type: "spring", stiffness: 300 }}
@@ -571,14 +627,14 @@ export default function About() {
                 </Button>
               </Link>
               {/* <Link href="/contact"> */}
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="border-teal-200 hover:bg-teal-50"
-                  onClick={() => router.push('/#contact-section')}
-                >
-                  {t("get_in_touch")}
-                </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-teal-200 hover:bg-teal-50"
+                onClick={() => router.push("/#contact-section")}
+              >
+                {t("get_in_touch")}
+              </Button>
               {/* </Link> */}
             </div>
           </motion.div>
