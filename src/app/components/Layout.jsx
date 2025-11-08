@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 // import { Link, useLocation } from "react-router-dom";
 
@@ -418,7 +418,13 @@ function LayoutContent({ children, currentPageName }) {
 export default function Layout({ children, currentPageName }) {
   return (
     <LanguageProvider>
-      <LayoutContent children={children} currentPageName={currentPageName} />
+      <Suspense fallback={
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 to-teal-50 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600"></div>
+        </div>
+      }>
+        <LayoutContent children={children} currentPageName={currentPageName} />
+      </Suspense>
     </LanguageProvider>
   );
 }

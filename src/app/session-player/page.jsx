@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
@@ -20,7 +20,7 @@ const languageNames = {
   arabic: "العربية",
 };
 
-export default function SessionPlayer() {
+function SessionPlayerContent() {
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session");
   const { status } = useSession();
@@ -300,5 +300,17 @@ export default function SessionPlayer() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function SessionPlayer() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-teal-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600"></div>
+      </div>
+    }>
+      <SessionPlayerContent />
+    </Suspense>
   );
 }
