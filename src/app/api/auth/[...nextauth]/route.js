@@ -104,20 +104,15 @@ const handler = NextAuth({
       }
       return token;
     },
+    async redirect({ url, baseUrl }) {
+      return baseUrl;
+    },
   },
   debug: process.env.NODE_ENV === "development",
   events: {
     async signOut(message) {
       console.log("User signed out:", message);
     },
-  },
-  callbacks: {
-  async redirect({ url, baseUrl }) {
-    // Always redirect to production domain
-    return baseUrl;
-  },
-}
-
-});
+  },});
 
 export { handler as GET, handler as POST };
