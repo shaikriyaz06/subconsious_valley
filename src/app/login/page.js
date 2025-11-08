@@ -165,7 +165,7 @@ export default function Login() {
                   <Label htmlFor="password">Password</Label>
                   <div className="group relative">
                     <HelpCircle className="h-4 w-4 text-slate-400 cursor-help" />
-                    <div className="absolute bottom-6 left-0 bg-slate-800 text-white text-xs p-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+                    <div className="absolute top-6 -left-20 bg-slate-800 text-white text-xs p-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none">
                       Min 8 chars, 1 uppercase, 1 lowercase, 1 special char
                     </div>
                   </div>
