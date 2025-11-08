@@ -1,9 +1,9 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, CreditCard, Download, Check, Clock, ExternalLink, Facebook } from "lucide-react";
+import { ArrowLeft, CreditCard, Download, Check, Clock, ExternalLink } from "lucide-react";
 import { motion } from "framer-motion";
 import { useCurrency } from "@/components/CurrencyConverter";
 import { useSearchParams } from "next/navigation";
@@ -11,7 +11,7 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
-export default function Checkout() {
+function CheckoutContent() {
   const { data: userSession, status } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -25,7 +25,6 @@ export default function Checkout() {
   const [purchaseComplete, setPurchaseComplete] = useState(paymentSuccess);
 
   useEffect(() => {
-    // Redirect to login if not authenticated
     if (status === 'unauthenticated') {
       router.push(`/login?callbackUrl=${encodeURIComponent(window.location.href)}`);
       return;
@@ -50,7 +49,6 @@ export default function Checkout() {
         }
 
         if (paymentSuccess) {
-          // Record purchase for successful payment
           if (foundSession) {
             try {
               const response = await fetch('/api/purchases', {
@@ -111,7 +109,6 @@ export default function Checkout() {
       const data = await response.json();
 
       if (data.checkoutUrl) {
-        // Redirect to Stripe checkout
         window.location.href = data.checkoutUrl;
       } else {
         throw new Error('Failed to create checkout session');
@@ -211,7 +208,6 @@ export default function Checkout() {
         </div>
 
         <div className="grid lg:grid-cols-3 gap-8">
-          {/* Session Details */}
           <div className="lg:col-span-2">
             <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg mb-6">
               <CardHeader>
@@ -241,7 +237,6 @@ export default function Checkout() {
               </CardContent>
             </Card>
 
-            {/* What You'll Get */}
             <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
               <CardHeader>
                 <CardTitle>What You'll Get</CardTitle>
@@ -271,7 +266,6 @@ export default function Checkout() {
             </Card>
           </div>
 
-          {/* Payment Summary */}
           <div>
             <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg sticky top-8">
               <CardHeader>
@@ -347,5 +341,17 @@ export default function Checkout() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function Checkout() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-teal-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600"></div>
+      </div>
+    }>
+      <CheckoutContent />
+    </Suspense>
   );
 }
