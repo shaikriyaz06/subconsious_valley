@@ -127,7 +127,7 @@ export default function About() {
             >
               <div className="relative">
                 <img
-                  src="/images/founderImage.jpg"
+                  src="https://cdn.subconsciousvalley.workers.dev/founderImage.jpg"
                   alt="Vanita Pande - Founder"
                   className="rounded-2xl shadow-2xl"
                 />
@@ -274,7 +274,7 @@ export default function About() {
             >
               <div className="relative">
                 <img
-                  src="/images/coFounderImage.jpg"
+                  src="https://cdn.subconsciousvalley.workers.dev/coFounderImage.jpg"
                   alt="Sara - Co-Founder"
                   className="rounded-2xl shadow-2xl"
                 />

@@ -8,7 +8,7 @@ export default function Navbar() {
         <div className="flex justify-between items-center h-16">
           <div className="flex-shrink-0">
             <Image
-              src="/images/legend.png"
+              src="https://cdn.subconsciousvalley.workers.dev/legend.png"
               alt="Legend"
               width={50}
               height={50}

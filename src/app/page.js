@@ -137,9 +137,9 @@ export default function Home() {
           autoPlay
           loop
           muted
-          poster="/images/main_banner.jpeg"
+          poster="https://cdn.subconsciousvalley.workers.dev/main_banner.jpeg"
         >
-          <source src="/videos/hero_video.mp4" type="video/mp4" />
+          <source src="https://cdn.subconsciousvalley.workers.dev/hero_video.mp4" type="video/mp4" />
           Your browser does not support the video tag.
         </video>
         <div className="absolute inset-0 bg-black/40 bg-opacity-60"></div>
@@ -194,7 +194,7 @@ export default function Home() {
                   ref={popupVideoRef}
                   className="w-full h-auto rounded"
                   controls
-                  poster="/images/main_banner.jpeg"
+                  poster="https://cdn.subconsciousvalley.workers.dev/main_banner.jpeg"
                 >
                   <source src="/videos/hero_video.mp4" type="video/mp4" />
                   Your browser does not support the video tag.
