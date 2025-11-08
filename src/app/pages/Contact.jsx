@@ -1,25 +1,26 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 // import { Contact as ContactEntity, SiteSettings } from "@/api/entities";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Label } from "@/components/ui/label";
-import { MapPin, Mail, Send, Instagram, Youtube } from "lucide-react"; // Removed Phone, MessageCircle
+import { MapPin, Mail, Send, Instagram, Youtube, Facebook, ChevronDown } from "lucide-react"; // Removed Phone, MessageCircle
 import { motion } from "framer-motion";
 import { useLanguage } from "@/components/LanguageProvider";
+import { useRouter } from "next/navigation";
 // import { SendEmail } from "@/api/integrations";
 
 export default function ContactPage() {
   const { t } = useLanguage();
+  const router = useRouter();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -40,45 +41,35 @@ export default function ContactPage() {
     setIsSubmitting(true);
 
     try {
-      // await ContactEntity.create(formData);
-
-      // Send email notification
-      // const settingsList = await SiteSettings.list();
-      const supportEmail = "";
-      // settingsList.length > 0
-      //   ? settingsList[0].support_email
-      //   : "hello@subconsciousvalley.com";
-
-      const emailBody = `
-        New message from Subconscious Valley contact form:
-        -------------------------------------------------
-        Name: ${formData.name}
-        Email: ${formData.email}
-        Preferred Language: ${formData.preferred_language}
-        Subject: ${formData.subject}
-        -------------------------------------------------
-        Message:
-        ${formData.message}
-      `;
-
-      // await SendEmail({
-      //   to: supportEmail,
-      //   subject: `New Contact Form Submission: ${formData.subject}`,
-      //   body: emailBody,
-      //   from_name: "Subconscious Valley"
-      // });
-
-      setSubmitted(true);
-      setFormData({
-        name: "",
-        email: "",
-        // phone: "", // Removed phone field
-        subject: "",
-        message: "",
-        preferred_language: "english",
+      const response = await fetch('/api/email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          fullName: formData.name,
+          email: formData.email,
+          preferredLanguage: formData.preferred_language,
+          subject: formData.subject,
+          message: formData.message,
+        }),
       });
+
+      if (response.ok) {
+        setSubmitted(true);
+        setFormData({
+          name: "",
+          email: "",
+          subject: "",
+          message: "",
+          preferred_language: "english",
+        });
+      } else {
+        throw new Error('Failed to send message');
+      }
     } catch (error) {
       console.error("Error submitting contact form:", error);
+      alert('Failed to send message. Please try again.');
     }
 
     setIsSubmitting(false);
@@ -88,10 +79,7 @@ export default function ContactPage() {
     {
       icon: MapPin,
       title: t("visit_us"),
-      details: [
-        "Office 302, Shubbar Majed Building",
-        "Mankhool, Bur Dubai, Dubai, UAE",
-      ],
+      details: ["Dubai, UAE"],
       color: "text-teal-600",
     },
     {
@@ -102,6 +90,15 @@ export default function ContactPage() {
     },
     // Removed WhatsApp contact info
   ];
+
+  useEffect(() => {
+    if (submitted) {
+      const timer = setTimeout(() => {
+        router.push('/sessions');
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [submitted, router]);
 
   if (submitted) {
     return (
@@ -118,12 +115,7 @@ export default function ContactPage() {
             {t("message_sent")}
           </h2>
           <p className="text-slate-600 mb-6">{t("message_sent_desc")}</p>
-          <Button
-            onClick={() => setSubmitted(false)}
-            className="bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white"
-          >
-            {t("send_another")}
-          </Button>
+          <p className="text-sm text-slate-500">Redirecting to sessions in 3 seconds...</p>
         </motion.div>
       </div>
     );
@@ -222,8 +214,26 @@ export default function ContactPage() {
                   rel="noopener noreferrer"
                   className="p-3 bg-black text-white rounded-xl hover:shadow-lg transition-all duration-300 transform hover:scale-105"
                 >
-                  <svg className="h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-.88-.05A6.33 6.33 0 0 0 5.16 20.5a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.5z"/>
+                  <svg
+                    className="h-6 w-6"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                  >
+                    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-.88-.05A6.33 6.33 0 0 0 5.16 20.5a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.5z" />
+                  </svg>
+                </a>                
+                <a
+                    href="https://www.facebook.com/people/Subconscious-Valley/61581912532657/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-3 bg-blue-800 text-white rounded-xl hover:shadow-lg transition-all duration-300 transform hover:scale-105"
+                >
+                  <svg
+                    className="h-6 w-6"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                  >
+                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
                   </svg>
                 </a>
               </div>
@@ -288,28 +298,42 @@ export default function ContactPage() {
                     </div>
                   </div>
 
-                  {/* Phone input section removed */}
-                  <div className="grid md:grid-cols-1 gap-4">
-                    {" "}
-                    {/* Adjusted grid to 1 column for language select */}
-                    <div>
-                      <Label htmlFor="language">{t("pref_language")}</Label>
-                      <Select
-                        value={formData.preferred_language}
-                        onValueChange={(value) =>
-                          handleInputChange("preferred_language", value)
-                        }
-                      >
-                        <SelectTrigger className="mt-1">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="english">English</SelectItem>
-                          <SelectItem value="hindi">हिंदी</SelectItem>
-                          <SelectItem value="arabic">العربية</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
+                  <div>
+                    <Label htmlFor="language">{t("pref_language")}</Label>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="w-full justify-between mt-1"
+                        >
+                          {formData.preferred_language === "english" && "English"}
+                          {formData.preferred_language === "hindi" && "हिंदी"}
+                          {formData.preferred_language === "arabic" && "العربية"}
+                          {!formData.preferred_language && "Select Language"}
+                          <ChevronDown className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="start" className="w-[var(--radix-dropdown-menu-trigger-width)]">
+                        <DropdownMenuItem
+                          onClick={() => handleInputChange("preferred_language", "english")}
+                          className="cursor-pointer hover:bg-teal-50 hover:text-teal-700"
+                        >
+                          English
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => handleInputChange("preferred_language", "hindi")}
+                          className="cursor-pointer hover:bg-teal-50 hover:text-teal-700"
+                        >
+                          हिंदी
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => handleInputChange("preferred_language", "arabic")}
+                          className="cursor-pointer hover:bg-teal-50 hover:text-teal-700"
+                        >
+                          العربية
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
 
                   <div>

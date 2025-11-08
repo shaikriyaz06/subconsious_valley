@@ -90,6 +90,12 @@ export default function About() {
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
+              <Link to={createPageUrl("Contact")}>
+                <Button size="lg" className="bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white">
+                  {t('explore_programs')}
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
             </motion.div>
 
             <motion.div

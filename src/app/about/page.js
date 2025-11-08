@@ -16,9 +16,11 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/components/LanguageProvider";
+import { useRouter } from "next/navigation";
 
 export default function About() {
   const { t } = useLanguage();
+  const router = useRouter();
 
   const values = [
     {
@@ -59,7 +61,7 @@ export default function About() {
       description: t("journey_1_desc"),
     },
     {
-      year: "2019",
+      year: "2020",
       title: t("journey_2_title"),
       description: t("journey_2_desc"),
     },
@@ -73,7 +75,7 @@ export default function About() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-teal-50 via-white to-emerald-50">
       {/* Hero Section */}
-      <section className="relative py-20 lg:py-32">
+      <section className="relative lg:py-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <motion.div
@@ -96,15 +98,25 @@ export default function About() {
               <p className="text-xl text-slate-600 mb-8 leading-relaxed">
                 {t("about_hero_desc")}
               </p>
-              <Link href="/contact">
+              <div className="flex flex-col sm:flex-row gap-4">
                 <Button
                   size="lg"
-                  className="bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white"
+                  className="bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white cursor-pointer"
+                  onClick={() => router.push('/#contact-section')}
                 >
                   {t("start_your_transformation")}
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
-              </Link>
+                <Link href="/sessions">
+                  <Button
+                    size="lg"
+                    className="bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white"
+                  >
+                    {t("explore_programs")}
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </Link>
+              </div>
             </motion.div>
 
             <motion.div
@@ -238,11 +250,11 @@ export default function About() {
                       </Badge>
                     ))}
                   </div>
-                  {/* <div className="mt-3 text-center">
+                  <div className="mt-3 text-center">
                     <Badge variant="outline" className="text-slate-600">
                       {t("many_more")}
                     </Badge>
-                  </div> */}
+                  </div>
                 </CardContent>
               </Card>
             </motion.div>
@@ -251,7 +263,7 @@ export default function About() {
       </section>
 
       {/* Co-Founder Section */}
-      <section className="relative py-20 lg:py-32 bg-gradient-to-br from-purple-50 to-pink-50">
+      <section className="min-h-screen bg-gradient-to-br from-teal-50 via-white to-emerald-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <motion.div
@@ -284,7 +296,7 @@ export default function About() {
                 {t("co_founder")}
               </Badge>
               <h2 className="text-4xl lg:text-5xl font-bold mb-6">
-                <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-teal-600 to-emerald-600 bg-clip-text text-transparent">
                   {t("meet_cofounder")}
                 </span>
                 <br />
@@ -354,8 +366,8 @@ export default function About() {
       </section>
 
       {/* Journey Timeline */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-20 bg-white relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -371,42 +383,95 @@ export default function About() {
             </p>
           </motion.div>
 
-          <div className="relative">
-            <div className="absolute left-1/2 transform -translate-x-px h-full w-0.5 bg-gradient-to-b from-teal-200 to-emerald-200"></div>
+          <div className="relative perspective-1000">
+            <div className="absolute left-1/2 transform -translate-x-px h-full w-1 bg-gradient-to-b from-teal-400 via-emerald-500 to-teal-600 shadow-lg"></div>
 
-            <div className="space-y-12">
+            <div className="space-y-16">
               {journey.map((milestone, index) => (
                 <motion.div
                   key={milestone.year}
-                  initial={{ opacity: 0, x: index % 2 === 0 ? -30 : 30 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.8, delay: index * 0.2 }}
+                  initial={{ 
+                    opacity: 0, 
+                    x: index % 2 === 0 ? -100 : 100,
+                    rotateY: index % 2 === 0 ? -15 : 15,
+                    z: -50
+                  }}
+                  whileInView={{ 
+                    opacity: 1, 
+                    x: 0,
+                    rotateY: 0,
+                    z: 0
+                  }}
+                  transition={{ 
+                    duration: 1, 
+                    delay: index * 0.3,
+                    type: "spring",
+                    stiffness: 100
+                  }}
                   viewport={{ once: true }}
                   className={`relative flex items-center ${
                     index % 2 === 0 ? "lg:flex-row" : "lg:flex-row-reverse"
                   }`}
+                  style={{ transformStyle: "preserve-3d" }}
                 >
                   <div
                     className={`lg:w-1/2 ${
-                      index % 2 === 0 ? "lg:pr-12" : "lg:pl-12"
+                      index % 2 === 0 ? "lg:pr-16" : "lg:pl-16"
                     }`}
                   >
-                    <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
-                      <CardContent className="p-6">
-                        <Badge className="bg-gradient-to-r from-teal-500 to-emerald-600 text-white mb-4">
-                          {milestone.year}
-                        </Badge>
-                        <h3 className="text-xl font-bold mb-3 text-slate-800">
-                          {milestone.title}
-                        </h3>
-                        <p className="text-slate-600 leading-relaxed">
-                          {milestone.description}
-                        </p>
-                      </CardContent>
-                    </Card>
+                    <motion.div
+                      whileHover={{ 
+                        rotateY: index % 2 === 0 ? 5 : -5,
+                        rotateX: -2,
+                        z: 20,
+                        scale: 1.02
+                      }}
+                      transition={{ type: "spring", stiffness: 300 }}
+                      className="group cursor-pointer"
+                      style={{ transformStyle: "preserve-3d" }}
+                    >
+                      <div className="absolute -inset-4 bg-gradient-to-r from-teal-500/20 to-emerald-500/20 rounded-3xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                      <Card className="relative bg-white border-0 shadow-2xl hover:shadow-3xl transition-all duration-500 transform-gpu">
+                        <div className="absolute inset-0 bg-gradient-to-br from-white via-slate-50 to-slate-100 rounded-xl" />
+                        <CardContent className="relative p-8 z-10">
+                          <div className="flex items-center mb-6">
+                            <motion.div 
+                              className="w-16 h-16 bg-gradient-to-br from-teal-500 to-emerald-600 rounded-2xl flex items-center justify-center mr-4 shadow-xl"
+                              whileHover={{ rotateZ: 360 }}
+                              transition={{ duration: 0.6 }}
+                            >
+                              <span className="text-white font-bold text-lg">{milestone.year.slice(-2)}</span>
+                            </motion.div>
+                            <div>
+                              <Badge className="bg-gradient-to-r from-teal-500 to-emerald-600 text-white mb-2 shadow-lg">
+                                {milestone.year}
+                              </Badge>
+                              <div className="text-xs text-slate-500 uppercase tracking-wider">Milestone {index + 1}</div>
+                            </div>
+                          </div>
+                          <h3 className="text-2xl font-bold mb-4 text-slate-800 group-hover:text-teal-700 transition-colors">
+                            {milestone.title}
+                          </h3>
+                          <p className="text-slate-600 leading-relaxed text-lg">
+                            {milestone.description}
+                          </p>
+                          <div className="mt-6 flex items-center text-teal-600">
+                            <div className="w-12 h-0.5 bg-gradient-to-r from-teal-500 to-emerald-500 mr-3" />
+                            <span className="text-sm font-medium">Achievement Unlocked</span>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
                   </div>
 
-                  <div className="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-gradient-to-r from-teal-500 to-emerald-600 rounded-full border-4 border-white shadow-lg"></div>
+                  <motion.div 
+                    className="absolute left-1/2 transform -translate-x-1/2 w-8 h-8 bg-gradient-to-br from-teal-500 to-emerald-600 rounded-full border-4 border-white shadow-2xl z-20"
+                    whileHover={{ scale: 1.3, rotateZ: 180 }}
+                    transition={{ type: "spring", stiffness: 300 }}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-br from-teal-400 to-emerald-500 rounded-full animate-ping opacity-30" />
+                    <div className="absolute inset-2 bg-white rounded-full" />
+                  </motion.div>
                 </motion.div>
               ))}
             </div>
@@ -423,10 +488,11 @@ export default function About() {
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
+              className="h-full"
             >
-              <div className="bg-white/10 backdrop-blur-sm p-8 rounded-2xl">
+              <div className="bg-white/10 backdrop-blur-sm p-8 rounded-2xl h-full flex flex-col">
                 <h3 className="text-2xl font-bold mb-6">{t("our_mission")}</h3>
-                <p className="text-teal-100 text-lg leading-relaxed">
+                <p className="text-teal-100 text-lg leading-relaxed flex-1">
                   {t("our_mission_desc")}
                 </p>
               </div>
@@ -437,10 +503,11 @@ export default function About() {
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
+              className="h-full"
             >
-              <div className="bg-white/10 backdrop-blur-sm p-8 rounded-2xl">
+              <div className="bg-white/10 backdrop-blur-sm p-8 rounded-2xl h-full flex flex-col">
                 <h3 className="text-2xl font-bold mb-6">{t("our_vision")}</h3>
-                <p className="text-teal-100 text-lg leading-relaxed">
+                <p className="text-teal-100 text-lg leading-relaxed flex-1">
                   {t("our_vision_desc")}
                 </p>
               </div>
@@ -494,7 +561,7 @@ export default function About() {
               {t("ready_to_begin_desc")}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/session">
+              <Link href="/sessions">
                 <Button
                   size="lg"
                   className="bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white"
@@ -503,15 +570,16 @@ export default function About() {
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
-              <Link href="/contact">
+              {/* <Link href="/contact"> */}
                 <Button
                   size="lg"
                   variant="outline"
                   className="border-teal-200 hover:bg-teal-50"
+                  onClick={() => router.push('/#contact-section')}
                 >
                   {t("get_in_touch")}
                 </Button>
-              </Link>
+              {/* </Link> */}
             </div>
           </motion.div>
         </div>

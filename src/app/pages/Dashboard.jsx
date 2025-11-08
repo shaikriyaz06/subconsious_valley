@@ -76,7 +76,7 @@ export default function Dashboard() {
             <h1 className="text-3xl font-bold text-slate-800">Welcome, {user?.full_name}</h1>
             <p className="text-slate-600">This is your personal space for transformation.</p>
           </div>
-          <Button onClick={handleLogout} variant="outline">
+          <Button onClick={handleLogout} variant="outline" >
             <LogOut className="h-4 w-4 mr-2" />
             Logout
           </Button>

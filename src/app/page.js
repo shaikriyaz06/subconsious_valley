@@ -20,20 +20,18 @@ export default function Home() {
   const section1Ref = useRef(null);
   const section2Ref = useRef(null);
   const section3Ref = useRef(null);
-  const section4Ref = useRef(null);
+
 
   const scrollToSection = (tabKey) => {
     const refs = {
       2: section2Ref,
       3: section3Ref,
-      4: section4Ref,
     };
 
     // Update progress based on tab click
     const progressValues = {
       2: 20,
-      3: 60,
-      4: 100,
+      3: 100,
     };
     setProgress(progressValues[tabKey]);
 
@@ -53,7 +51,7 @@ export default function Home() {
 
       // Check if we should make tabs sticky
       const firstSection = section2Ref.current;
-      const lastSection = section4Ref.current;
+      // const lastSection = section4Ref.current;
 
       let shouldBeSticky = false;
 
@@ -69,7 +67,6 @@ export default function Home() {
       const sections = [
         { id: "2", ref: section2Ref },
         { id: "3", ref: section3Ref },
-        { id: "4", ref: section4Ref },
       ];
 
       let currentTab = "2";
@@ -88,8 +85,8 @@ export default function Home() {
             currentTab = section.id;
             // Calculate progress within the section
             const sectionProgress = (scrollTop - sectionTop) / sectionHeight;
-            // Map to our progress values: 20 -> 60 -> 100
-            const progressValues = [20, 60, 100];
+            // Map to our progress values: 20 -> 100
+            const progressValues = [20, 100];
             if (i < progressValues.length - 1) {
               totalProgress =
                 progressValues[i] +
@@ -100,7 +97,7 @@ export default function Home() {
             break;
           } else if (scrollTop >= sectionTop + sectionHeight) {
             // Past this section
-            const progressValues = [20, 60, 100];
+            const progressValues = [20, 100];
             totalProgress = progressValues[i];
             currentTab = section.id;
           }
@@ -145,7 +142,7 @@ export default function Home() {
           <source src="/videos/hero_video.mp4" type="video/mp4" />
           Your browser does not support the video tag.
         </video>
-        <div className="absolute inset-0 bg-black/60 bg-opacity-60"></div>
+        <div className="absolute inset-0 bg-black/40 bg-opacity-60"></div>
         {/* <Navbar /> */}
         <div
           className={`absolute bottom-20 max-w-lg ${
@@ -229,8 +226,7 @@ export default function Home() {
               items={[
                 // { key: "1", label: "Sessions" },
                 { key: "2", label: t("about") },
-                { key: "3", label: t("blog") },
-                { key: "4", label: t("contact") },
+                { key: "3", label: t("contact") },
               ]}
             />
           </div>
@@ -258,10 +254,8 @@ export default function Home() {
                 }}
                 centered
                 items={[
-                  // { key: "1", label: "Sessions" },
                   { key: "2", label: t("about") },
-                  { key: "3", label: t("blog") },
-                  { key: "4", label: t("contact") },
+                  { key: "3", label: t("contact") },
                 ]}
               />
             </div>
@@ -289,7 +283,7 @@ export default function Home() {
 
         <section
           ref={section2Ref}
-          className="min-h-screen p-8 pt-20 bg-gray-50"
+          className="min-h-screen p-8  bg-gray-50"
         >
           {/* <h2 className="text-3xl font-bold mb-6">About Us</h2>
           <p className="text-lg mb-4">
@@ -311,27 +305,9 @@ export default function Home() {
           <About />
         </section>
 
-        <section ref={section3Ref} className="min-h-screen p-8 pt-20">
-          <h2 className="text-3xl font-bold mb-6">Blog</h2>
-          <p className="text-lg mb-4">
-            Explore our latest insights on consciousness, meditation, and
-            personal transformation.
-          </p>
-          <p className="text-lg mb-4">
-            Read articles on brainwave entrainment, altered states, and the
-            science of consciousness.
-          </p>
-          <p className="text-lg mb-4">
-            Discover tips, techniques, and success stories from our community of
-            practitioners.
-          </p>
-          <p className="text-lg">
-            Stay updated with the latest research and developments in
-            consciousness studies.
-          </p>
-        </section>
 
-        <section ref={section4Ref} className="p-8 pt-20 pb-20 bg-gray-50">
+
+        <section ref={section3Ref} id="contact-section" className="p-8 pt-20 pb-20 bg-gray-50">
           <Contact />
         </section>
       </div>

@@ -65,12 +65,12 @@ export const CurrencySelector = () => {
   
   return (
     <Select value={selectedCurrency} onValueChange={setSelectedCurrency}>
-      <SelectTrigger className="w-32">
+      <SelectTrigger className="w-32 border-slate-200 bg-white text-slate-700">
         <SelectValue />
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent className="bg-white border-slate-200 shadow-lg">
         {currencies.map((currency) => (
-          <SelectItem key={currency.code} value={currency.code}>
+          <SelectItem key={currency.code} value={currency.code} className="text-slate-700 hover:bg-slate-100 focus:bg-slate-100">
             {currency.symbol} {currency.code}
           </SelectItem>
         ))}

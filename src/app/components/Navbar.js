@@ -28,10 +28,10 @@ export default function Navbar() {
             >
               Session
             </Link>
-            {/* <Link href="/blog" className="text-black hover:text-gray-300 px-3 py-2 text-sm font-medium">
+            <Link href="/blog" className="text-black hover:text-gray-300 px-3 py-2 text-sm font-medium">
               Blog
             </Link>
-            <Link href="/contact" className="text-black hover:text-gray-300 px-3 py-2 text-sm font-medium">
+            {/* <Link href="/contact" className="text-black hover:text-gray-300 px-3 py-2 text-sm font-medium">
               Contact Us
             </Link> */}
           </div>

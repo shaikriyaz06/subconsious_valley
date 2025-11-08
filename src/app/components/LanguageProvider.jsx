@@ -22,7 +22,7 @@ const translations = {
     freedom_path: "Freedom Path",
     restful_nights: "Restful Nights",
     bright_minds: "Bright Minds",
-    book_your_sessions:"Book Your Sessions",
+    book_your_sessions: "Book Your Sessions",
     watch_video: "Watch Video",
     follow_us: "Follow Us",
     // Taglines & Headers
@@ -30,9 +30,12 @@ const translations = {
     brand_name: "Subconscious Valley",
 
     // Homepage
-    hero_title:"Train your subconscious today. It already runs your breathing. Professional audio sessions rewire habits while you simply listen nightly",
-    hero_sub_title_1:"No therapist calls. Purchase the audio, press play, and stream. Breathing proves your subconscious runs vital systems automatically.",
-    hero_sub_title_2:"Train it deliberately. Rehearse success, rehearse calm, rehearse action. Book your session today and install better defaults.",
+    hero_title:
+      "Train your subconscious today. It already runs your breathing and most of your daily choices. Our science-backed hypnotherapy and NLP audios quietly reprogram the subconscious mind while you.",
+    hero_sub_title_1:
+      "No calls or waitlists. Purchase, press play, and stream.",
+    hero_sub_title_2:
+      "Deliberately install better defaults: Calm, Clarity, and Consistent action. Start now and let therapy do the heavy lifting.",
     hero_title_1: "The Power to Rewrite",
     hero_title_2: "Your Story",
     hero_subtitle:
@@ -40,6 +43,7 @@ const translations = {
     multilingual_support_desc:
       "Multilingual NLP & Hypnotherapy Audios for Deep, Lasting Change",
     start_your_transformation: "Start Your Transformation",
+    explore_programs: "Explore Programs",
     get_in_touch: "Get in Touch",
     video_welcome: "Welcome to Subconscious Valley",
     video_discover: "Meet Vanita Pande & discover your transformation",
@@ -89,26 +93,26 @@ const translations = {
     testimonial_3:
       "Self-love sessions in Hindi touched my heart deeply. I now speak to myself with kindness.",
 
-
     //co-founer
-    co_founder:"Co Founder",
-    about_cofounder:"Sara, 15, is a certified Access Bars Practitioner with a strong interest in energy healing and consciousness work. She's contributed meaningfully to SubconsciousValley's audio content shaping its calming feel through solid technical input, aesthetic sense, and sensitivity to the emotional/energetic impact of sound. As a young creator, she embodies the brand's belief that healing, awareness, and creativity aren't limited by age.",
-    meet_cofounder:"Meet Sara",
-    young_visionary:"Young Visionary",
+    co_founder: "Co Founder",
+    about_cofounder:
+      "Sara, 15, is a certified Access Bars Practitioner with a strong interest in energy healing and consciousness work. She's contributed meaningfully to SubconsciousValley's audio content shaping its calming feel through solid technical input, aesthetic sense, and sensitivity to the emotional/energetic impact of sound. As a young creator, she embodies the brand's belief that healing, awareness, and creativity aren't limited by age.",
+    meet_cofounder: "Meet Sara",
+    young_visionary: "Young Visionary",
     // About Page
     about_hero_title: "Healing That Speaks",
-    about_hero_title_2: "to Your Soul",
+    about_hero_title_2: "to Your Subconscious",
     about_hero_desc:
-      "Subconscious Valley was born from a simple yet profound belief: true healing happens when therapy connects with both your mind and your cultural heart.",
+      "True change sticks when you reprogram the subconscious mindmthe layer that drives habits, emotions, and automatic decisions. Subconscious Valley delivers science based hypnotherapy, NLP, and guided audio sessions that install calmer defaults, stronger focus, and consistent action.",
     story_behind_title: "The Story Behind Subconscious Valley",
     story_behind_desc: "Every transformation begins with a story. Here's mine.",
     founder_about_quote:
       "I believe that every person carries within them the power to heal, transform, and create the life they truly desire. Sometimes, we just need the right key to unlock that power - and that key is often found in the language of our heart.",
     why_multilingual_matters: "Why Multilingual Matters",
     why_multilingual_p1:
-      "After working with clients from diverse backgrounds across the Middle East and Asia, I noticed something remarkable: breakthrough moments often happened when we switched to their mother tongue. Hindi sessions unlocked emotions that English couldn't reach. Arabic hypnosis connected with cultural beliefs in ways that felt authentic and powerful.",
+      "Breakthroughs happen faster when subconscious reprogramming speaks your mother tongue. Working across the Middle East and Asia, we saw clients unlock emotions and resolve blocks the moment sessions switched to Arabic, Hindi, or their native language.",
     why_multilingual_p2:
-      "This realization inspired Subconscious Valley - the first platform to offer professional hypnotherapy across multiple languages, designed specifically for the diverse communities of the Middle East and Asia.",
+      "Multilingual hypnotherapy + NLP connects cultural beliefs with modern neuroscience and therapy, making guided meditations and brainwave-entrainment audio more effective and more personal.",
     founder_title: "Founder & Lead Practitioner",
     certifications_training: "Certifications & Training",
     lives_transformed: "Lives Transformed",
@@ -120,39 +124,39 @@ const translations = {
       "These principles guide everything we do at Subconscious Valley",
     value_1_title: "Authentic Healing",
     value_1_desc:
-      "We believe true transformation happens when therapy speaks to your heart in your native language.",
+      "Transformation lasts when the subconscious is addressed directly in your native language.",
     value_2_title: "Science-Based Approach",
     value_2_desc:
-      "Our methods combine ancient wisdom with modern neuroscience and evidence-based hypnotherapy techniques.",
+      "We combine hypnotherapy, NLP and brainwave entrainment for practical, testable results.",
     value_3_title: "Cultural Sensitivity",
     value_3_desc:
-      "Understanding that healing is deeply personal and cultural, we honor diverse backgrounds and languages.",
+      "Healing is personal and cultural; our content is localized for Arabic, Hindi, English and many more regional audiences coming soon.",
     value_4_title: "Lasting Change",
     value_4_desc:
-      "We focus on subconscious reprogramming for permanent transformation, not temporary fixes.",
+      "We focus on habit installation, not quick fixes designing audios that reinforce new neural pathways over time.",
     our_journey: "Our Journey",
     our_journey_desc:
       "From personal transformation to helping thousands heal across cultures",
     journey_1_title: "Professional Training",
     journey_1_desc:
-      "Completed comprehensive NLP and hypnotherapy certifications in Dubai and internationally.",
+      "Completed comprehensive NLP and clinical hypnotherapy certifications in Dubai and internationally, with specialization in subconscious reprogramming and habit formation.",
     journey_2_title: "Multilingual Practice",
     journey_2_desc:
-      "Began developing sessions in multiple languages after seeing the profound impact of native-language therapy.",
+      "Launched Arabic and Hindi protocols after seeing the dramatic impact of native-language hypnosis on emotional release, confidence, and behavior change.",
     journey_3_title: "Subconscious Valley Launch",
     journey_3_desc:
-      "Founded the platform to make transformational healing accessible to diverse communities worldwide.",
+      "Founded the first platform in the region offering professional hypnotherapy, NLP, and guided audio across multiple languages-built on neuroscience and culturally aware practice.",
     our_mission: "Our Mission",
     our_mission_desc:
-      "To make transformational healing accessible to diverse communities by delivering professional hypnotherapy and NLP in the languages that speak to their hearts. We bridge the gap between ancient wisdom and modern neuroscience, creating a healing experience that honors both culture and science.",
+      "To make subconscious healing accessible to diverse communities by delivering professional hypnotherapy, NLP, and evidence-based audio programs in native languages. We bridge ancient wisdom and modern neuroscience to create sessions that respect culture and drive measurable habit change.",
     our_vision: "Our Vision",
     our_vision_desc:
-      "To create a world where mental wellness transcends language barriers, where every person can access the healing they need in the language that feels like home. We envision communities healed from within, empowered to break generational patterns and create lasting positive change.",
+      "A world where mental wellness transcends language barriers and every person can reprogram the subconscious mind in the language that feels like home, empowering communities to break generational patterns and create lasting change.",
     stat_countries: "Countries Served",
     stat_success: "Success Rate",
     ready_to_begin: "Ready to Begin Your Transformation?",
     ready_to_begin_desc:
-      "Join our community of healers and discover the power of subconscious change in your native language.",
+      "Join a community using subconscious reprogramming to reduce anxiety, increase focus, and follow through-without therapy waitlists. Start in your native language.",
 
     // Sessions Page
     sessions_title: "Hypnosis Sessions",
@@ -162,6 +166,7 @@ const translations = {
     all_languages: "All Languages",
     available_in: "Available in:",
     start_session: "Start Session",
+    view_collection: "View Collection",
     requires_subscription: "Requires Subscription",
     no_sessions_found: "No sessions found matching your filters.",
     clear_filters: "Clear Filters",
@@ -204,6 +209,73 @@ const translations = {
     privacy_policy: "Privacy Policy",
     terms_conditions: "Terms & Conditions",
     all_rights_reserved: "All rights reserved.",
+
+    // Terms Page
+    terms_page_title:
+      "Subconscious Valley - Disclaimer, Terms & Privacy Policy",
+    terms_intro_text:
+      "Welcome to Subconscious Valley. By accessing and using our website, programs, and hypnotherapy audios, you agree to the following terms and conditions. Please read carefully.",
+    disclaimer_section: "1. Disclaimer",
+    disclaimer_p1:
+      "All hypnotherapy audios and content provided by Subconscious Valley are designed for relaxation, self-improvement, and personal growth. They are not a substitute for medical, psychiatric, or psychological diagnosis or treatment.",
+    disclaimer_p2:
+      "Individuals with epilepsy, seizure disorders, or other serious psychiatric or neurological conditions should not use our audios unless cleared by a licensed medical professional.",
+    disclaimer_p3:
+      "Do not listen to our audios while driving, operating machinery, or performing tasks that require full attention.",
+    disclaimer_p4:
+      "Results vary from person to person, and no specific outcomes are guaranteed.",
+    disclaimer_p5:
+      "By using our services, you acknowledge full responsibility for your own health and wellbeing.",
+    purchases_section: "2. Purchases, Refund & Cancellation Policy",
+    purchases_p1:
+      "All products offered by Subconscious Valley are digital one-time purchases for personal use only.",
+    purchases_p2:
+      "Once a purchase is confirmed and access is granted, it cannot be canceled or refunded.",
+    purchases_p3:
+      "By purchasing, you agree that all sales are final and non-refundable.",
+    ip_section: "3. Intellectual Property & Copyright",
+    ip_p1:
+      "All content on this website, including hypnotherapy audios, scripts, text, graphics, logos, and images, is the intellectual property of Subconscious Valley and is protected under copyright law.",
+    ip_p2:
+      "You are granted a license for personal, non-commercial use only of the purchased audios.",
+    ip_p3:
+      "Reproduction, resale, redistribution, uploading, or sharing of our content in any form is strictly prohibited and may result in legal action.",
+    copyright_notice: "©2025 Subconscious Valley. All Rights Reserved.",
+    privacy_section: "4. Privacy Policy",
+    info_collect_label: "Information We Collect:",
+    info_collect_text:
+      "We may collect your name, email address, and payment details when you subscribe, purchase, or contact us.",
+    info_use_label: "How We Use Your Information:",
+    info_use_text:
+      "To process payments, deliver products, send updates, and improve our services.",
+    data_protection_label: "Data Protection:",
+    data_protection_text:
+      "Your personal data will never be sold, rented, or shared with third parties, except as necessary for payment processing or when required by law.",
+    cookies_label: "Cookies:",
+    cookies_text:
+      "Our website may use cookies to improve user experience. You can disable cookies in your browser settings.",
+    your_rights_label: "Your Rights:",
+    your_rights_text:
+      "You may request access, correction, or deletion of your data at any time by contacting us at hello@subconsciousvalley.com.",
+    children_label: "Children:",
+    children_text:
+      "Our services are intended for adults 18+ or for minors with parental/guardian consent.",
+    liability_section: "5. Limitation of Liability",
+    liability_p1:
+      "Subconscious Valley is not liable for any direct, indirect, or incidental damages arising from the use or inability to use our services.",
+    liability_p2:
+      "By accessing our website and using our products, you agree to release Subconscious Valley from any liability related to your personal outcomes or experiences.",
+    governing_law_section: "6. Governing Law",
+    governing_law_text:
+      "These Terms shall be governed by and construed in accordance with the laws of the United Arab Emirates, without regard to conflict of law principles.",
+    got_questions: "Got Questions?",
+    drop_email: "Drop us an email and we'll get back to you.",
+
+    // Privacy Page
+    privacy_page_title: "Subconscious Valley - Privacy Policy",
+    privacy_intro_text:
+      "Welcome to Subconscious Valley. By accessing and using our website, programs, and hypnotherapy audios, you agree to the following privacy policy. Please read carefully.",
+    privacy_policy_section: "Privacy Policy",
   },
 
   ar: {
@@ -226,7 +298,7 @@ const translations = {
     freedom_path: "طريق الحرية",
     restful_nights: "ليالي مريحة",
     bright_minds: "عقول مشرقة",
-    book_your_sessions:"احجز جلساتك",
+    book_your_sessions: "احجز جلساتك",
     watch_video: "شاهد الفيديو",
     follow_us: "تابعنا",
 
@@ -235,9 +307,12 @@ const translations = {
     brand_name: "وادي اللاوعي",
 
     // Homepage
-    hero_title:"درّب عقلك الباطن اليوم؛ فهو بالفعل يدير تنفّسك .جلسات صوتية احترافية تعيد برمجة العادات بينما تكتفي بالاستماع ليلًا.",
-    hero_sub_title_1:"لا حاجة لمكالمات مع مُعالج. اشترِ الملف الصوتي، اضغط تشغيل، واستمع بالبثّ من الموقع. التنفّس دليل على أن عقلك الباطن يدير الأنظمة الحيوية تلقائيًا. درّبه عن قصد.",
-    hero_sub_title_2:"تمرّن على النجاح، تمرّن على الهدوء، تمرّن على الفعل. احجز جلستك اليوم وثبّت إعدادات أفضل.",
+    hero_title:
+      "درّب عقلك الباطن اليوم. فهو يُدير أنفاسك ومعظم خياراتك اليومية. تُعيد جلسات التنويم المغناطيسي المدعومة علميًا وتسجيلات البرمجة اللغوية العصبية برمجة عقلك الباطن بهدوء بينما أنت...",
+    hero_sub_title_1:
+      "لا مكالمات أو قوائم انتظار. اشترِ، شغّل، وبثّ.",
+    hero_sub_title_2:
+      "ثبّت عمدًا قيمًا افتراضية أفضل: الهدوء، والوضوح، والاتساق في العمل. ابدأ الآن ودع العلاج النفسي يقوم بالمهمة الصعبة.",
     hero_title_1: "القوة لإعادة كتابة",
     hero_title_2: "قصتك",
     hero_subtitle:
@@ -245,6 +320,7 @@ const translations = {
     multilingual_support_desc:
       "تسجيلات العلاج بالبرمجة اللغوية العصبية والتنويم المغناطيسي متعددة اللغات للتغيير العميق والدائم",
     start_your_transformation: "ابدأ تحولك",
+    explore_programs: "استكشاف البرامج",
     get_in_touch: "تواصل معنا",
     video_welcome: "مرحباً بكم في وادي اللاوعي",
     video_discover: "تعرف على فانيتا باندي واكتشف تحولك",
@@ -294,24 +370,25 @@ const translations = {
     testimonial_3:
       "جلسات حب الذات باللغة الهندية لمست قلبي بعمق. الآن أتحدث مع نفسي بلطف.",
     //co-founer
-    about_cofounder:" عامًا، مُمارسة معتمدة في مجال Access Bars، ولديها اهتمام كبير بالشفاء بالطاقة والوعي. ساهمت بشكل فعّال في المحتوى الصوتي لـ وادي الباطن، مُشكّلةً أجواءه الهادئة من خلال إسهامات تقنية فعّالة، وحسٍّ جمالي، وحساسية عالية للتأثير العاطفي/الطاقي للصوت. بصفتها مُبدعة شابة، تُجسّد سارة إيمان العلامة التجارية بأن الشفاء والوعي والإبداع لا حدود لهما بالعمر.",
-    meet_cofounder:"تعرف على سارة",
-    young_visionary:"شاب ذو رؤية",
-    co_founder:"المؤسس المشارك",
+    about_cofounder:
+      " عامًا، مُمارسة معتمدة في مجال Access Bars، ولديها اهتمام كبير بالشفاء بالطاقة والوعي. ساهمت بشكل فعّال في المحتوى الصوتي لـ وادي الباطن، مُشكّلةً أجواءه الهادئة من خلال إسهامات تقنية فعّالة، وحسٍّ جمالي، وحساسية عالية للتأثير العاطفي/الطاقي للصوت. بصفتها مُبدعة شابة، تُجسّد سارة إيمان العلامة التجارية بأن الشفاء والوعي والإبداع لا حدود لهما بالعمر.",
+    meet_cofounder: "تعرف على سارة",
+    young_visionary: "شاب ذو رؤية",
+    co_founder: "المؤسس المشارك",
     // About Page
     about_hero_title: "شفاء يخاطب",
-    about_hero_title_2: "روحك",
+    about_hero_title_2: "إلى عقلك الباطن",
     about_hero_desc:
-      "وُلد وادي اللاوعي من إيمان بسيط وعميق: الشفاء الحقيقي يحدث عندما يتصل العلاج بعقلك وقلبك الثقافي.",
+      " تُعيد برمجة عقلك الباطن، الطبقة التي تُحرك العادات والمشاعر والقرارات التلقائية. يُقدم وادي العقل الباطن علاجًا بالتنويم المغناطيسي قائمًا على أسس علمية، وبرمجة عصبية لغوية، وجلسات صوتية مُوجهة تُعزز عاداتٍ أكثر هدوءًا، وتركيزًا أقوى، ونشاطًا مُستمرًا.وُلد وادي اللاوعي من إيمان بسيط وعميق: الشفاء الحقيقي يحدث عندما يتصل العلاج بعقلك وقلبك الثقافي.",
     story_behind_title: "القصة وراء وادي اللاوعي",
     story_behind_desc: "كل تحول يبدأ بقصة. هذه قصتي.",
     founder_about_quote:
       "أؤمن بأن كل شخص يحمل في داخله القوة للشفاء والتحول وخلق الحياة التي يرغب فيها حقًا. أحيانًا، نحتاج فقط إلى المفتاح الصحيح لفتح تلك القوة - وغالبًا ما يوجد هذا المفتاح في لغة قلوبنا.",
     why_multilingual_matters: "لماذا التعددية اللغوية مهمة",
     why_multilingual_p1:
-      "بعد العمل مع عملاء من خلفيات متنوعة في جميع أنحاء الشرق الأوسط وآسيا، لاحظت شيئًا رائعًا: لحظات الاختراق غالبًا ما تحدث عندما نتحول إلى لغتهم الأم. فتحت الجلسات الهندية مشاعر لم تستطع الإنجليزية الوصول إليها. تواصل التنويم المغناطيسي العربي مع المعتقدات الثقافية بطرق شعرت بأنها أصيلة وقوية.",
+      "تحدث الإنجازات أسرع عندما تتحدث إعادة برمجة اللاوعي لغتك الأم. من خلال عملنا في الشرق الأوسط وآسيا، شهدنا عملاء يُطلقون العنان لمشاعرهم ويحلون العقبات بمجرد تحول الجلسات إلى اللغة العربية أو الهندية أو لغتهم الأم.",
     why_multilingual_p2:
-      "ألهم هذا الإدراك وادي اللاوعي - أول منصة تقدم العلاج بالتنويم المغناطيسي الاحترافي عبر لغات متعددة، مصممة خصيصًا للمجتمعات المتنوعة في الشرق الأوسط وآسيا.",
+      "يربط العلاج بالتنويم المغناطيسي متعدد اللغات + البرمجة اللغوية العصبية المعتقدات الثقافية بعلم الأعصاب والعلاج الحديث، مما يجعل التأملات الموجهة ومزامنة الموجات الدماغية أكثر فعالية وأكثر شخصية.",
     founder_title: "المؤسس والممارس الرئيسي",
     certifications_training: "الشهادات والتدريب",
     lives_transformed: "حياة تم تحويلها",
@@ -322,16 +399,16 @@ const translations = {
     core_values_desc: "هذه المبادئ توجه كل ما نقوم به في وادي اللاوعي",
     value_1_title: "شفاء أصيل",
     value_1_desc:
-      "نحن نؤمن بأن التحول الحقيقي يحدث عندما يخاطب العلاج قلبك بلغتك الأم.",
+      "يحدث التحول عندما يتم توجيه العقل الباطن مباشرة إلى لغتك الأم",
     value_2_title: "نهج قائم على العلم",
     value_2_desc:
-      "تجمع أساليبنا بين الحكمة القديمة وعلم الأعصاب الحديث وتقنيات التنويم المغناطيسي القائمة على الأدلة.",
+      "نحن نجمع بين العلاج بالتنويم المغناطيسي والبرمجة اللغوية العصبية وتنسيق الموجات الدماغية للحصول على نتائج عملية وقابلة للاختبار.",
     value_3_title: "حساسية ثقافية",
     value_3_desc:
-      "إدراكًا منا بأن الشفاء شخصي وثقافي للغاية، فإننا نكرم الخلفيات واللغات المتنوعة.",
+      "الشفاء أمر شخصي وثقافي؛ ومحتوانا مترجم للغة العربية والهندية والإنجليزية والعديد من الجماهير الإقليمية الأخرى قريبًا.",
     value_4_title: "تغيير دائم",
     value_4_desc:
-      "نحن نركز على إعادة برمجة اللاوعي من أجل تحول دائم، وليس إصلاحات مؤقتة.",
+      "نحن نركز على تثبيت العادات، وليس على الحلول السريعة من خلال تصميم ملفات صوتية تعمل على تعزيز المسارات العصبية الجديدة بمرور الوقت.",
     our_journey: "رحلتنا",
     our_journey_desc:
       "من التحول الشخصي إلى مساعدة الآلاف على الشفاء عبر الثقافات",
@@ -346,15 +423,15 @@ const translations = {
       "أسست المنصة لجعل الشفاء التحويلي متاحًا للمجتمعات المتنوعة في جميع أنحاء العالم.",
     our_mission: "مهمتنا",
     our_mission_desc:
-      "جعل الشفاء التحويلي متاحًا للمجتمعات المتنوعة من خلال تقديم العلاج بالتنويم المغناطيسي والبرمجة اللغوية العصبية باللغات التي تخاطب قلوبهم. نحن نسد الفجوة بين الحكمة القديمة وعلم الأعصاب الحديث، ونخلق تجربة شفاء تكرم الثقافة والعلم على حد سواء.",
+      "نجعل الشفاء اللاواعي متاحًا لمختلف المجتمعات من خلال تقديم العلاج بالتنويم المغناطيسي الاحترافي، والبرمجة اللغوية العصبية، والبرامج الصوتية المبنية على الأدلة باللغات الأم. نربط بين الحكمة القديمة وعلم الأعصاب الحديث لتقديم جلسات تحترم الثقافات وتدفع نحو تغيير عادات قابل للقياس.",
     our_vision: "رؤيتنا",
     our_vision_desc:
-      "خلق عالم تتجاوز فيه الصحة العقلية حواجز اللغة، حيث يمكن لكل شخص الوصول إلى الشفاء الذي يحتاجه باللغة التي يشعر بها وكأنها في وطنه. نتصور مجتمعات تلتئم من الداخل، وممكّنة لكسر الأنماط الأجيال وخلق تغيير إيجابي دائم.",
+      "عالم حيث تتخطى العافية العقلية الحواجز اللغوية ويمكن لكل شخص إعادة برمجة العقل الباطن باللغة التي يشعر بها وكأنه وطنه، مما يمكّن المجتمعات من كسر الأنماط الجيلية وخلق تغيير دائم.",
     stat_countries: "الدول التي نخدمها",
     stat_success: "معدل النجاح",
     ready_to_begin: "هل أنت مستعد لبدء تحولك؟",
     ready_to_begin_desc:
-      "انضم إلى مجتمع المعالجين لدينا واكتشف قوة التغيير اللاواعي بلغتك الأم.",
+      "انضم إلى مجتمع يستخدم إعادة برمجة اللاوعي لتخفيف القلق، وزيادة التركيز، ومتابعة العلاج - دون الحاجة إلى قوائم انتظار. ابدأ بلغتك الأم.",
 
     // Sessions Page
     sessions_title: "جلسات التنويم المغناطيسي",
@@ -364,6 +441,7 @@ const translations = {
     all_languages: "جميع اللغات",
     available_in: "متوفر في:",
     start_session: "ابدأ الجلسة",
+    view_collection: "عرض المجموعة",
     requires_subscription: "يتطلب اشتراك",
     no_sessions_found: "لم يتم العثور على جلسات تطابق عوامل التصفية الخاصة بك.",
     clear_filters: "مسح الفلاتر",
@@ -404,6 +482,73 @@ const translations = {
     privacy_policy: "سياسة الخصوصية",
     terms_conditions: "الشروط والأحكام",
     all_rights_reserved: "كل الحقوق محفوظة.",
+
+    // Terms Page
+    terms_page_title:
+      "وادي العقل الباطن - إخلاء المسؤولية والشروط وسياسة الخصوصية",
+    terms_intro_text:
+      "أهلاً بكم في وادي العقل الباطن. بدخولكم واستخدامكم لموقعنا الإلكتروني وبرامجنا وتسجيلات التنويم المغناطيسي الصوتية، فإنكم توافقون على الشروط والأحكام التالية. يُرجى القراءة بعناية.",
+    disclaimer_section: "1. إخلاء المسؤولية",
+    disclaimer_p1:
+      "جميع ملفات الصوت والمحتوى العلاجي بالتنويم المغناطيسي التي تقدمها وادي الوعي الباطني مصممة للاسترخاء وتحسين الذات والنمو الشخصي. وهي لا تغني عن التشخيص أو العلاج الطبي أو النفسي.",
+    disclaimer_p2:
+      "لا ينبغي للأشخاص المصابين بالصرع أو اضطرابات النوبات أو غيرها من الحالات النفسية أو العصبية الخطيرة استخدام ملفاتنا الصوتية إلا بعد الحصول على موافقة من طبيب مرخص.",
+    disclaimer_p3:
+      "ا تستمع إلى تسجيلاتنا الصوتية أثناء القيادة أو تشغيل الآلات أو أداء المهام التي تتطلب الاهتمام الكامل.",
+    disclaimer_p4:
+      "تختلف النتائج من شخص لآخر، ولا توجد نتائج محددة مضمونة.Results vary from person to person, and no specific outcomes are guaranteed.",
+    disclaimer_p5:
+      "عند استخدام خدماتنا، فإنك تقر بالمسؤولية الكاملة عن صحتك ورفاهتك.",
+    purchases_section: "2. سياسة المشتريات والاسترداد والإلغاء",
+    purchases_p1:
+      "جميع المنتجات التي تقدمها Subconscious Valley هي عمليات شراء رقمية لمرة واحدة للاستخدام الشخصي فقط.",
+    purchases_p2:
+      "بمجرد تأكيد عملية الشراء ومنح الوصول إليها، لا يمكن إلغاؤها أو استرداد المبلغ.",
+    purchases_p3:
+      "من خلال الشراء، فإنك توافق على أن جميع المبيعات نهائية وغير قابلة للاسترداد.",
+    ip_section: "3. الملكية الفكرية وحقوق النشر",
+    ip_p1:
+      "جميع المحتويات الموجودة على هذا الموقع، بما في ذلك ملفات صوتية التنويم المغناطيسي، والنصوص، والرسومات، والشعارات، والصور، هي ملكية فكرية لشركة Subconscious Valley وهي محمية بموجب قانون حقوق النشر.",
+    ip_p2:
+      "لقد تم منحك ترخيصًا للاستخدام الشخصي غير التجاري فقط للمقاطع الصوتية التي اشتريتها.",
+    ip_p3:
+      "يُحظر تمامًا إعادة إنتاج أو إعادة بيع أو إعادة توزيع أو تحميل أو مشاركة المحتوى الخاص بنا بأي شكل من الأشكال وقد يؤدي ذلك إلى اتخاذ إجراء قانوني.",
+    copyright_notice: "©2025 وادي العقل الباطن. جميع الحقوق محفوظة.",
+    privacy_section: "4. سياسة الخصوصية",
+    info_collect_label: "المعلومات التي نجمعها:",
+    info_collect_text:
+      "يجوز لنا جمع اسمك وعنوان بريدك الإلكتروني وتفاصيل الدفع عند الاشتراك أو الشراء أو الاتصال بنا.",
+    info_use_label: "كيف نستخدم معلوماتك:",
+    info_use_text:
+      "لمعالجة المدفوعات وتسليم المنتجات وإرسال التحديثات وتحسين خدماتنا.",
+    data_protection_label: "حماية البيانات:",
+    data_protection_text:
+      "لن يتم بيع بياناتك الشخصية أو تأجيرها أو مشاركتها مع أطراف ثالثة، إلا إذا كان ذلك ضروريًا لمعالجة الدفع أو عندما يقتضي القانون ذلك.",
+    cookies_label: "ملفات تعريف الارتباط:",
+    cookies_text:
+      "قد يستخدم موقعنا ملفات تعريف الارتباط لتحسين تجربة المستخدم. يمكنك تعطيل ملفات تعريف الارتباط في إعدادات المتصفح لديك.",
+    your_rights_label: "حقوقك:",
+    your_rights_text:
+      "يمكنك طلب الوصول إلى بياناتك أو تصحيحها أو حذفها في أي وقت عن طريق الاتصال بنا على hello@subconsciousvalley.com.",
+    children_label: "أطفال:",
+    children_text:
+      "خدماتنا مخصصة للبالغين 18 عامًا أو للقاصرين بموافقة الوالدين أو الوصي.",
+    liability_section: "5. تحديد المسؤولية",
+    liability_p1:
+      "لا تتحمل شركة Subconscious Valley مسؤولية أي أضرار مباشرة أو غير مباشرة أو عرضية ناجمة عن استخدام خدماتنا أو عدم القدرة على استخدامها.",
+    liability_p2:
+      "من خلال الوصول إلى موقعنا الإلكتروني واستخدام منتجاتنا، فإنك توافق على إعفاء Subconscious Valley من أي مسؤولية تتعلق بنتائجك أو تجاربك الشخصية.",
+    governing_law_section: "6. القانون الحاكم",
+    governing_law_text:
+      "تخضع هذه الشروط لقوانين دولة الإمارات العربية المتحدة ويتم تفسيرها وفقًا لها، دون مراعاة مبادئ تضارب القوانين.",
+    got_questions: "هل لديك أسئلة؟",
+    drop_email: "أرسل لنا بريدًا إلكترونيًا وسنتصل بك.",
+
+    // Privacy Page
+    privacy_page_title: "وادي العقل الباطن - سياسة الخصوصية",
+    privacy_intro_text:
+      "أهلاً بكم في وادي العقل الباطن. بدخولكم واستخدامكم لموقعنا الإلكتروني وبرامجنا وتسجيلات التنويم المغناطيسي الصوتية، فإنكم توافقون على سياسة الخصوصية التالية. يُرجى القراءة بعناية.",
+    privacy_policy_section: "سياسة الخصوصية",
   },
 
   hi: {
@@ -426,7 +571,7 @@ const translations = {
     freedom_path: "स्वतंत्रता का रास्ता",
     restful_nights: "आरामदायक रातें",
     bright_minds: "उज्ज्वल दिमाग",
-    book_your_sessions:"अपना सत्र बुक करें",
+    book_your_sessions: "अपना सत्र बुक करें",
     watch_video: "वीडियो देखें",
     follow_us: "हमें फॉलो करें",
 
@@ -435,9 +580,12 @@ const translations = {
     brand_name: "सबकॉन्शस वैली",
 
     // Homepage
-    hero_title:"आज ही अपना अवचेतन मन ट्रेन करें. साँस भी वही चलाता है। पेशेवर ऑडियो आपकी आदतें बदलते है।आपको बस हर रात सुनना है।",
-    hero_sub_title_1:"किसी थेरपिस्ट से बात नहीं करनी। ऑडियो खरीदें, प्ले दबाएँ और वेबसाइट से सुनें। साँस अपने-आप चलती है| यही अवचेतन की शक्ति है।",
-    hero_sub_title_2:" उसी को ट्रेन करें। सफलता, शांति और कार्रवाई की प्रैक्टिस करें। आज ही एक्सेस लें और बेहतर आदतें बसाइए।",
+    hero_title:
+      "आज ही अपने अवचेतन मन को प्रशिक्षित करें। यह पहले से ही आपकी साँसों और आपके अधिकांश दैनिक निर्णयों को नियंत्रित करता है। हमारी विज्ञान-समर्थित सम्मोहन चिकित्सा और एनएलपी ऑडियो चुपचाप अवचेतन मन को पुनः प्रोग्राम करते हैं, जबकि आप।",
+    hero_sub_title_1:
+      "कोई कॉल या वेटलिस्ट नहीं। खरीदें, प्ले बटन दबाएँ और स्ट्रीम करें।",
+    hero_sub_title_2:
+      "जानबूझकर बेहतर डिफ़ॉल्ट स्थापित करें: शांति, स्पष्टता और निरंतर कार्रवाई। अभी शुरुआत करें और थेरेपी को भारी काम करने दें।",
     hero_title_1: "अपनी कहानी को",
     hero_title_2: "फिर से लिखने की शक्ति",
     hero_subtitle:
@@ -445,6 +593,7 @@ const translations = {
     multilingual_support_desc:
       "गहरे, स्थायी परिवर्तन के लिए बहुभाषी NLP और हिप्नोथेरेपी ऑडियो",
     start_your_transformation: "अपना परिवर्तन शुरू करें",
+    explore_programs: "कार्यक्रमों का पता लगाएं",
     get_in_touch: "संपर्क में रहें",
     video_welcome: "सबकॉन्शस वैली में आपका स्वागत है",
     video_discover: "वनिता पांडे से मिलें और अपने परिवर्तन की खोज करें",
@@ -496,24 +645,25 @@ const translations = {
 
     //co-founer
     //co-founer
-    about_cofounder:"15 वर्षीय सारा एक प्रमाणित एक्सेस बार्स प्रैक्टिशनर हैं, जिन्हें ऊर्जा चिकित्सा और चेतना कार्य में गहरी रुचि है। उन्होंने सबकॉन्शस वैली की ऑडियो सामग्री में सार्थक योगदान दिया है, जो ठोस तकनीकी इनपुट, सौंदर्यशास्त्र की समझ और ध्वनि के भावनात्मक/ऊर्जावान प्रभाव के प्रति संवेदनशीलता के माध्यम से इसके शांत माहौल को आकार देता है। एक युवा निर्माता के रूप में, वह ब्रांड के इस विश्वास को मूर्त रूप देती हैं कि उपचार, जागरूकता और रचनात्मकता उम्र से सीमित नहीं हैं।",
-    meet_cofounder:"सारा से मिलें",
-    young_visionary:"युवा दूरदर्शी",
-    co_founder:"सह-संस्थापक",
+    about_cofounder:
+      "15 वर्षीय सारा एक प्रमाणित एक्सेस बार्स प्रैक्टिशनर हैं, जिन्हें ऊर्जा चिकित्सा और चेतना कार्य में गहरी रुचि है। उन्होंने सबकॉन्शस वैली की ऑडियो सामग्री में सार्थक योगदान दिया है, जो ठोस तकनीकी इनपुट, सौंदर्यशास्त्र की समझ और ध्वनि के भावनात्मक/ऊर्जावान प्रभाव के प्रति संवेदनशीलता के माध्यम से इसके शांत माहौल को आकार देता है। एक युवा निर्माता के रूप में, वह ब्रांड के इस विश्वास को मूर्त रूप देती हैं कि उपचार, जागरूकता और रचनात्मकता उम्र से सीमित नहीं हैं।",
+    meet_cofounder: "सारा से मिलें",
+    young_visionary: "युवा दूरदर्शी",
+    co_founder: "सह-संस्थापक",
     // About Page
     about_hero_title: "चिकित्सा जो बोलती है",
-    about_hero_title_2: "आपकी आत्मा से",
+    about_hero_title_2: "आपके अवचेतन तक",
     about_hero_desc:
-      "सबकॉन्शस वैली एक सरल लेकिन गहरे विश्वास से पैदा हुआ था: सच्चा उपचार तब होता है जब चिकित्सा आपके दिमाग और आपके सांस्कृतिक दिल दोनों से जुड़ती है।",
+      "सच्चा बदलाव तब होता है जब आप अवचेतन मन को पुनः प्रोग्राम करते हैं - वह परत जो आदतों, भावनाओं और स्वचालित निर्णयों को संचालित करती है। सबकॉन्शियस वैली विज्ञान आधारित सम्मोहन चिकित्सा, एनएलपी और निर्देशित ऑडियो सत्र प्रदान करती है जो शांत स्वभाव, मज़बूत एकाग्रता और निरंतर कार्रवाई स्थापित करते हैं।",
     story_behind_title: "सबकॉन्शस वैली के पीछे की कहानी",
     story_behind_desc: "हर परिवर्तन एक कहानी से शुरू होता है। यह मेरी है।",
     founder_about_quote:
       "मेरा मानना ​​है कि प्रत्येक व्यक्ति अपने भीतर चंगा करने, बदलने और वास्तव में इच्छित जीवन बनाने की शक्ति रखता है। कभी-कभी, हमें उस शक्ति को अनलॉक करने के लिए बस सही कुंजी की आवश्यकता होती है - और वह कुंजी अक्सर हमारे दिल की भाषा में पाई जाती है।",
     why_multilingual_matters: "बहुभाषी क्यों मायने रखता है",
     why_multilingual_p1:
-      "मध्य पूर्व और एशिया भर में विविध पृष्ठभूमि के ग्राहकों के साथ काम करने के बाद, मैंने कुछ उल्लेखनीय देखा: सफलता के क्षण अक्सर तब होते थे जब हम उनकी मातृभाषा में स्विच करते थे। हिंदी सत्रों ने उन भावनाओं को अनलॉक किया जहां तक ​​अंग्रेजी नहीं पहुंच सकती थी। अरबी सम्मोहन सांस्कृतिक मान्यताओं से इस तरह से जुड़ा कि यह प्रामाणिक और शक्तिशाली महसूस हुआ।",
+      "जब अवचेतन पुनर्प्रोग्रामिंग आपकी मातृभाषा में होती है, तो सफलताएँ तेज़ी से मिलती हैं। मध्य पूर्व और एशिया में काम करते हुए, हमने देखा कि जैसे ही सत्र अरबी, हिंदी या उनकी मूल भाषा में शुरू हुए, ग्राहकों ने अपनी भावनाओं को उजागर किया और रुकावटों को दूर किया।",
     why_multilingual_p2:
-      "इस अहसास ने सबकॉन्शस वैली को प्रेरित किया - मध्य पूर्व और एशिया के विविध समुदायों के लिए विशेष रूप से डिजाइन की गई कई भाषाओं में पेशेवर हिप्नोथेरेपी की पेशकश करने वाला पहला मंच।",
+      "बहुभाषी सम्मोहन चिकित्सा + एनएलपी सांस्कृतिक विश्वासों को आधुनिक तंत्रिका विज्ञान और चिकित्सा के साथ जोड़ती है, जिससे निर्देशित ध्यान और मस्तिष्क तरंग-प्रशिक्षण ऑडियो अधिक प्रभावी और अधिक व्यक्तिगत बन जाते हैं।",
     founder_title: "संस्थापक और प्रमुख व्यवसायी",
     certifications_training: "प्रमाणन और प्रशिक्षण",
     lives_transformed: "जीवन बदल गए",
@@ -525,16 +675,16 @@ const translations = {
       "ये सिद्धांत सबकॉन्शस वैली में हम जो कुछ भी करते हैं उसका मार्गदर्शन करते हैं",
     value_1_title: "प्रामाणिक उपचार",
     value_1_desc:
-      "हमारा मानना ​​है कि सच्चा परिवर्तन तब होता है जब चिकित्सा आपकी मातृभाषा में आपके दिल से बात करती है।",
+      "परिवर्तन तब स्थायी होता है जब अवचेतन मन को सीधे अपनी मूल भाषा में संबोधित किया जाता है।",
     value_2_title: "विज्ञान आधारित दृष्टिकोण",
     value_2_desc:
-      "हमारी विधियाँ प्राचीन ज्ञान को आधुनिक तंत्रिका विज्ञान और साक्ष्य-आधारित सम्मोहन चिकित्सा तकनीकों के साथ जोड़ती हैं।",
+      "हम व्यावहारिक, परीक्षण योग्य परिणामों के लिए सम्मोहन चिकित्सा, एनएलपी और ब्रेनवेव ट्रेनिंग को संयोजित करते हैं।",
     value_3_title: "सांस्कृतिक संवेदनशीलता",
     value_3_desc:
-      "यह समझते हुए कि उपचार अत्यंत व्यक्तिगत और सांस्कृतिक है, हम विविध पृष्ठभूमि और भाषाओं का सम्मान करते हैं।",
+      "उपचार व्यक्तिगत और सांस्कृतिक है; हमारी सामग्री अरबी, हिंदी, अंग्रेजी और कई अन्य क्षेत्रीय दर्शकों के लिए स्थानीयकृत है, जो जल्द ही आने वाली है।",
     value_4_title: "स्थायी परिवर्तन",
     value_4_desc:
-      "हम स्थायी परिवर्तन के लिए अवचेतन पुन: प्रोग्रामिंग पर ध्यान केंद्रित करते हैं, अस्थायी सुधारों पर नहीं।",
+      "हम आदत डालने पर ध्यान केंद्रित करते हैं, न कि त्वरित सुधार के लिए ऑडियो डिजाइन करने पर जो समय के साथ नए तंत्रिका मार्गों को सुदृढ़ करते हैं।",
     our_journey: "हमारी यात्रा",
     our_journey_desc:
       "व्यक्तिगत परिवर्तन से लेकर संस्कृतियों में हजारों लोगों को ठीक करने में मदद करने तक",
@@ -549,15 +699,15 @@ const translations = {
       "दुनिया भर के विविध समुदायों के लिए परिवर्तनकारी उपचार सुलभ बनाने के लिए मंच की स्थापना की।",
     our_mission: "हमारा विशेष कार्य",
     our_mission_desc:
-      "विविध समुदायों के लिए परिवर्तनकारी उपचार सुलभ बनाना, उनके दिलों से बात करने वाली भाषाओं में पेशेवर सम्मोहन चिकित्सा और एनएलपी प्रदान करके। हम प्राचीन ज्ञान और आधुनिक तंत्रिका विज्ञान के बीच की खाई को पाटते हैं, एक उपचार अनुभव बनाते हैं जो संस्कृति और विज्ञान दोनों का सम्मान करता है।",
+      "पेशेवर सम्मोहन चिकित्सा, एनएलपी और स्थानीय भाषाओं में साक्ष्य-आधारित ऑडियो कार्यक्रम प्रदान करके अवचेतन उपचार को विविध समुदायों के लिए सुलभ बनाना। हम प्राचीन ज्ञान और आधुनिक तंत्रिका विज्ञान का संयोजन करके ऐसे सत्र तैयार करते हैं जो संस्कृति का सम्मान करते हैं और आदतों में उल्लेखनीय बदलाव लाते हैं।",
     our_vision: "हमारी दृष्टि",
     our_vision_desc:
-      "एक ऐसी दुनिया बनाना जहां मानसिक स्वास्थ्य भाषा की बाधाओं को पार कर जाए, जहां हर व्यक्ति अपनी घरेलू भाषा में आवश्यक उपचार प्राप्त कर सके। हम भीतर से ठीक हुए समुदायों की कल्पना करते हैं, जो पीढ़ीगत पैटर्न को तोड़ने और स्थायी सकारात्मक बदलाव लाने के लिए सशक्त हैं।",
+      "एक ऐसा विश्व जहां मानसिक स्वास्थ्य भाषा की बाधाओं से परे हो और प्रत्येक व्यक्ति अपने अवचेतन मन को उस भाषा में पुनः प्रोग्राम कर सके जो उसे घर जैसा महसूस हो, जिससे समुदायों को पीढ़ीगत पैटर्न को तोड़ने और स्थायी परिवर्तन लाने के लिए सशक्त बनाया जा सके।",
     stat_countries: "सेवा प्रदान किए गए देश",
     stat_success: "सफलता दर",
     ready_to_begin: "क्या आप अपना परिवर्तन शुरू करने के लिए तैयार हैं?",
     ready_to_begin_desc:
-      "हमारे चिकित्सकों के समुदाय में शामिल हों और अपनी मातृभाषा में अवचेतन परिवर्तन की शक्ति की खोज करें।",
+      "चिंता कम करने, ध्यान केंद्रित करने और बिना किसी प्रतीक्षा सूची के थेरेपी का पालन करने के लिए अवचेतन पुनर्प्रोग्रामिंग का उपयोग करने वाले समुदाय में शामिल हों। अपनी मातृभाषा से शुरुआत करें।",
 
     // Sessions Page
     sessions_title: "सम्मोहन सत्र",
@@ -567,6 +717,7 @@ const translations = {
     all_languages: "सभी भाषाएँ",
     available_in: "में उपलब्ध:",
     start_session: "सत्र शुरू करें",
+    view_collection: "संग्रह देखें",
     requires_subscription: "सदस्यता की आवश्यकता है",
     no_sessions_found: "आपके फ़िल्टर से मेल खाने वाला कोई सत्र नहीं मिला।",
     clear_filters: "फ़िल्टर साफ़ करें",
@@ -609,6 +760,70 @@ const translations = {
     privacy_policy: "गोपनीयता नीति",
     terms_conditions: "नियम और शर्तें",
     all_rights_reserved: "सर्वाधिकार सुरक्षित।",
+    terms_page_title: "अवचेतन घाटी - अस्वीकरण, नियम और गोपनीयता नीति",
+    terms_intro_text:
+      "अवचेतन घाटी में आपका स्वागत है। हमारी वेबसाइट, प्रोग्राम और सम्मोहन ऑडियो रिकॉर्डिंग तक आपकी पहुंच और उपयोग के साथ, आप निम्नलिखित नियमों और शर्तों से सहमत होते हैं। कृपया ध्यान से पढ़ें।",
+    disclaimer_section: "1. अस्वीकरण",
+    disclaimer_p1:
+      "हमारे द्वारा प्रदान किए गए सभी ऑडियो फाइलें और सम्मोहन चिकित्सा उपचार सामग्री विश्राम, आत्म-सुधार और व्यक्तिगत विकास के लिए डिज़ाइन की गई हैं। ये निदान या चिकित्सा या मनोवैज्ञानिक उपचार का विकल्प नहीं हैं।",
+    disclaimer_p2:
+      "मिर्गी या दौरे विकार या अन्य गंभीर मानसिक या न्यूरोलॉजिकल स्थितियों वाले व्यक्तियों को हमारे ऑडियो का उपयोग केवल एक लाइसेंस प्राप्त चिकित्सक की मंजूरी के बाद करना चाहिए।",
+    disclaimer_p3:
+      "ड्राइविंग या मशीनरी चलाने या पूर्ण ध्यान की आवश्यकता वाले कार्यों को करते समय हमारे रिकॉर्डिंग सुनना उचित नहीं है।",
+    disclaimer_p4:
+      "परिणाम व्यक्ति से व्यक्ति भिन्न होते हैं, और कोई विशिष्ट परिणाम गारंटीकृत नहीं हैं।",
+    disclaimer_p5:
+      " हमारे सेवाओं का उपयोग करते समय, आप अपनी स्वास्थ्य और कल्याण के लिए पूरी जिम्मेदारी स्वीकार करते हैं।",
+    purchases_section: "2. खरीद, रिफंड और रद्दीकरण नीति",
+    purchases_p1:
+      "सबकॉन्शस वैली द्वारा प्रदान किए गए सभी उत्पाद व्यक्तिगत उपयोग के लिए एक बार की डिजिटल खरीद हैं।",
+    purchases_p2:
+      "एक बार खरीद की पुष्टि और एक्सेस प्रदान करने के बाद, इसे रद्द या रिफंड नहीं किया जा सकता है।",
+    purchases_p3:
+      "खरीदारी के माध्यम से, आप सहमत होते हैं कि सभी बिक्री अंतिम हैं और रिफंड योग्य नहीं हैं।",
+    ip_section: "3. बौद्धिक संपदा और कॉपीराइट",
+    ip_p1:
+      "इस वेबसाइट पर सभी सामग्री, जिसमें सम्मोहन ऑडियो फाइलें, लिपियाँ, ग्राफिक्स, लोगो, और छवियां शामिल हैं, सबकॉन्शस वैली की बौद्धिक संपदा हैं और कॉपीराइट कानून द्वारा संरक्षित हैं।",
+    ip_p2:
+      "आपके द्वारा खरीदी गई ऑडियो क्लिप्स के लिए आपको केवल व्यक्तिगत गैर-वाणिज्यिक उपयोग के लिए एक लाइसेंस दिया गया है।",
+    ip_p3:
+      "हमारी सामग्री को किसी भी रूप में पुन: उत्पन्न, पुनर्विक्रय, पुनर्वितरित, अपलोड या साझा करना सख्त वर्जित है और इसके लिए कानूनी कार्रवाई हो सकती है।",
+    copyright_notice: "©2025 अवचेतन घाटी। सर्वाधिकार सुरक्षित।",
+    privacy_section: "4. गोपनीयता नीति",
+    info_collect_label: "हम जो जानकारी एकत्र करते हैं:",
+    info_collect_text:
+      "जब आप सदस्यता लेते हैं, खरीदारी करते हैं, या हमसे संपर्क करते हैं तो हम आपका नाम, ईमेल पता, और भुगतान विवरण एकत्र कर सकते हैं।",
+    info_use_label: "हम आपकी जानकारी का उपयोग कैसे करते हैं:",
+    info_use_text:
+      "भुगतान संसाधित करने, उत्पाद वितरित करने, अपडेट भेजने, और हमारी सेवाओं में सुधार करने के लिए।",
+    data_protection_label: "डेटा सुरक्षा:",
+    data_protection_text:
+      "आपका व्यक्तिगत डेटा बेचा, किराए पर नहीं दिया जाएगा, या तीसरे पक्ष के साथ साझा नहीं किया जाएगा, सिवाय इसके कि भुगतान संसाधित करने के लिए आवश्यक हो या जब कानून द्वारा आवश्यक हो।",
+    cookies_label: "कुकीज़:",
+    cookies_text:
+      "हमारी वेबसाइट उपयोगकर्ता अनुभव में सुधार के लिए कुकीज़ का उपयोग कर सकती है। आप अपने ब्राउज़र सेटिंग्स में कुकीज़ अक्षम कर सकते हैं।",
+    your_rights_label: "आपके अधिकार:",
+    your_rights_text:
+      "आप कभी भी हमसे संपर्क करके अपने डेटा तक पहुंच, इसे सुधारने, या हटाने का अनुरोध कर सकते हैं।",
+    children_label: "बच्चे:",
+    children_text:
+      "हमारी सेवाएं 18 वर्ष या उससे अधिक उम्र के वयस्कों के लिए हैं या माता-पिता या अभिभावक की सहमति से नाबालिगों के लिए हैं।",
+    liability_section: "5. दायित्व की सीमा",
+    liability_p1:
+      "सबकॉन्शस वैली हमारे सेवाओं के उपयोग या उपयोग में असमर्थता से उत्पन्न किसी भी प्रत्यक्ष, अप्रत्यक्ष, आकस्मिक नुकसान के लिए जिम्मेदार नहीं है।",
+    liability_p2:
+      "हमारी वेबसाइट तक पहुंचने और हमारे उत्पादों का उपयोग करके, आप सबकॉन्शस वैली को आपकी व्यक्तिगत परिणामों या अनुभवों से संबंधित किसी भी दायित्व से मुक्त करने के लिए सहमत होते हैं।",
+    governing_law_section: "6. शासक कानून",
+    governing_law_text:
+      "ये शर्तें संयुक्त अरब अमीरात के कानूनों के अधीन हैं और उनके अनुसार व्याख्या की जाती हैं, बिना किसी कानून संघर्ष सिद्धांतों को ध्यान में रखे।",
+    got_questions: "क्या आपके पास प्रश्न हैं?",
+    drop_email: "हमें एक ईमेल भेजें और हम आपसे संपर्क करेंगे।",
+
+    // Privacy Page
+    privacy_page_title: "अवचेतन घाटी - गोपनीयता नीति",
+    privacy_intro_text:
+      "अवचेतन घाटी में आपका स्वागत है। हमारी वेबसाइट, प्रोग्राम और सम्मोहन ऑडियो रिकॉर्डिंग तक आपकी पहुंच और उपयोग के साथ, आप निम्नलिखित गोपनीयता नीति से सहमत होते हैं। कृपया ध्यान से पढ़ें।",
+    privacy_policy_section: "गोपनीयता नीति",
   },
 };
 

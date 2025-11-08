@@ -16,14 +16,7 @@ import { motion } from "framer-motion";
 import { useLanguage } from "@/components/LanguageProvider";
 import { useCurrency } from "@/components/CurrencyConverter";
 
-const categoryNames = {
-  body_confidence: "Body Confidence Collection",
-  self_love: "Self-Love Collection",
-  emotional_healing: "Emotional Healing Collection",
-  freedom_path: "Freedom Path Collection",
-  restful_nights: "Restful Nights",
-  bright_minds: "Bright Minds Collection",
-};
+// Dynamic category names will be generated from sessions
 
 const languageNames = {
   english: "English",
@@ -56,27 +49,34 @@ export default function Sessions() {
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [selectedLanguage, setSelectedLanguage] = useState("all");
   const [isLoading, setIsLoading] = useState(true);
+  const [dynamicCategories, setDynamicCategories] = useState({});
 
-  //   useEffect(() => {
-  //     loadData();
-  //   }, []);
+  useEffect(() => {
+    loadData();
+  }, []);
 
   const loadData = async () => {
     try {
-      const sessionsData = await Session.list("-created_date");
+      const [sessionsResponse, purchasesResponse] = await Promise.all([
+        fetch("/api/sessions"),
+        fetch("/api/purchases"),
+      ]);
+
+      const sessionsData = await sessionsResponse.json();
       setSessions(sessionsData);
 
-      try {
-        const userData = await User.me();
-        setUser(userData);
-        // Load purchases if user is logged in
-        const userPurchases = await Purchase.filter({
-          user_email: userData.email,
-          payment_status: "completed",
-        });
-        setPurchases(userPurchases);
-      } catch (error) {
-        setUser(null);
+      // Generate dynamic categories from parent session titles only
+      const categories = {};
+      sessionsData.forEach((session) => {
+        if (session.title && session.parent_id === null) {
+          categories[session.title] = session.title;
+        }
+      });
+      setDynamicCategories(categories);
+
+      if (purchasesResponse.ok) {
+        const purchasesData = await purchasesResponse.json();
+        setPurchases(purchasesData);
       }
     } catch (error) {
       console.error("Error loading data:", error);
@@ -85,38 +85,47 @@ export default function Sessions() {
   };
 
   const hasAccess = (session) => {
-    if (!user) return false;
-    // Check for subscription access (future implementation)
-    // For now, check if session is free or purchased
-    if (session.price === 0) return true;
-    return purchases.some((p) => p.session_id === session.id);
+    // Check if session is free
+    if (session.price === 0 || session.isFree) {
+      return true;
+    }
+
+    // Check if user has purchased this session
+    return purchases.some(
+      (purchase) =>
+        purchase.session_id === session._id &&
+        purchase.payment_status === "completed"
+    );
   };
 
   const handleSessionAction = (session) => {
-    if (!user) {
-      User.loginWithRedirect(window.location.href);
-      return;
-    }
-
     if (hasAccess(session)) {
-      // User has access (free, purchased, or subscription)
-      window.location.href =
-        createPageUrl("SessionPlayer") + `?session=${session.id}`;
+      // Check if this is a parent session with child sessions
+      if (session.child_sessions && session.child_sessions.length > 0) {
+        // Redirect to dashboard to see individual sessions
+        window.location.href = "/dashboard";
+      } else {
+        // Single session - go to player
+        window.location.href =
+          createPageUrl("SessionPlayer") + `?session=${session._id}`;
+      }
     } else {
       // User needs to purchase
       window.location.href =
-        createPageUrl("checkout") + `?session=${session.id}`;
+        createPageUrl("checkout") + `?session=${session._id}`;
     }
   };
 
   const filteredSessions = sessions.filter((session) => {
+    // Only show parent sessions
+    const isParent = session.parent_id === null;
     const categoryMatch =
       selectedCategories.length === 0 ||
-      selectedCategories.includes(session.category);
+      selectedCategories.includes(session.title);
     const languageMatch =
       selectedLanguage === "all" ||
       session.languages?.includes(selectedLanguage);
-    return categoryMatch && languageMatch;
+    return isParent && categoryMatch && languageMatch;
   });
 
   const toggleCategory = (category) => {
@@ -165,7 +174,7 @@ export default function Sessions() {
             </div> */}
             <div className="flex flex-wrap gap-2 items-center justify-center">
               <Filter className="h-5 w-5 mt-1 text-slate-500" />
-              {Object.entries(categoryNames).map(([key, name]) => (
+              {Object.entries(dynamicCategories).map(([key, name]) => (
                 <button
                   key={key}
                   onClick={() => toggleCategory(key)}
@@ -175,7 +184,7 @@ export default function Sessions() {
                       : "bg-white text-slate-600 border border-slate-200 hover:border-teal-300 hover:text-teal-600"
                   }`}
                 >
-                  {t(key)}
+                  {name}
                 </button>
               ))}
             </div>
@@ -217,7 +226,7 @@ export default function Sessions() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredSessions.map((session, index) => (
               <motion.div
-                key={session.id}
+                key={session._id || session.id || index}
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
@@ -239,7 +248,7 @@ export default function Sessions() {
                       <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all duration-300"></div>
                       <div className="absolute bottom-3 left-3">
                         <Badge className="bg-white/90 text-slate-700">
-                          {categoryNames[session.category]}
+                          {session.category}
                         </Badge>
                       </div>
                       <div className="absolute top-3 right-3">
@@ -297,11 +306,14 @@ export default function Sessions() {
 
                     <Button
                       onClick={() => handleSessionAction(session)}
-                      className="w-full bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white"
+                      className="cursor-pointer w-full bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white"
                     >
                       <Play className="mr-2 h-4 w-4" />
                       {hasAccess(session)
-                        ? t("start_session")
+                        ? session.child_sessions &&
+                          session.child_sessions.length > 0
+                          ? t("view_collection")
+                          : t("start_session")
                         : session.price > 0
                         ? `${t("purchase")} - ${formatPrice(session.price)}`
                         : t("start_session")}
