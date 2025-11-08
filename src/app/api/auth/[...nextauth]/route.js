@@ -10,12 +10,6 @@ const handler = NextAuth({
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      authorization: {
-        params: {
-          redirect_uri:
-            "https://subconsious-valley.vercel.app/api/auth/callback/google",
-        },
-      },
     }),
     CredentialsProvider({
       name: "credentials",
