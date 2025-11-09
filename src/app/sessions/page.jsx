@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 // import { Session, User, Purchase } from "@/api/entities";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -15,9 +15,13 @@ import { Play, Lock, Star, Clock, Globe, Filter } from "lucide-react";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/components/LanguageProvider";
 import { useCurrency } from "@/components/CurrencyConverter";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { fetchWithCache } from "@/utils/cache";
 
 // Dynamic category names will be generated from sessions
 
+// Memoize language names to prevent recreation
 const languageNames = {
   english: "English",
   indian_english: "Indian English",
@@ -43,26 +47,19 @@ const createPageUrl = (pageName) => {
 export default function Sessions() {
   const { t, currentLanguage } = useLanguage();
   const { formatPrice } = useCurrency();
+  const { data: session } = useSession();
+  const router = useRouter();
   const [sessions, setSessions] = useState([]);
-  const [user, setUser] = useState(null);
   const [purchases, setPurchases] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [selectedLanguage, setSelectedLanguage] = useState("all");
   const [isLoading, setIsLoading] = useState(true);
   const [dynamicCategories, setDynamicCategories] = useState({});
 
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
-      const [sessionsResponse, purchasesResponse] = await Promise.all([
-        fetch("/api/sessions"),
-        fetch("/api/purchases"),
-      ]);
-
-      const sessionsData = await sessionsResponse.json();
+      // Use smart caching with ETag support
+      const sessionsData = await fetchWithCache('/api/sessions', 'sessions', 15);
       setSessions(sessionsData);
 
       // Generate dynamic categories from parent session titles only
@@ -74,71 +71,90 @@ export default function Sessions() {
       });
       setDynamicCategories(categories);
 
-      if (purchasesResponse.ok) {
-        const purchasesData = await purchasesResponse.json();
-        setPurchases(purchasesData);
+      // Always fetch fresh purchases if user is logged in (user-specific data)
+      if (session?.user) {
+        try {
+          const purchasesResponse = await fetch("/api/purchases");
+          if (purchasesResponse.ok) {
+            const purchasesData = await purchasesResponse.json();
+            setPurchases(purchasesData);
+          }
+        } catch (purchaseError) {
+          console.error("Error loading purchases:", purchaseError);
+        }
       }
     } catch (error) {
       console.error("Error loading data:", error);
     }
     setIsLoading(false);
-  };
+  }, [session?.user]);
 
-  const hasAccess = (session) => {
-    // Check if session is free
-    if (session.price === 0 || session.isFree) {
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
+
+  // Check access based on session price and user purchases
+  const hasAccess = useCallback((sessionItem) => {
+    // Free sessions are always accessible
+    if (sessionItem.price === 0 || sessionItem.isFree) {
       return true;
     }
-
+    
+    // If user is not logged in, no access to paid sessions
+    if (!session?.user) {
+      return false;
+    }
+    
     // Check if user has purchased this session
     return purchases.some(
       (purchase) =>
-        purchase.session_id === session._id &&
+        purchase.session_id === sessionItem._id &&
         purchase.payment_status === "completed"
     );
-  };
+  }, [session?.user, purchases]);
 
-  const handleSessionAction = (session) => {
+  const handleSessionAction = useCallback((session) => {
     if (hasAccess(session)) {
       // Check if this is a parent session with child sessions
       if (session.child_sessions && session.child_sessions.length > 0) {
         // Redirect to dashboard to see individual sessions
-        window.location.href = "/dashboard";
+        router.push("/dashboard");
       } else {
         // Single session - go to player
-        window.location.href =
-          createPageUrl("SessionPlayer") + `?session=${session._id}`;
+        router.push(`/session-player?session=${session._id}`);
       }
     } else {
       // User needs to purchase
-      window.location.href =
-        createPageUrl("checkout") + `?session=${session._id}`;
+      router.push(`/checkout?session=${session._id}`);
     }
-  };
+  }, [hasAccess, router]);
 
-  const filteredSessions = sessions.filter((session) => {
-    // Only show parent sessions
-    const isParent = session.parent_id === null;
-    const categoryMatch =
-      selectedCategories.length === 0 ||
-      selectedCategories.includes(session.title);
-    const languageMatch =
-      selectedLanguage === "all" ||
-      session.languages?.includes(selectedLanguage);
-    return isParent && categoryMatch && languageMatch;
-  });
+  // Memoize filtered sessions to prevent recalculation on every render
+  const filteredSessions = useMemo(() => {
+    return sessions.filter((session) => {
+      // Only show parent sessions
+      const isParent = session.parent_id === null;
+      const categoryMatch =
+        selectedCategories.length === 0 ||
+        selectedCategories.includes(session.title);
+      const languageMatch =
+        selectedLanguage === "all" ||
+        session.languages?.includes(selectedLanguage);
+      return isParent && categoryMatch && languageMatch;
+    });
+  }, [sessions, selectedCategories, selectedLanguage]);
 
-  const toggleCategory = (category) => {
+  const toggleCategory = useCallback((category) => {
     setSelectedCategories((prev) =>
       prev.includes(category)
         ? prev.filter((c) => c !== category)
         : [...prev, category]
     );
-  };
+  }, []);
 
-  const getTranslated = (item, field) => {
+  const getTranslated = useCallback((item, field) => {
     return item[`${field}_${currentLanguage}`] || item[field];
-  };
+  }, [currentLanguage]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-teal-50 py-12">
@@ -229,9 +245,9 @@ export default function Sessions() {
                 key={session._id || session.id || index}
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
+                transition={{ duration: 0.6, delay: index < 6 ? index * 0.1 : 0 }}
               >
-                <Card className="h-full hover:shadow-2xl transition-all duration-300 border-0 bg-white/80 backdrop-blur-sm group">
+                <Card className="h-full hover:shadow-2xl transition-all duration-300 border-0 bg-white/95 group">
                   <CardHeader className="relative overflow-hidden rounded-t-2xl">
                     <div className="aspect-video bg-gradient-to-br from-teal-100 to-emerald-100 rounded-xl relative overflow-hidden">
                       {session.image_url ? (

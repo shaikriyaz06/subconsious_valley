@@ -18,7 +18,10 @@ const handler = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
+        console.log('Login attempt:', { email: credentials?.email, password: '***' });
+        
         if (!credentials?.email || !credentials?.password) {
+          console.log('Missing credentials');
           return null;
         }
 
@@ -30,7 +33,13 @@ const handler = NextAuth({
             provider: "credentials",
           });
 
+          console.log('User found:', user ? 'Yes' : 'No');
+          if (user) {
+            console.log('User provider:', user.provider);
+          }
+
           if (!user) {
+            console.log('No user found with email:', credentials.email);
             return null;
           }
 
@@ -39,10 +48,14 @@ const handler = NextAuth({
             user.password
           );
 
+          console.log('Password valid:', isPasswordValid);
+
           if (!isPasswordValid) {
+            console.log('Invalid password for user:', credentials.email);
             return null;
           }
 
+          console.log('Login successful for:', credentials.email);
           return {
             id: user._id.toString(),
             email: user.email,
@@ -105,7 +118,10 @@ const handler = NextAuth({
       return token;
     },
     async redirect({ url, baseUrl }) {
-      return baseUrl;
+      // Redirect to dashboard after login
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
+      else if (new URL(url).origin === baseUrl) return url;
+      return `${baseUrl}/dashboard`;
     },
   },
   debug: process.env.NODE_ENV === "development",
@@ -113,6 +129,8 @@ const handler = NextAuth({
     async signOut(message) {
       console.log("User signed out:", message);
     },
-  },});
+  },
+  
+});
 
 export { handler as GET, handler as POST };

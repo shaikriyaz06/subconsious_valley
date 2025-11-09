@@ -1,13 +1,9 @@
 "use client";
-import Image from "next/image";
-import Navbar from "./components/Navbar";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback, useMemo } from "react";
 import { Progress, Tabs } from "antd";
 import About from "./about/page";
-import Contact from "@/pages/Contact.jsx";
-import Link from "next/link";
+import Contact from "./contact/page";
 import { useLanguage } from "./components/LanguageProvider";
-
 export default function Home() {
   const videoRef = useRef(null);
   const popupVideoRef = useRef(null);
@@ -16,23 +12,43 @@ export default function Home() {
   const [isSticky, setIsSticky] = useState(false);
   const [progress, setProgress] = useState(20);
   const [activeTab, setActiveTab] = useState("2");
+  const activeTabRef = useRef("2");
+  const progressRef = useRef(20);
+  const timeoutRef = useRef(null);
+  const scrollTimeoutRef = useRef(null);
   const tabsRef = useRef(null);
-  const section1Ref = useRef(null);
   const section2Ref = useRef(null);
   const section3Ref = useRef(null);
 
+  // Memoize static sections array
+  const sections = useMemo(() => [
+    { id: "2", ref: section2Ref },
+    { id: "3", ref: section3Ref },
+  ], []);
 
-  const scrollToSection = (tabKey) => {
-    const refs = {
-      2: section2Ref,
-      3: section3Ref,
-    };
+  // Memoize tab items
+  const tabItems = useMemo(() => [
+    { key: "2", label: t("about") },
+    { key: "3", label: t("contact") },
+  ], [t]);
 
-    // Update progress based on tab click
-    const progressValues = {
-      2: 20,
-      3: 100,
-    };
+  // Memoize refs and progress values
+  const refs = useMemo(() => ({
+    2: section2Ref,
+    3: section3Ref,
+  }), []);
+
+  const progressValues = useMemo(() => ({ 2: 20, 3: 100 }), []);
+
+  // Cache style classes
+  const heroContentClass = useMemo(() => 
+    `absolute bottom-20 max-w-lg ${isRTL ? "right-8" : "left-8"}`, [isRTL]
+  );
+  const heroTextClass = useMemo(() => 
+    `mb-8 ${isRTL ? "text-right" : "text-left"}`, [isRTL]
+  );
+
+  const scrollToSection = useCallback((tabKey) => {
     setProgress(progressValues[tabKey]);
 
     const targetRef = refs[tabKey];
@@ -43,11 +59,17 @@ export default function Home() {
         behavior: "smooth",
       });
     }
-  };
+  }, [refs, progressValues]);
 
   useEffect(() => {
     const handleScroll = () => {
-      const scrollTop = window.scrollY;
+      // Throttle scroll events for better performance
+      if (scrollTimeoutRef.current) return;
+      
+      scrollTimeoutRef.current = setTimeout(() => {
+        scrollTimeoutRef.current = null;
+        
+        const scrollTop = window.scrollY;
 
       // Check if we should make tabs sticky
       const firstSection = section2Ref.current;
@@ -63,11 +85,6 @@ export default function Home() {
       }
 
       setIsSticky(shouldBeSticky);
-
-      const sections = [
-        { id: "2", ref: section2Ref },
-        { id: "3", ref: section3Ref },
-      ];
 
       let currentTab = "2";
       let totalProgress = 20;
@@ -104,29 +121,54 @@ export default function Home() {
         }
       }
 
-      setActiveTab(currentTab);
-      setProgress(Math.min(Math.max(totalProgress, 20), 100));
+        // Batch state updates to reduce re-renders
+        const newProgress = Math.min(Math.max(totalProgress, 20), 100);
+        if (currentTab !== activeTabRef.current || newProgress !== progressRef.current) {
+          activeTabRef.current = currentTab;
+          progressRef.current = newProgress;
+          setActiveTab(currentTab);
+          setProgress(newProgress);
+        }
+      }, 16); // ~60fps
     };
 
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+    };
+  }, []); // No dependencies - runs once on mount
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
   }, []);
 
-  const handleWatchTrailer = () => {
+  const handleWatchTrailer = useCallback(() => {
     setShowPopup(true);
-    setTimeout(() => {
+    timeoutRef.current = setTimeout(() => {
       if (popupVideoRef.current) {
         popupVideoRef.current.play();
       }
     }, 100);
-  };
+  }, []);
 
-  const closePopup = () => {
+  const closePopup = useCallback(() => {
     setShowPopup(false);
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
     if (popupVideoRef.current) {
       popupVideoRef.current.pause();
     }
-  };
+  }, []);
 
   return (
     <>
@@ -139,17 +181,16 @@ export default function Home() {
           muted
           poster="https://cdn.subconsciousvalley.workers.dev/main_banner.jpeg"
         >
-          <source src="https://cdn.subconsciousvalley.workers.dev/hero_video.mp4" type="video/mp4" />
+          <source
+            src="https://cdn.subconsciousvalley.workers.dev/hero_video.mp4"
+            type="video/mp4"
+          />
           Your browser does not support the video tag.
         </video>
         <div className="absolute inset-0 bg-black/40 bg-opacity-60"></div>
         {/* <Navbar /> */}
-        <div
-          className={`absolute bottom-20 max-w-lg ${
-            isRTL ? "right-8" : "left-8"
-          }`}
-        >
-          <div className={`mb-8 ${isRTL ? "text-right" : "text-left"}`}>
+        <div className={heroContentClass}>
+          <div className={heroTextClass}>
             <h1 className="text-yellow-400 text-2xl font-bold mb-4">
               {t("hero_title")}
             </h1>
@@ -208,14 +249,14 @@ export default function Home() {
       {/* Sticky Progress Bar and Tabs (appear when scrolling) */}
       {isSticky && (
         <>
-          <div className="fixed top-0 w-full z-[100] bg-white/90 backdrop-blur-sm">
+          <div className="fixed top-0 w-full z-[100] bg-white/95">
             <Progress
               percent={progress}
               showInfo={false}
               strokeColor="#8b5cf6"
             />
           </div>
-          <div className="fixed top-[15px] w-full z-[99] bg-white/95 backdrop-blur-sm">
+          <div className="fixed top-[15px] w-full z-[99] bg-white/98">
             <Tabs
               activeKey={activeTab}
               onChange={(key) => {
@@ -223,11 +264,7 @@ export default function Home() {
                 scrollToSection(key);
               }}
               centered
-              items={[
-                // { key: "1", label: "Sessions" },
-                { key: "2", label: t("about") },
-                { key: "3", label: t("contact") },
-              ]}
+              items={tabItems}
             />
           </div>
         </>
@@ -238,14 +275,14 @@ export default function Home() {
         {/* Static Progress Bar and Tabs (visible only when not sticky) */}
         {!isSticky && (
           <div ref={tabsRef} className="relative w-full z-20">
-            <div className="w-full bg-white/90 backdrop-blur-sm">
+            <div className="w-full bg-white/95">
               <Progress
                 percent={progress}
                 showInfo={false}
                 strokeColor="#8b5cf6"
               />
             </div>
-            <div className="w-full bg-white/95 backdrop-blur-sm">
+            <div className="w-full bg-white/98">
               <Tabs
                 activeKey={activeTab}
                 onChange={(key) => {
@@ -253,10 +290,7 @@ export default function Home() {
                   scrollToSection(key);
                 }}
                 centered
-                items={[
-                  { key: "2", label: t("about") },
-                  { key: "3", label: t("contact") },
-                ]}
+                items={tabItems}
               />
             </div>
           </div>
@@ -281,10 +315,7 @@ export default function Home() {
           </p>
         </section> */}
 
-        <section
-          ref={section2Ref}
-          className="min-h-screen p-8  bg-gray-50"
-        >
+        <section ref={section2Ref} className="min-h-screen p-8  bg-gray-50">
           {/* <h2 className="text-3xl font-bold mb-6">About Us</h2>
           <p className="text-lg mb-4">
             We are pioneers in consciousness exploration and brainwave
@@ -302,13 +333,15 @@ export default function Home() {
             Our mission is to make advanced consciousness techniques accessible
             to everyone seeking personal growth.
           </p> */}
-          <About />
+          <About t={t} />
         </section>
 
-
-
-        <section ref={section3Ref} id="contact-section" className="p-8 pt-20 pb-20 bg-gray-50">
-          <Contact />
+        <section
+          ref={section3Ref}
+          id="contact-section"
+          className="p-8 pt-20 pb-20 bg-gray-50"
+        >
+          <Contact t={t} />
         </section>
       </div>
     </>

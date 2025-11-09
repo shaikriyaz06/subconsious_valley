@@ -18,7 +18,23 @@ export async function GET(request) {
     // If type is 'all' or not specified, return all sessions
     
     const sessions = await Session.find(query);
-    return Response.json(sessions);
+    
+    // Generate ETag based on data hash
+    const dataString = JSON.stringify(sessions);
+    const etag = `"${Buffer.from(dataString).toString('base64').slice(0, 16)}"`;
+    
+    // Check if client has current version
+    const ifNoneMatch = request.headers.get('if-none-match');
+    if (ifNoneMatch === etag) {
+      return new Response(null, { status: 304 });
+    }
+    
+    return Response.json(sessions, {
+      headers: {
+        'ETag': etag,
+        'Cache-Control': 'public, max-age=300' // 5 minutes browser cache
+      }
+    });
   } catch (error) {
     console.error('Sessions API error:', error);
     return Response.json({ error: 'Failed to fetch sessions' }, { status: 500 });

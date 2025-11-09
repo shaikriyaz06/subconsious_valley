@@ -18,8 +18,9 @@ import { motion } from "framer-motion";
 import { useLanguage } from "@/components/LanguageProvider";
 import { useRouter } from "next/navigation";
 
-export default function About() {
-  const { t } = useLanguage();
+export default function About({ t: propT }) {
+  const { t: hookT } = useLanguage();
+  const t = propT || hookT; // Use prop if provided, fallback to hook
   const router = useRouter();
 
   const values = [

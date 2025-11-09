@@ -5,24 +5,28 @@ import bcrypt from "bcryptjs";
 export async function POST(request) {
   try {
     const { name, email, password } = await request.json();
+    console.log('Registration attempt:', { name, email, password: '***' });
 
     if (!name || !email || !password) {
+      console.log('Missing fields:', { name: !!name, email: !!email, password: !!password });
       return Response.json(
         { error: "All fields are required" },
         { status: 400 }
       );
     }
 
-    // Validate name (only alphabets and spaces)
-    if (!/^[a-zA-Z\s]+$/.test(name)) {
+    // Validate name (only alphabets and spaces, minimum 2 characters)
+    if (!/^[a-zA-Z\s]{2,}$/.test(name.trim())) {
+      console.log('Name validation failed:', name);
       return Response.json(
-        { error: "Name should contain only alphabets and spaces" },
+        { error: "Name should contain only alphabets and spaces (minimum 2 characters)" },
         { status: 400 }
       );
     }
 
     // Validate email
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      console.log('Email validation failed:', email);
       return Response.json(
         { error: "Please enter a valid email address" },
         { status: 400 }

@@ -76,7 +76,7 @@ export default function Login() {
       });
       
       if (result?.ok) {
-        window.location.href = '/dashboard';
+        router.push('/dashboard');
       } else {
         setErrors({ general: 'Invalid email or password' });
       }
