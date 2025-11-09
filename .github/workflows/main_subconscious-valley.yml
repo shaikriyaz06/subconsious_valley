@@ -70,7 +70,7 @@ jobs:
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'nextapp25'
+          app-name: 'subconscious-valley' # <-- your Azure Web App name
           slot-name: 'Production'
           package: .
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_9087B3EA480B4DDBA2CDEE1C62202C6F }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_E8CF81FC53C74CB08FDFA91C0D24E621 }}
