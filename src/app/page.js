@@ -152,9 +152,14 @@ export default function Home() {
 
   const handleWatchTrailer = useCallback(() => {
     setShowPopup(true);
-    timeoutRef.current = setTimeout(() => {
+    timeoutRef.current = setTimeout(async () => {
       if (popupVideoRef.current) {
-        popupVideoRef.current.play();
+        try {
+          await popupVideoRef.current.play();
+        } catch (error) {
+          console.log('Autoplay prevented:', error);
+          // User will need to click play manually
+        }
       }
     }, 100);
   }, []);
@@ -179,6 +184,7 @@ export default function Home() {
           autoPlay
           loop
           muted
+          preload="auto"
           poster="https://cdn.subconsciousvalley.workers.dev/main_banner.jpeg"
         >
           <source
@@ -235,9 +241,10 @@ export default function Home() {
                   ref={popupVideoRef}
                   className="w-full h-auto rounded"
                   controls
+                  preload="metadata"
                   poster="https://cdn.subconsciousvalley.workers.dev/main_banner.jpeg"
                 >
-                  <source src="/videos/hero_video.mp4" type="video/mp4" />
+                  <source src="https://cdn.subconsciousvalley.workers.dev/hero_video.mp4" type="video/mp4" />
                   Your browser does not support the video tag.
                 </video>
               </div>
@@ -339,7 +346,7 @@ export default function Home() {
         <section
           ref={section3Ref}
           id="contact-section"
-          className="p-8 pt-20 pb-20 bg-gray-50"
+          className="p-8 pb-20 bg-gray-50"
         >
           <Contact t={t} />
         </section>

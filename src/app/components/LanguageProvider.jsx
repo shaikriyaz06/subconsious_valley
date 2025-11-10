@@ -31,7 +31,7 @@ const translations = {
 
     // Homepage
     hero_title:
-      "Train your subconscious today. It already runs your breathing and most of your daily choices. Our science-backed hypnotherapy and NLP audios quietly reprogram the subconscious mind while you.",
+      "Train your subconscious today. It already runs your breathing and most of your daily choices. Our science-backed hypnotherapy and NLP audios quietly reprogram the subconscious mind while you relax.",
     hero_sub_title_1:
       "No calls or waitlists. Purchase, press play, and stream.",
     hero_sub_title_2:
@@ -164,7 +164,7 @@ const translations = {
     // Sessions Page
     sessions_title: "Hypnosis Sessions",
     sessions_desc:
-      "Transform your life with our scientifically-backed hypnotherapy sessions. Available in multiple languages for deeper connection and lasting change.",
+      "Transform your life with scientifically-backed Hypnotherapy & Neuro-Linguistic Programming (NLP). Available in multiple languages for deeper connection and lasting change.",
     all_categories: "All Categories",
     all_languages: "All Languages",
     available_in: "Available in:",
@@ -311,7 +311,7 @@ const translations = {
 
     // Homepage
     hero_title:
-      "درّب عقلك الباطن اليوم. فهو يُدير أنفاسك ومعظم خياراتك اليومية. تُعيد جلسات التنويم المغناطيسي المدعومة علميًا وتسجيلات البرمجة اللغوية العصبية برمجة عقلك الباطن بهدوء بينما أنت...",
+      "درّب عقلك الباطن اليوم. فهو يُدير أنفاسك ومعظم خياراتك اليومية. تُعيد جلسات التنويم المغناطيسي المدعومة علميًا وتسجيلات البرمجة اللغوية العصبية برمجة عقلك الباطن بهدوء بينما أنتيستريح",
     hero_sub_title_1:
       "لا مكالمات أو قوائم انتظار. اشترِ، شغّل، وبثّ.",
     hero_sub_title_2:
@@ -443,7 +443,7 @@ const translations = {
     // Sessions Page
     sessions_title: "جلسات التنويم المغناطيسي",
     sessions_desc:
-      "غير حياتك من خلال جلسات العلاج بالتنويم المغناطيسي المدعومة علميًا. متوفرة بلغات متعددة لتواصل أعمق وتغيير دائم.",
+      "غيّر حياتك مع التنويم المغناطيسي والبرمجة اللغوية العصبية (NLP) المدعوم علميًا. متوفر بعدة لغات لتواصل أعمق وتغيير دائم.",
     all_categories: "جميع الفئات",
     all_languages: "جميع اللغات",
     available_in: "متوفر في:",
@@ -588,7 +588,7 @@ const translations = {
 
     // Homepage
     hero_title:
-      "आज ही अपने अवचेतन मन को प्रशिक्षित करें। यह पहले से ही आपकी साँसों और आपके अधिकांश दैनिक निर्णयों को नियंत्रित करता है। हमारी विज्ञान-समर्थित सम्मोहन चिकित्सा और एनएलपी ऑडियो चुपचाप अवचेतन मन को पुनः प्रोग्राम करते हैं, जबकि आप।",
+      "आज ही अपने अवचेतन मन को प्रशिक्षित करें। यह पहले से ही आपकी साँसों और आपके अधिकांश दैनिक निर्णयों को नियंत्रित करता है। हमारी विज्ञान-समर्थित सम्मोहन चिकित्सा और एनएलपी ऑडियो चुपचाप अवचेतन मन को पुनः प्रोग्राम करते हैं, जबकि आप आराम करना",
     hero_sub_title_1:
       "कोई कॉल या वेटलिस्ट नहीं। खरीदें, प्ले बटन दबाएँ और स्ट्रीम करें।",
     hero_sub_title_2:
@@ -722,7 +722,7 @@ const translations = {
     // Sessions Page
     sessions_title: "सम्मोहन सत्र",
     sessions_desc:
-      "हमारे वैज्ञानिक रूप से समर्थित सम्मोहन चिकित्सा सत्रों के साथ अपने जीवन को बदलें। गहरे संबंध और स्थायी परिवर्तन के लिए कई भाषाओं में उपलब्ध है।",
+      "वैज्ञानिक रूप से समर्थित हिप्नोथेरेपी और न्यूरो-लिंग्विस्टिक प्रोग्रामिंग (एनएलपी) के साथ अपने जीवन को बदलें। गहरे जुड़ाव और स्थायी बदलाव के लिए कई भाषाओं में उपलब्ध।",
     all_categories: "सभी श्रेणियाँ",
     all_languages: "सभी भाषाएँ",
     available_in: "में उपलब्ध:",

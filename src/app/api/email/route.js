@@ -3,7 +3,15 @@ import nodemailer from 'nodemailer';
 
 export async function POST(request) {
   try {
-    const { fullName, email, preferredLanguage, subject, message } = await request.json();
+    const body = await request.json();
+    const { type } = body;
+
+    if (type === 'feedback') {
+      return await handleFeedback(body);
+    }
+
+    // Default contact form handling
+    const { fullName, email, preferredLanguage, subject, message } = body;
 
     const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,
@@ -47,4 +55,43 @@ export async function POST(request) {
       { status: 500 }
     );
   }
+}
+
+async function handleFeedback(data) {
+  const { sessionTitle, userEmail, happiness, calmness, mindState, didSleep, improvement, listenAgain, comments } = data;
+
+  const transporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: parseInt(process.env.SMTP_PORT),
+    secure: false,
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
+    },
+  });
+
+  const feedbackHtml = `
+    <h3>New Session Feedback from Subconscious Valley:</h3>
+    <hr>
+    <p><strong>User:</strong> ${userEmail || 'Unknown User'}</p>
+    <p><strong>Session:</strong> ${sessionTitle || 'Unknown Session'}</p>
+    <hr>
+    <p><strong>1. Happiness/Peace Level:</strong> ${happiness}</p>
+    <p><strong>2. Calmness Level:</strong> ${calmness}</p>
+    <p><strong>3. State of Mind:</strong> ${mindState}</p>
+    <p><strong>4. Did Sleep:</strong> ${didSleep}</p>
+    <p><strong>5. Emotional Improvement:</strong> ${improvement}</p>
+    <p><strong>6. Listen Again:</strong> ${listenAgain}</p>
+    ${comments ? `<p><strong>7. Comments:</strong><br>${comments.replace(/\n/g, '<br>')}</p>` : ''}
+  `;
+
+  const mailOptions = {
+    from: process.env.SMTP_USER,
+    to: 'hello@subconsciousvalley.com;sajid.azure@gmail.com',
+    subject: `Session Feedback: ${sessionTitle || 'Unknown Session'}`,
+    html: feedbackHtml,
+  };
+
+  await transporter.sendMail(mailOptions);
+  return NextResponse.json({ success: true, message: 'Feedback sent successfully' });
 }

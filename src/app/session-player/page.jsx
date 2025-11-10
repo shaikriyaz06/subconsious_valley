@@ -13,6 +13,7 @@ import {
   Lock,
   AlertTriangle,
 } from "lucide-react";
+import FeedbackPopup from "@/components/FeedbackPopup";
 
 const languageNames = {
   english: "English",
@@ -30,6 +31,7 @@ function SessionPlayerContent() {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedLanguage, setSelectedLanguage] = useState("english");
   const [currentAudioUrl, setCurrentAudioUrl] = useState("");
+  const [showFeedback, setShowFeedback] = useState(false);
 
   useEffect(() => {
     const checkAccessAndLoad = async () => {
@@ -114,6 +116,8 @@ function SessionPlayerContent() {
     checkAccessAndLoad();
   }, [sessionId, status]);
 
+
+
   const handleLanguageChange = (lang) => {
     setSelectedLanguage(lang);
     if (sessionData && sessionData.audio_urls) {
@@ -121,6 +125,8 @@ function SessionPlayerContent() {
       setCurrentAudioUrl(audioUrl);
     }
   };
+
+
 
   // Get available languages from audio_urls
   const getAvailableLanguages = () => {
@@ -182,7 +188,7 @@ function SessionPlayerContent() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-teal-50 py-12">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center gap-4 mb-8">
+        <div className="flex items-center gap-4">
           <Link href="/dashboard">
             <Button variant="ghost" size="sm" className="cursor-pointer">
               <ArrowLeft className="h-4 w-4 mr-2" />
@@ -254,11 +260,23 @@ function SessionPlayerContent() {
                     </div>
                   )}
 
-                  <div className="bg-blue-50 p-4 rounded-lg text-blue-800 text-sm">
+                  <div className="bg-blue-50 px-4 rounded-lg text-blue-800 text-sm">
                     <p>
                       <strong>Pro Tip:</strong> For best results, listen in a
                       quiet, comfortable space where you won't be disturbed. Use
                       headphones for an immersive experience.
+                    </p>
+                  </div>
+
+                  <div className="bg-blue-50 px-4 rounded-lg text-blue-800 text-sm">
+                    <p>
+                      <strong>Your Feedback Matters:</strong> Let us know how you felt after this session. 
+                      <button
+                        onClick={() => setShowFeedback(true)}
+                        className="text-blue-600 hover:text-blue-700 underline font-medium cursor-pointer ml-1"
+                      >
+                        Share your experience
+                      </button>
                     </p>
                   </div>
                 </div>
@@ -299,6 +317,12 @@ function SessionPlayerContent() {
           </Card>
         </div>
       </div>
+      
+      <FeedbackPopup 
+        isOpen={showFeedback}
+        onClose={() => setShowFeedback(false)}
+        sessionTitle={sessionData?.title}
+      />
     </div>
   );
 }

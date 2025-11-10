@@ -11,13 +11,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Play, Lock, Star, Clock, Globe, Filter } from "lucide-react";
+import { Play, Lock, Star, Clock, Globe, Filter, X } from "lucide-react";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/components/LanguageProvider";
 import { useCurrency } from "@/components/CurrencyConverter";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { fetchWithCache } from "@/utils/cache";
+import { useApiCache } from "@/hooks/useApiCache";
 
 // Dynamic category names will be generated from sessions
 
@@ -51,17 +51,18 @@ export default function Sessions() {
   const router = useRouter();
   const [sessions, setSessions] = useState([]);
   const [purchases, setPurchases] = useState([]);
-  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedLanguage, setSelectedLanguage] = useState("all");
   const [isLoading, setIsLoading] = useState(true);
   const [dynamicCategories, setDynamicCategories] = useState({});
 
-  const loadData = useCallback(async () => {
-    try {
-      // Use smart caching with ETag support
-      const sessionsData = await fetchWithCache('/api/sessions', 'sessions', 15);
+  // Use API cache for sessions
+  const { data: sessionsData, loading: sessionsLoading } = useApiCache('/api/sessions');
+  
+  useEffect(() => {
+    if (sessionsData) {
       setSessions(sessionsData);
-
+      
       // Generate dynamic categories from parent session titles only
       const categories = {};
       sessionsData.forEach((session) => {
@@ -70,8 +71,12 @@ export default function Sessions() {
         }
       });
       setDynamicCategories(categories);
+    }
+  }, [sessionsData]);
 
-      // Always fetch fresh purchases if user is logged in (user-specific data)
+  useEffect(() => {
+    // Always fetch fresh purchases if user is logged in (user-specific data)
+    const loadPurchases = async () => {
       if (session?.user) {
         try {
           const purchasesResponse = await fetch("/api/purchases");
@@ -83,15 +88,13 @@ export default function Sessions() {
           console.error("Error loading purchases:", purchaseError);
         }
       }
-    } catch (error) {
-      console.error("Error loading data:", error);
+      setIsLoading(false);
+    };
+    
+    if (!sessionsLoading) {
+      loadPurchases();
     }
-    setIsLoading(false);
-  }, [session?.user]);
-
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
+  }, [session?.user, sessionsLoading]);
 
   // Check access based on session price and user purchases
   const hasAccess = useCallback((sessionItem) => {
@@ -135,22 +138,18 @@ export default function Sessions() {
       // Only show parent sessions
       const isParent = session.parent_id === null;
       const categoryMatch =
-        selectedCategories.length === 0 ||
-        selectedCategories.includes(session.title);
+        selectedCategory === "all" ||
+        session.title === selectedCategory;
       const languageMatch =
         selectedLanguage === "all" ||
         session.languages?.includes(selectedLanguage);
       return isParent && categoryMatch && languageMatch;
     });
-  }, [sessions, selectedCategories, selectedLanguage]);
+  }, [sessions, selectedCategory, selectedLanguage]);
 
-  const toggleCategory = useCallback((category) => {
-    setSelectedCategories((prev) =>
-      prev.includes(category)
-        ? prev.filter((c) => c !== category)
-        : [...prev, category]
-    );
-  }, []);
+  const selectCategory = useCallback((category) => {
+    setSelectedCategory(category === selectedCategory ? "all" : category);
+  }, [selectedCategory]);
 
   const getTranslated = useCallback((item, field) => {
     return item[`${field}_${currentLanguage}`] || item[field];
@@ -190,17 +189,30 @@ export default function Sessions() {
             </div> */}
             <div className="flex flex-wrap gap-2 items-center justify-center">
               <Filter className="h-5 w-5 mt-1 text-slate-500" />
+              <button
+                onClick={() => setSelectedCategory("all")}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                  selectedCategory === "all"
+                    ? "bg-teal-500 text-white shadow-md"
+                    : "bg-white text-slate-600 border border-slate-200 hover:border-teal-300 hover:text-teal-600"
+                }`}
+              >
+                All Categories
+              </button>
               {Object.entries(dynamicCategories).map(([key, name]) => (
                 <button
                   key={key}
-                  onClick={() => toggleCategory(key)}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
-                    selectedCategories.includes(key)
+                  onClick={() => selectCategory(key)}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
+                    selectedCategory === key
                       ? "bg-teal-500 text-white shadow-md"
                       : "bg-white text-slate-600 border border-slate-200 hover:border-teal-300 hover:text-teal-600"
                   }`}
                 >
                   {name}
+                  {selectedCategory === key && (
+                    <X className="h-3 w-3" />
+                  )}
                 </button>
               ))}
             </div>

@@ -31,7 +31,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useSession, signOut } from "next-auth/react";
+import { signOut } from "next-auth/react";
+import { ConditionalAuth } from "./ConditionalAuth";
 
 const languages = [
   { code: "en", name: "English", flag: "🇺🇸" },
@@ -44,8 +45,7 @@ function LayoutContent({ children, currentPageName }) {
 
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { data: session, status } = useSession();
-  const isLoading = status === "loading";
+
 
   const { currentLanguage, changeLanguage, t, isRTL } = useLanguage();
 
@@ -157,8 +157,10 @@ function LayoutContent({ children, currentPageName }) {
                 </DropdownMenu>
 
                 {/* User Menu */}
-                {!isLoading &&
-                  (session ? (
+                <ConditionalAuth>
+                  {({ session, status }) => {
+                    const isLoading = status === "loading";
+                    return !isLoading && (session ? (
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button
@@ -191,16 +193,18 @@ function LayoutContent({ children, currentPageName }) {
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
-                  ) : (
-                    <Link href="/login" className="cursor-pointer">
-                      <Button
-                        size="sm"
-                        className="cursor-pointer bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white"
-                      >
-                        {t("login")}
-                      </Button>
-                    </Link>
-                  ))}
+                    ) : (
+                      <Link href="/login" className="cursor-pointer">
+                        <Button
+                          size="sm"
+                          className="cursor-pointer bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white"
+                        >
+                          {t("login")}
+                        </Button>
+                      </Link>
+                    ));
+                  }}
+                </ConditionalAuth>
 
                 {/* Mobile menu button */}
                 <Button
@@ -273,18 +277,22 @@ function LayoutContent({ children, currentPageName }) {
                     </DropdownMenu>
                   </div>
 
-                  {!session && (
-                    <div className="mt-6 px-5">
-                      <Link href="/login">
-                        <Button
-                          className="w-full bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white"
-                          onClick={() => setIsMenuOpen(false)}
-                        >
-                          {t("login")}
-                        </Button>
-                      </Link>
-                    </div>
-                  )}
+                  <ConditionalAuth>
+                    {({ session }) => (
+                      !session && (
+                        <div className="mt-6 px-5">
+                          <Link href="/login">
+                            <Button
+                              className="w-full bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white"
+                              onClick={() => setIsMenuOpen(false)}
+                            >
+                              {t("login")}
+                            </Button>
+                          </Link>
+                        </div>
+                      )
+                    )}
+                  </ConditionalAuth>
                 </div>
               </div>
             )}
