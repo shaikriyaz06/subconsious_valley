@@ -5,11 +5,16 @@ import { CustomProgress } from "./components/CustomProgress";
 import About from "./about/page";
 import Contact from "./contact/page";
 import { useLanguage } from "./components/LanguageProvider";
+import SubscriptionPopup from "@/components/SubscriptionPopup";
+import { Toaster } from "@/components/ui/toaster";
+import { useToast } from "@/components/ui/use-toast";
 export default function Home() {
   const videoRef = useRef(null);
   const popupVideoRef = useRef(null);
   const [showPopup, setShowPopup] = useState(false);
+  const [showSubscriptionPopup, setShowSubscriptionPopup] = useState(false);
   const { t, isRTL } = useLanguage();
+  const { toast } = useToast();
   const [isSticky, setIsSticky] = useState(false);
   const [progress, setProgress] = useState(20);
   const [activeTab, setActiveTab] = useState("2");
@@ -141,6 +146,24 @@ export default function Home() {
       }
     };
   }, []); // No dependencies - runs once on mount
+
+
+
+  // Show subscription popup after 5 seconds (only once per session)
+  useEffect(() => {
+    const hasShownPopup = sessionStorage.getItem('subscriptionPopupShown');
+    
+    if (!hasShownPopup) {
+      const subscriptionTimer = setTimeout(() => {
+        setShowSubscriptionPopup(true);
+        sessionStorage.setItem('subscriptionPopupShown', 'true');
+      }, 5000);
+
+      return () => {
+        clearTimeout(subscriptionTimer);
+      };
+    }
+  }, []);
 
   // Cleanup timeout on unmount
   useEffect(() => {
@@ -353,6 +376,13 @@ export default function Home() {
           <Contact t={t} />
         </section>
       </div>
+
+      {/* Subscription Popup */}
+      <SubscriptionPopup 
+        isOpen={showSubscriptionPopup}
+        onClose={() => setShowSubscriptionPopup(false)}
+      />
+      <Toaster />
     </>
   );
 }

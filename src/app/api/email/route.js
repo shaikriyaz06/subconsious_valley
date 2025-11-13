@@ -10,6 +10,10 @@ export async function POST(request) {
       return await handleFeedback(body);
     }
 
+    if (type === 'subscribe') {
+      return await handleSubscription(body);
+    }
+
     // Default contact form handling
     const { fullName, email, preferredLanguage, subject, message } = body;
 
@@ -94,4 +98,38 @@ async function handleFeedback(data) {
 
   await transporter.sendMail(mailOptions);
   return NextResponse.json({ success: true, message: 'Feedback sent successfully' });
+}
+
+async function handleSubscription(data) {
+  const { name, email, phone } = data;
+
+  const transporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: parseInt(process.env.SMTP_PORT),
+    secure: false,
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
+    },
+  });
+
+  const subscriptionHtml = `
+    <h3>New Newsletter Subscription from Subconscious Valley:</h3>
+    <hr>
+    <p><strong>Name:</strong> ${name}</p>
+    <p><strong>Email:</strong> ${email}</p>
+    <p><strong>Phone:</strong> ${phone}</p>
+    <hr>
+    <p><em>This user has subscribed to receive updates and special offers from Subconscious Valley.</em></p>
+  `;
+
+  const mailOptions = {
+    from: process.env.SMTP_USER,
+    to: 'hello@subconsciousvalley.com;sajid.azure@gmail.com',
+    subject: `New Newsletter Subscription: ${name}`,
+    html: subscriptionHtml,
+  };
+
+  await transporter.sendMail(mailOptions);
+  return NextResponse.json({ success: true, message: 'Subscription successful' });
 }
