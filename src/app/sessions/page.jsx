@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Play, Lock, Star, Clock, Globe, Filter, X } from "lucide-react";
+import { Play, Lock, Star, Clock, Globe, Filter, X, Edit } from "lucide-react";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/components/LanguageProvider";
 import { useCurrency } from "@/components/CurrencyConverter";
@@ -47,7 +47,7 @@ const createPageUrl = (pageName) => {
 export default function Sessions() {
   const { t, currentLanguage } = useLanguage();
   const { formatPrice } = useCurrency();
-  const { data: session } = useSession();
+  const { data: authSession } = useSession();
   const router = useRouter();
   const [sessions, setSessions] = useState([]);
   const [purchases, setPurchases] = useState([]);
@@ -77,7 +77,7 @@ export default function Sessions() {
   useEffect(() => {
     // Always fetch fresh purchases if user is logged in (user-specific data)
     const loadPurchases = async () => {
-      if (session?.user) {
+      if (authSession?.user) {
         try {
           const purchasesResponse = await fetch("/api/purchases");
           if (purchasesResponse.ok) {
@@ -94,7 +94,7 @@ export default function Sessions() {
     if (!sessionsLoading) {
       loadPurchases();
     }
-  }, [session?.user, sessionsLoading]);
+  }, [authSession?.user, sessionsLoading]);
 
   // Check access based on session price and user purchases
   const hasAccess = useCallback((sessionItem) => {
@@ -104,7 +104,7 @@ export default function Sessions() {
     }
     
     // If user is not logged in, no access to paid sessions
-    if (!session?.user) {
+    if (!authSession?.user) {
       return false;
     }
     
@@ -114,7 +114,7 @@ export default function Sessions() {
         purchase.session_id === sessionItem._id &&
         purchase.payment_status === "completed"
     );
-  }, [session?.user, purchases]);
+  }, [authSession?.user, purchases]);
 
   const handleSessionAction = useCallback((session) => {
     if (hasAccess(session)) {
@@ -299,13 +299,24 @@ export default function Sessions() {
                     </p>
 
                     <div className="flex items-center gap-4 mb-4 text-sm text-slate-500">
-                      <div className="flex items-center gap-1">
+                      {/* <div className="flex items-center gap-1">
                         <Clock className="h-4 w-4" />
                         {session.duration || 25} min
-                      </div>
+                      </div> */}
                       <div className="flex items-center gap-1">
-                        <Star className="h-4 w-4 fill-current text-amber-400" />
-                        4.9
+                        {[1, 2, 3, 4].map((star) => (
+                          <Star
+                            key={star}
+                            className="h-4 w-4 fill-current text-amber-400"
+                          />
+                        ))}
+                        <div className="relative">
+                          <Star className="h-4 w-4 text-amber-400" />
+                          <div className="absolute inset-0 overflow-hidden" style={{ width: '90%' }}>
+                            <Star className="h-4 w-4 fill-current text-amber-400" />
+                          </div>
+                        </div>
+                        <span className="ml-1 text-sm">4.9</span>
                       </div>
                     </div>
 
@@ -332,20 +343,32 @@ export default function Sessions() {
                       </div>
                     </div>
 
-                    <Button
-                      onClick={() => handleSessionAction(session)}
-                      className="cursor-pointer w-full bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white"
-                    >
-                      <Play className="mr-2 h-4 w-4" />
-                      {hasAccess(session)
-                        ? session.child_sessions &&
-                          session.child_sessions.length > 0
-                          ? t("view_collection")
-                          : t("start_session")
-                        : session.price > 0
-                        ? `${t("purchase")} - ${formatPrice(session.price)}`
-                        : t("start_session")}
-                    </Button>
+                    <div className="space-y-2">
+                      <Button
+                        onClick={() => handleSessionAction(session)}
+                        className="cursor-pointer w-full bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white"
+                      >
+                        <Play className="mr-2 h-4 w-4" />
+                        {hasAccess(session)
+                          ? session.child_sessions &&
+                            session.child_sessions.length > 0
+                            ? t("view_collection")
+                            : t("start_session")
+                          : session.price > 0
+                          ? `${t("purchase")} - ${formatPrice(session.price)}`
+                          : t("start_session")}
+                      </Button>
+                      {authSession?.user?.role === "admin" && (
+                        <Button
+                          onClick={() => router.push(`/admin/sessions/edit/${session._id}`)}
+                          variant="outline"
+                          className="cursor-pointer w-full border-black-300 from-teal-50 via-white to-emerald-50 hover:border-teal-400"
+                        >
+                          <Edit className="mr-2 h-4 w-4" />
+                          Edit Session
+                        </Button>
+                      )}
+                    </div>
                   </CardContent>
                 </Card>
               </motion.div>

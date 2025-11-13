@@ -46,8 +46,14 @@ function SessionPlayerContent() {
 
       try {
         // Check if sessionId is a parent or child session
-        const sessionsRes = await fetch("/api/sessions");
+        const sessionsRes = await fetch("/api/sessions?" + new Date().getTime(), {
+          cache: 'no-store',
+          headers: {
+            'Cache-Control': 'no-cache'
+          }
+        });
         const sessions = await sessionsRes.json();
+        console.log("Fetched sessions from API:", sessions.length, "sessions");
         
         let foundSession = null;
         let parentSession = null;
@@ -74,6 +80,22 @@ function SessionPlayerContent() {
           return;
         }
         
+        console.log("Found session:", foundSession);
+        console.log("Session ID from URL:", sessionId);
+        console.log("Is parent session:", !parentSession);
+        console.log("Parent session:", parentSession);
+        
+        // Double-check by fetching the parent session directly
+        if (parentSession) {
+          const directRes = await fetch(`/api/sessions/${parentSession._id}?` + new Date().getTime(), {
+            cache: 'no-store'
+          });
+          const directSession = await directRes.json();
+          console.log("Direct parent session fetch:", directSession);
+          const directChild = directSession.child_sessions?.find(child => child._id === sessionId);
+          console.log("Direct child session:", directChild);
+        }
+        
         setSessionData(foundSession);
 
         // Check if user has purchased this session (check parent if it's a child)
@@ -89,19 +111,21 @@ function SessionPlayerContent() {
 
         if (sessionPrice === 0 || foundSession.is_sample || hasPurchased) {
           setHasAccess(true);
-          setSelectedLanguage(foundSession.languages?.[0] || "english");
           
-          // Get audio URL from child session or parent
+          // Get available languages and set the first one
+          const availableLanguages = foundSession.audio_urls ? Object.keys(foundSession.audio_urls).filter(lang => foundSession.audio_urls[lang]) : [];
+          const firstLanguage = availableLanguages[0] || "english";
+          setSelectedLanguage(firstLanguage);
+          
+          // Get audio URL for the first available language
           let audioUrl = "";
-          if (foundSession.audio_urls) {
-            audioUrl = foundSession.audio_urls.english || foundSession.audio_urls.hindi || foundSession.audio_urls.arabic || "";
+          if (foundSession.audio_urls && foundSession.audio_urls[firstLanguage]) {
+            audioUrl = foundSession.audio_urls[firstLanguage];
           }
           
-          if (audioUrl && audioUrl.includes("public/")) {
-            audioUrl = audioUrl.split("public/")[1];
-            audioUrl = "/" + audioUrl;
-          }
-          console.log("Audio URL:", audioUrl);
+          console.log("Initial language:", firstLanguage);
+          console.log("Initial audio URL:", audioUrl);
+          console.log("All audio URLs:", foundSession.audio_urls);
           setCurrentAudioUrl(audioUrl);
         } else {
           setHasAccess(false);
@@ -119,10 +143,15 @@ function SessionPlayerContent() {
 
 
   const handleLanguageChange = (lang) => {
+    console.log("Language changed to:", lang);
+    console.log("Session data audio URLs:", sessionData?.audio_urls);
     setSelectedLanguage(lang);
     if (sessionData && sessionData.audio_urls) {
-      const audioUrl = sessionData.audio_urls[lang] || "";
+      let audioUrl = sessionData.audio_urls[lang] || "";
+      console.log("Selected audio URL:", audioUrl);
       setCurrentAudioUrl(audioUrl);
+    } else {
+      console.log("No audio URLs found in session data");
     }
   };
 
@@ -234,9 +263,7 @@ function SessionPlayerContent() {
                     </div>
                   </div>
 
-                  {/* <div className="mb-2 text-xs text-gray-500">
-                    Debug: {currentAudioUrl || "No audio URL"}
-                  </div> */}
+
                   {currentAudioUrl ? (
                     <audio
                       controls

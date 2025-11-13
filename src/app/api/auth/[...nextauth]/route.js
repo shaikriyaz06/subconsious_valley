@@ -108,13 +108,28 @@ const handler = NextAuth({
     async session({ session, token }) {
       if (token) {
         session.user.id = token.id;
+        session.user.role = token.role;
       }
       return session;
     },
-    async jwt({ token, user }) {
+    async jwt({ token, user, account }) {
       if (user) {
         token.id = user.id;
       }
+      
+      // Fetch user role from database
+      if (token.email && !token.role) {
+        try {
+          await dbConnect();
+          const dbUser = await User.findOne({ email: token.email });
+          if (dbUser) {
+            token.role = dbUser.role;
+          }
+        } catch (error) {
+          console.error('Error fetching user role:', error);
+        }
+      }
+      
       return token;
     },
     async redirect({ url, baseUrl }) {

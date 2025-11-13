@@ -19,20 +19,9 @@ export async function GET(request) {
     
     const sessions = await Session.find(query);
     
-    // Generate ETag based on data hash
-    const dataString = JSON.stringify(sessions);
-    const etag = `"${Buffer.from(dataString).toString('base64').slice(0, 16)}"`;
-    
-    // Check if client has current version
-    const ifNoneMatch = request.headers.get('if-none-match');
-    if (ifNoneMatch === etag) {
-      return new Response(null, { status: 304 });
-    }
-    
     return Response.json(sessions, {
       headers: {
-        'ETag': etag,
-        'Cache-Control': 'public, max-age=300' // 5 minutes browser cache
+        'Cache-Control': 'no-cache, no-store, must-revalidate'
       }
     });
   } catch (error) {

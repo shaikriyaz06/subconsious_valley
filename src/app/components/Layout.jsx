@@ -42,6 +42,7 @@ const languages = [
 
 function LayoutContent({ children, currentPageName }) {
   const pathname = usePathname();
+  const isHomePage = pathname === '/';
 
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -84,7 +85,9 @@ function LayoutContent({ children, currentPageName }) {
         dir={isRTL ? "rtl" : "ltr"}
       >
         {/* Header */}
-        <header className="bg-white/80 backdrop-blur-md border-b border-teal-100 sticky top-0 z-50">
+        <header className={`bg-white/80 backdrop-blur-md border-b border-teal-100 z-50 ${
+          isHomePage ? 'relative' : 'sticky top-0'
+        }`}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-16">
               {/* Logo */}

@@ -130,7 +130,7 @@ const translations = {
       "Transformation lasts when the subconscious is addressed directly in your native language.",
     value_2_title: "Science-Based Approach",
     value_2_desc:
-      "We combine hypnotherapy, NLP and brainwave entrainment for practical, testable results.",
+      "We combine hypnotherapy NLP and other healing modalities.",
     value_3_title: "Cultural Sensitivity",
     value_3_desc:
       "Healing is personal and cultural; our content is localized for Arabic, Hindi, English and many more regional audiences coming soon.",

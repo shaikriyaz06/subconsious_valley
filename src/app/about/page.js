@@ -283,7 +283,7 @@ export default function About({ t: propT }) {
                   <p className="text-sm font-semibold text-slate-800">
                     Co-Founder
                   </p>
-                  <p className="text-xs text-slate-500">Age 15</p>
+                  {/* <p className="text-xs text-slate-500">Age 15</p> */}
                 </div>
               </div>
             </motion.div>
@@ -361,7 +361,7 @@ export default function About({ t: propT }) {
               viewport={{ once: true }}
             >
               <img
-                src="https://cdn.subconsciousvalley.workers.dev/AWARDS.png"
+                src="https://cdn.subconsciousvalley.workers.dev/AWARDS.jpeg"
                 alt="Professional Excellence Awards for Global Wellness Innovation 2025"
                 className="rounded-2xl shadow-2xl w-full"
               />

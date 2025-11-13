@@ -1,6 +1,7 @@
 "use client";
 import { useRef, useState, useEffect, useCallback, useMemo } from "react";
-import { Progress, Tabs } from "antd";
+import { CustomTabs } from "./components/CustomTabs";
+import { CustomProgress } from "./components/CustomProgress";
 import About from "./about/page";
 import Contact from "./contact/page";
 import { useLanguage } from "./components/LanguageProvider";
@@ -256,23 +257,24 @@ export default function Home() {
       {/* Sticky Progress Bar and Tabs (appear when scrolling) */}
       {isSticky && (
         <>
-          <div className="fixed top-0 w-full z-[100] bg-white/95">
-            <Progress
+          <div className="fixed top-0 w-full z-[100] bg-white/95 shadow-sm transition-all duration-700 ease-out transform">
+            <CustomProgress
               percent={progress}
               showInfo={false}
-              strokeColor="#8b5cf6"
+              strokeColor="#0d9488"
+              className="h-1"
             />
-          </div>
-          <div className="fixed top-[15px] w-full z-[99] bg-white/98">
-            <Tabs
-              activeKey={activeTab}
-              onChange={(key) => {
-                setActiveTab(key);
-                scrollToSection(key);
-              }}
-              centered
-              items={tabItems}
-            />
+            <div className="py-2">
+              <CustomTabs
+                activeKey={activeTab}
+                onChange={(key) => {
+                  setActiveTab(key);
+                  scrollToSection(key);
+                }}
+                centered
+                items={tabItems}
+              />
+            </div>
           </div>
         </>
       )}
@@ -283,14 +285,14 @@ export default function Home() {
         {!isSticky && (
           <div ref={tabsRef} className="relative w-full z-20">
             <div className="w-full bg-white/95">
-              <Progress
+              <CustomProgress
                 percent={progress}
                 showInfo={false}
-                strokeColor="#8b5cf6"
+                strokeColor="#0d9488"
               />
             </div>
             <div className="w-full bg-white/98">
-              <Tabs
+              <CustomTabs
                 activeKey={activeTab}
                 onChange={(key) => {
                   setActiveTab(key);
