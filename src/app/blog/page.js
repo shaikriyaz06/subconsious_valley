@@ -147,9 +147,9 @@ export default function Blog() {
               <div className="grid lg:grid-cols-2">
                 <div className="aspect-video lg:aspect-auto">
                   <img 
-                    src={posts[0].featured_image || "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80"}
+                    src={posts[0].featured_image}
                     alt={getTranslated(posts[0], 'title')}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain"
                   />
                 </div>
                 <CardContent className="p-8 flex flex-col justify-center">
@@ -204,7 +204,7 @@ export default function Blog() {
                   <CardHeader className="p-0">
                     <div className="aspect-video overflow-hidden rounded-t-2xl">
                       <img 
-                        src={post.featured_image || `https://images.unsplash.com/photo-${1559757148 + index}?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80`}
+                        src={post.featured_image}
                         alt={getTranslated(post, 'title')}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />

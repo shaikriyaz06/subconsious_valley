@@ -22,9 +22,9 @@ const exchangeRates = {
 const CurrencyContext = React.createContext();
 
 export const CurrencyProvider = ({ children }) => {
-  const [selectedCurrency, setSelectedCurrency] = useState('USD');
+  const [selectedCurrency, setSelectedCurrency] = useState('AED');
 
-  const convertPrice = (amount, fromCurrency = 'USD') => {
+  const convertPrice = (amount, fromCurrency = 'AED') => {
     if (selectedCurrency === fromCurrency) {
       return amount;
     }
@@ -33,10 +33,10 @@ export const CurrencyProvider = ({ children }) => {
     return Math.round(amount * rate * 100) / 100;
   };
 
-  const formatPrice = (amount, fromCurrency = 'USD') => {
+  const formatPrice = (amount, fromCurrency = 'AED') => {
     const convertedAmount = convertPrice(amount, fromCurrency);
     const currency = currencies.find(c => c.code === selectedCurrency);
-    return `${currency.symbol}${convertedAmount}`;
+    return `${currency.code} ${convertedAmount}`;
   };
 
   return (

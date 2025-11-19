@@ -226,10 +226,10 @@ function CheckoutContent() {
                     <h3 className="font-semibold text-lg">{session.title}</h3>
                     <p className="text-slate-600 mt-1">{session.description}</p>
                     <div className="flex gap-2 mt-3">
-                      <Badge className="flex items-center gap-1">
+                      {/* <Badge className="flex items-center gap-1">
                         <Clock className="h-3 w-3" />
                         {session.duration || 25} minutes
-                      </Badge>
+                      </Badge> */}
                       <Badge variant="outline">{session.category?.replace('_', ' ')}</Badge>
                     </div>
                   </div>

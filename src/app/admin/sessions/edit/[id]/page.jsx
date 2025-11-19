@@ -35,16 +35,8 @@ export default function EditSession() {
     title: "",
     description: "",
     category: "",
-    duration: 25,
     languages: [],
-    audio_urls: {
-      hindi: "",
-      english: "",
-      arabic: "",
-    },
-    preview_url: "",
     image_url: "",
-    materials: "",
     price: 0,
     original_price: 0,
     discount_percentage: 0,
@@ -126,6 +118,66 @@ export default function EditSession() {
     }));
   };
 
+  const handleSubSessionChange = (childIndex, subIndex, field, value) => {
+    setSessionData((prev) => ({
+      ...prev,
+      child_sessions: prev.child_sessions.map((child, i) =>
+        i === childIndex
+          ? {
+              ...child,
+              sub_sessions: child.sub_sessions?.map((sub, j) =>
+                j === subIndex ? { ...sub, [field]: value } : sub
+              ) || [],
+            }
+          : child
+      ),
+    }));
+  };
+
+  const handleSubMaterialChange = (childIndex, subIndex, materialIndex, field, value) => {
+    setSessionData((prev) => ({
+      ...prev,
+      child_sessions: prev.child_sessions.map((child, i) =>
+        i === childIndex
+          ? {
+              ...child,
+              sub_sessions: child.sub_sessions?.map((sub, j) =>
+                j === subIndex
+                  ? {
+                      ...sub,
+                      materials: sub.materials?.map((material, k) =>
+                        k === materialIndex ? { ...material, [field]: value } : material
+                      ) || [],
+                    }
+                  : sub
+              ) || [],
+            }
+          : child
+      ),
+    }));
+  };
+
+  const handleSubAudioChange = (childIndex, subIndex, language, url) => {
+    setSessionData((prev) => ({
+      ...prev,
+      child_sessions: prev.child_sessions.map((child, i) =>
+        i === childIndex
+          ? {
+              ...child,
+              sub_sessions: child.sub_sessions?.map((sub, j) =>
+                j === subIndex
+                  ? {
+                      ...sub,
+                      audio_urls: { ...sub.audio_urls, [language]: url },
+                    }
+                  : sub
+              ) || [],
+            }
+          : child
+      ),
+    }));
+  };
+
   const handleChildMaterialChange = (
     childIndex,
     materialIndex,
@@ -197,11 +249,7 @@ export default function EditSession() {
         ...(prev.child_sessions || []),
         {
           title: "",
-          description: "",
-          duration: 25,
-          audio_urls: { hindi: "", english: "", arabic: "" },
-          image_url: "",
-          order: (prev.child_sessions?.length || 0) + 1,
+          sub_sessions: [],
         },
       ];
 
@@ -215,6 +263,87 @@ export default function EditSession() {
 
       return { ...prev, child_sessions: newChildSessions };
     });
+  };
+
+  const addSubSession = (childIndex) => {
+    setSessionData((prev) => ({
+      ...prev,
+      child_sessions: prev.child_sessions.map((child, i) =>
+        i === childIndex
+          ? {
+              ...child,
+              sub_sessions: [
+                ...(child.sub_sessions || []),
+                {
+                  title: "",
+                  description: "",
+                  duration: 25,
+                  audio_urls: { hindi: "", english: "", arabic: "" },
+                  image_url: "",
+                  materials: [],
+                  order: (child.sub_sessions?.length || 0) + 1,
+                },
+              ],
+            }
+          : child
+      ),
+    }));
+  };
+
+  const removeSubSession = (childIndex, subIndex) => {
+    setSessionData((prev) => ({
+      ...prev,
+      child_sessions: prev.child_sessions.map((child, i) =>
+        i === childIndex
+          ? {
+              ...child,
+              sub_sessions: child.sub_sessions?.filter((_, j) => j !== subIndex) || [],
+            }
+          : child
+      ),
+    }));
+  };
+
+  const addSubMaterial = (childIndex, subIndex) => {
+    setSessionData((prev) => ({
+      ...prev,
+      child_sessions: prev.child_sessions.map((child, i) =>
+        i === childIndex
+          ? {
+              ...child,
+              sub_sessions: child.sub_sessions?.map((sub, j) =>
+                j === subIndex
+                  ? {
+                      ...sub,
+                      materials: [...(sub.materials || []), { name: "", link: "" }],
+                    }
+                  : sub
+              ) || [],
+            }
+          : child
+      ),
+    }));
+  };
+
+  const removeSubMaterial = (childIndex, subIndex, materialIndex) => {
+    setSessionData((prev) => ({
+      ...prev,
+      child_sessions: prev.child_sessions.map((child, i) =>
+        i === childIndex
+          ? {
+              ...child,
+              sub_sessions: child.sub_sessions?.map((sub, j) =>
+                j === subIndex
+                  ? {
+                      ...sub,
+                      materials: sub.materials?.filter((_, k) => k !== materialIndex) || [],
+                    }
+                  : sub
+              ) || [],
+            }
+          : child
+      ),
+    }));
   };
 
   const removeChildSession = (index) => {
@@ -239,51 +368,26 @@ export default function EditSession() {
       errors.push("Price cannot be negative");
     }
 
-    // Validate main session audio files
-    if (sessionData.audio_urls) {
-      Object.entries(sessionData.audio_urls).forEach(([lang, audioFile]) => {
-        if (
-          audioFile &&
-          audioFile instanceof File &&
-          !audioFile.name.toLowerCase().endsWith(".mp3")
-        ) {
-          errors.push(`${lang} audio file must be in MP3 format`);
-        }
-      });
-    }
+
 
     if (sessionData.child_sessions?.length > 0) {
       sessionData.child_sessions.forEach((child, index) => {
         if (!child.title?.trim()) {
           errors.push(`Child session ${index + 1} title is required`);
         }
-        if (!child.duration || child.duration <= 0) {
-          errors.push(
-            `Child session ${index + 1} duration must be greater than 0`
-          );
-        }
-
-        // Validate child session audio files
-        if (child.audio_urls) {
-          Object.entries(child.audio_urls).forEach(([lang, audioFile]) => {
-            if (
-              audioFile &&
-              audioFile instanceof File &&
-              !audioFile.name.toLowerCase().endsWith(".mp3")
-            ) {
-              errors.push(
-                `Child session ${
-                  index + 1
-                } ${lang} audio file must be in MP3 format`
-              );
+        
+        // Validate sub-sessions
+        if (child.sub_sessions?.length > 0) {
+          child.sub_sessions.forEach((sub, subIndex) => {
+            if (!sub.title?.trim()) {
+              errors.push(`Child ${index + 1} - Sub-session ${subIndex + 1} title is required`);
+            }
+            if (!sub.duration || sub.duration <= 0) {
+              errors.push(`Child ${index + 1} - Sub-session ${subIndex + 1} duration must be greater than 0`);
             }
           });
         }
       });
-    } else {
-      if (!sessionData.duration || sessionData.duration <= 0) {
-        errors.push("Duration must be greater than 0");
-      }
     }
 
     return errors;
@@ -341,60 +445,55 @@ export default function EditSession() {
         updatedSessionData.image_url = imageUrl;
       }
 
-      // Upload main session audio files if they are files or convert URLs to CDN
-      if (sessionData.audio_urls) {
-        for (const [lang, audioFile] of Object.entries(
-          sessionData.audio_urls
-        )) {
-          if (audioFile && audioFile instanceof File) {
-            const audioUrl = await uploadFileToCloudflare(
-              audioFile,
-              `session-${params.id}-${lang}-audio`
-            );
-            updatedSessionData.audio_urls[lang] = audioUrl;
-          } else if (shouldConvertToCDN(audioFile)) {
-            // Convert non-CDN URLs to CDN format by prefixing
-            updatedSessionData.audio_urls[lang] = `https://cdn.subconsciousvalley.workers.dev/${audioFile.split('/').pop()}`;
-          }
-        }
-      }
 
-      // Upload child session audio files and materials if they are files
+
+      // Upload child and sub-session files
       if (sessionData.child_sessions) {
         for (let i = 0; i < sessionData.child_sessions.length; i++) {
           const child = sessionData.child_sessions[i];
-
-          // Upload audio files or convert URLs to CDN
-          if (child.audio_urls) {
-            for (const [lang, audioFile] of Object.entries(child.audio_urls)) {
-              if (audioFile && audioFile instanceof File) {
-                const audioUrl = await uploadFileToCloudflare(
-                  audioFile,
-                  `session-${params.id}-child-${i}-${lang}-audio`
-                );
-                updatedSessionData.child_sessions[i].audio_urls[lang] =
-                  audioUrl;
-              } else if (shouldConvertToCDN(audioFile)) {
-                // Convert non-CDN URLs to CDN format
-                updatedSessionData.child_sessions[i].audio_urls[lang] = `https://cdn.subconsciousvalley.workers.dev/${audioFile.split('/').pop()}`;
-              }
-            }
+          
+          // Upload child session image
+          if (child.image_url && child.image_url instanceof File) {
+            const imageUrl = await uploadFileToCloudflare(
+              child.image_url,
+              `session-${params.id}-child-${i}-image`
+            );
+            updatedSessionData.child_sessions[i].image_url = imageUrl;
           }
+          
+          if (child.sub_sessions) {
+            for (let k = 0; k < child.sub_sessions.length; k++) {
+              const subSession = child.sub_sessions[k];
 
-          // Upload material files or convert URLs to CDN
-          if (child.materials) {
-            for (let j = 0; j < child.materials.length; j++) {
-              const material = child.materials[j];
-              if (material.link && material.link instanceof File) {
-                const materialUrl = await uploadFileToCloudflare(
-                  material.link,
-                  `session-${params.id}-child-${i}-material-${j}`
-                );
-                updatedSessionData.child_sessions[i].materials[j].link =
-                  materialUrl;
-              } else if (shouldConvertToCDN(material.link)) {
-                // Convert non-CDN URLs to CDN format
-                updatedSessionData.child_sessions[i].materials[j].link = `https://cdn.subconsciousvalley.workers.dev/${material.link.split('/').pop()}`;
+              // Upload sub-session audio files
+              if (subSession.audio_urls) {
+                for (const [lang, audioFile] of Object.entries(subSession.audio_urls)) {
+                  if (audioFile && audioFile instanceof File) {
+                    const audioUrl = await uploadFileToCloudflare(
+                      audioFile,
+                      `session-${params.id}-child-${i}-sub-${k}-${lang}-audio`
+                    );
+                    updatedSessionData.child_sessions[i].sub_sessions[k].audio_urls[lang] = audioUrl;
+                  } else if (shouldConvertToCDN(audioFile)) {
+                    updatedSessionData.child_sessions[i].sub_sessions[k].audio_urls[lang] = `https://cdn.subconsciousvalley.workers.dev/${audioFile.split('/').pop()}`;
+                  }
+                }
+              }
+
+              // Upload sub-session materials
+              if (subSession.materials) {
+                for (let l = 0; l < subSession.materials.length; l++) {
+                  const material = subSession.materials[l];
+                  if (material.link && material.link instanceof File) {
+                    const materialUrl = await uploadFileToCloudflare(
+                      material.link,
+                      `session-${params.id}-child-${i}-sub-${k}-material-${l}`
+                    );
+                    updatedSessionData.child_sessions[i].sub_sessions[k].materials[l].link = materialUrl;
+                  } else if (shouldConvertToCDN(material.link)) {
+                    updatedSessionData.child_sessions[i].sub_sessions[k].materials[l].link = `https://cdn.subconsciousvalley.workers.dev/${material.link.split('/').pop()}`;
+                  }
+                }
               }
             }
           }
@@ -434,13 +533,7 @@ export default function EditSession() {
     <div className="min-h-screen bg-gradient-to-br from-teal-50 via-purple-50 to-pink-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Section */}
-        <div
-          className={`bg-white/90 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 p-6 mb-8 ${
-            sessionData.child_sessions && sessionData.child_sessions.length > 0
-              ? "mx-8 xl:mx-16"
-              : ""
-          }`}
-        >
+        <div className="bg-white/90 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 p-6 mb-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <Button
@@ -466,14 +559,7 @@ export default function EditSession() {
         {/* Main Form */}
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Primary Content */}
-          <div
-            className={`space-y-8 ${
-              sessionData.child_sessions &&
-              sessionData.child_sessions.length > 0
-                ? "lg:col-span-3 px-8 xl:px-16"
-                : "lg:col-span-2"
-            }`}
-          >
+          <div className="lg:col-span-2 space-y-8 lg:pr-4">
             {/* Basic Information */}
             <Card className="bg-white/90 backdrop-blur-lg border-0 shadow-xl rounded-2xl overflow-hidden">
               <CardHeader className="bg-gradient-to-r from-teal-50 to-cyan-50 border-b border-gray-100">
@@ -549,27 +635,7 @@ export default function EditSession() {
                   />
                 </div>
 
-                {(!sessionData.child_sessions ||
-                  sessionData.child_sessions.length === 0) && (
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="materials"
-                      className="text-sm font-medium text-gray-700"
-                    >
-                      Materials
-                    </Label>
-                    <Textarea
-                      id="materials"
-                      value={sessionData.materials || ""}
-                      onChange={(e) =>
-                        handleInputChange("materials", e.target.value)
-                      }
-                      rows={3}
-                      className="border-gray-200 focus:border-teal-500 focus:ring-teal-500/20 rounded-lg resize-none"
-                      placeholder="List any materials or resources needed for this session..."
-                    />
-                  </div>
-                )}
+
               </CardContent>
             </Card>
 
@@ -657,28 +723,6 @@ export default function EditSession() {
                   />
                 </div>
 
-                {(!sessionData.child_sessions ||
-                  sessionData.child_sessions.length === 0) && (
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="duration"
-                      className="text-sm font-medium text-gray-700"
-                    >
-                      Duration (minutes)
-                    </Label>
-                    <Input
-                      id="duration"
-                      type="number"
-                      value={sessionData.duration}
-                      onChange={(e) =>
-                        handleInputChange("duration", Number(e.target.value))
-                      }
-                      className="border-gray-200 focus:border-teal-500 focus:ring-teal-500/20 rounded-lg h-11"
-                      placeholder="25"
-                    />
-                  </div>
-                )}
-
                 <div className="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg">
                   <Checkbox
                     id="is_sample"
@@ -698,61 +742,7 @@ export default function EditSession() {
               </CardContent>
             </Card>
 
-            {/* Audio Files */}
-            {(!sessionData.child_sessions ||
-              sessionData.child_sessions.length === 0) && (
-              <Card className="bg-white/90 backdrop-blur-lg border-0 shadow-xl rounded-2xl overflow-hidden">
-                <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50 border-b border-gray-100">
-                  <CardTitle className="text-xl font-semibold text-gray-800 flex items-center">
-                    <div className="w-3 h-3 bg-purple-500 rounded-full mr-3"></div>
-                    Audio Files
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-8 space-y-6">
-                  <div className="space-y-6">
-                    <div className="space-y-3">
-                      <Label className="text-sm font-medium text-gray-700">
-                        English Audio
-                      </Label>
-                      <FileUpload
-                        value={sessionData.audio_urls?.english || ""}
-                        onChange={(value) =>
-                          handleAudioUrlChange("english", value)
-                        }
-                        accept="audio/*"
-                        placeholder="Upload English audio file"
-                      />
-                    </div>
-                    <div className="space-y-3">
-                      <Label className="text-sm font-medium text-gray-700">
-                        Hindi Audio
-                      </Label>
-                      <FileUpload
-                        value={sessionData.audio_urls?.hindi || ""}
-                        onChange={(value) =>
-                          handleAudioUrlChange("hindi", value)
-                        }
-                        accept="audio/*"
-                        placeholder="Upload Hindi audio file"
-                      />
-                    </div>
-                    <div className="space-y-3">
-                      <Label className="text-sm font-medium text-gray-700">
-                        Arabic Audio
-                      </Label>
-                      <FileUpload
-                        value={sessionData.audio_urls?.arabic || ""}
-                        onChange={(value) =>
-                          handleAudioUrlChange("arabic", value)
-                        }
-                        accept="audio/*"
-                        placeholder="Upload Arabic audio file"
-                      />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
+
 
             {/* Child Sessions */}
             {sessionData.child_sessions &&
@@ -817,25 +807,24 @@ export default function EditSession() {
                                     )
                                   }
                                   className="border-gray-200 focus:border-teal-500 focus:ring-teal-500/20 rounded-lg"
-                                  placeholder="Enter session title"
+                                  placeholder="Enter child session title"
                                 />
                               </div>
                               <div className="space-y-2">
                                 <Label className="text-sm font-medium text-gray-700">
-                                  Duration (minutes)
+                                  Image
                                 </Label>
-                                <Input
-                                  type="number"
-                                  value={child.duration || 25}
-                                  onChange={(e) =>
+                                <FileUpload
+                                  value={child.image_url || ""}
+                                  onChange={(value) =>
                                     handleChildSessionChange(
                                       index,
-                                      "duration",
-                                      Number(e.target.value)
+                                      "image_url",
+                                      value
                                     )
                                   }
-                                  className="border-gray-200 focus:border-teal-500 focus:ring-teal-500/20 rounded-lg"
-                                  placeholder="25"
+                                  accept="image/*"
+                                  placeholder="Upload child session image"
                                 />
                               </div>
                             </div>
@@ -855,150 +844,190 @@ export default function EditSession() {
                                 }
                                 rows={3}
                                 className="border-gray-200 focus:border-teal-500 focus:ring-teal-500/20 rounded-lg resize-none"
-                                placeholder="Describe this session..."
+                                placeholder="Describe this child session..."
                               />
                             </div>
 
+                            {/* Sub-Sessions */}
                             <div className="space-y-4">
-                              <Label className="text-sm font-medium text-gray-700">
-                                Materials
-                              </Label>
-                              <div className="p-4 rounded-lg border border-black space-y-3">
-                                {(child.materials || []).map(
-                                  (material, materialIndex) => (
-                                    <div
-                                      key={materialIndex}
-                                      className="p-3 bg-white rounded-lg  border-black space-y-3"
+                              <div className="flex items-center justify-between">
+                                <Label className="text-sm font-medium text-gray-700">
+                                  Sub-Sessions ({(child.sub_sessions || []).length})
+                                </Label>
+                                <Button
+                                  type="button"
+                                  onClick={() => addSubSession(index)}
+                                  variant="outline"
+                                  size="sm"
+                                  className="hover:bg-blue-100 border-blue-200"
+                                >
+                                  <Plus className="h-4 w-4 mr-2" />
+                                  Add Sub-Session
+                                </Button>
+                              </div>
+                              
+                              {(child.sub_sessions || []).map((subSession, subIndex) => (
+                                <div key={subIndex} className="p-4 border border-gray-200 rounded-lg bg-gray-50 space-y-4">
+                                  <div className="flex items-center justify-between">
+                                    <h6 className="text-sm font-medium text-gray-800">
+                                      Sub-Session {subIndex + 1}: {subSession.title || "Untitled"}
+                                    </h6>
+                                    <Button
+                                      type="button"
+                                      onClick={() => removeSubSession(index, subIndex)}
+                                      variant="destructive"
+                                      size="sm"
+                                      className="h-8 w-8 p-0"
                                     >
-                                      <div className="flex items-center justify-between">
-                                        <h5 className="text-sm font-medium text-gray-700">
-                                          Material {materialIndex + 1}
-                                        </h5>
-                                        <Button
-                                          type="button"
-                                          onClick={() =>
-                                            removeChildMaterial(
-                                              index,
-                                              materialIndex
-                                            )
-                                          }
-                                          variant="destructive"
-                                          size="sm"
-                                          className="h-8 w-8 p-0"
-                                        >
-                                          <Trash2 className="h-4 w-4" />
-                                        </Button>
-                                      </div>
-                                      <div>
-                                        <Label className="text-xs font-medium text-gray-600">
-                                          Name
-                                        </Label>
+                                      <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                  
+                                  <div className="grid md:grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                      <Label className="text-xs font-medium text-gray-600">
+                                        Title
+                                      </Label>
+                                      <Input
+                                        value={subSession.title || ""}
+                                        onChange={(e) =>
+                                          handleSubSessionChange(index, subIndex, "title", e.target.value)
+                                        }
+                                        className="text-sm"
+                                        placeholder="Sub-session title"
+                                      />
+                                    </div>
+                                    <div className="space-y-2">
+                                      <Label className="text-xs font-medium text-gray-600">
+                                        Duration (min)
+                                      </Label>
+                                      <Input
+                                        type="number"
+                                        value={subSession.duration || 25}
+                                        onChange={(e) =>
+                                          handleSubSessionChange(index, subIndex, "duration", Number(e.target.value))
+                                        }
+                                        className="text-sm"
+                                        placeholder="25"
+                                      />
+                                    </div>
+                                  </div>
+                                  
+                                  <div className="space-y-2">
+                                    <Label className="text-xs font-medium text-gray-600">
+                                      Description
+                                    </Label>
+                                    <Textarea
+                                      value={subSession.description || ""}
+                                      onChange={(e) =>
+                                        handleSubSessionChange(index, subIndex, "description", e.target.value)
+                                      }
+                                      rows={2}
+                                      className="text-sm resize-none"
+                                      placeholder="Sub-session description"
+                                    />
+                                  </div>
+                                  
+                                  {/* Sub-session Materials */}
+                                  <div className="space-y-3">
+                                    <div className="flex items-center justify-between">
+                                      <Label className="text-xs font-medium text-gray-600">
+                                        Materials
+                                      </Label>
+                                      <Button
+                                        type="button"
+                                        onClick={() => addSubMaterial(index, subIndex)}
+                                        variant="outline"
+                                        size="sm"
+                                        className="h-7 text-xs"
+                                      >
+                                        <Plus className="h-3 w-3 mr-1" />
+                                        Add
+                                      </Button>
+                                    </div>
+                                    {(subSession.materials || []).map((material, materialIndex) => (
+                                      <div key={materialIndex} className="p-3 bg-white rounded border space-y-2">
+                                        <div className="flex items-center justify-between">
+                                          <span className="text-xs font-medium text-gray-600">
+                                            Material {materialIndex + 1}
+                                          </span>
+                                          <Button
+                                            type="button"
+                                            onClick={() => removeSubMaterial(index, subIndex, materialIndex)}
+                                            variant="destructive"
+                                            size="sm"
+                                            className="h-6 w-6 p-0"
+                                          >
+                                            <Trash2 className="h-3 w-3" />
+                                          </Button>
+                                        </div>
                                         <Input
                                           value={material.name || ""}
                                           onChange={(e) =>
-                                            handleChildMaterialChange(
-                                              index,
-                                              materialIndex,
-                                              "name",
-                                              e.target.value
-                                            )
+                                            handleSubMaterialChange(index, subIndex, materialIndex, "name", e.target.value)
                                           }
-                                          className="mt-1"
+                                          className="text-xs"
                                           placeholder="Material name"
                                         />
-                                      </div>
-                                      <div>
-                                        <Label className="text-xs font-medium text-gray-600">
-                                          Material File
-                                        </Label>
                                         <FileUpload
                                           value={material.link || ""}
                                           onChange={(value) =>
-                                            handleChildMaterialChange(
-                                              index,
-                                              materialIndex,
-                                              "link",
-                                              value
-                                            )
+                                            handleSubMaterialChange(index, subIndex, materialIndex, "link", value)
                                           }
                                           accept=".pdf,.doc,.docx,.txt"
-                                          placeholder="Upload material file"
-                                          className="mt-1"
+                                          placeholder="Upload material"
+                                          className="text-xs"
+                                        />
+                                      </div>
+                                    ))}
+                                  </div>
+                                  
+                                  {/* Sub-session Audio Files */}
+                                  <div className="space-y-3">
+                                    <Label className="text-xs font-medium text-gray-600">
+                                      Audio Files
+                                    </Label>
+                                    <div className="grid grid-cols-1 gap-3">
+                                      <div className="space-y-1">
+                                        <Label className="text-xs text-gray-500">English</Label>
+                                        <FileUpload
+                                          value={subSession.audio_urls?.english || ""}
+                                          onChange={(value) =>
+                                            handleSubAudioChange(index, subIndex, "english", value)
+                                          }
+                                          accept="audio/*"
+                                          placeholder="English audio"
+                                          className="text-xs"
+                                        />
+                                      </div>
+                                      <div className="space-y-1">
+                                        <Label className="text-xs text-gray-500">Hindi</Label>
+                                        <FileUpload
+                                          value={subSession.audio_urls?.hindi || ""}
+                                          onChange={(value) =>
+                                            handleSubAudioChange(index, subIndex, "hindi", value)
+                                          }
+                                          accept="audio/*"
+                                          placeholder="Hindi audio"
+                                          className="text-xs"
+                                        />
+                                      </div>
+                                      <div className="space-y-1">
+                                        <Label className="text-xs text-gray-500">Arabic</Label>
+                                        <FileUpload
+                                          value={subSession.audio_urls?.arabic || ""}
+                                          onChange={(value) =>
+                                            handleSubAudioChange(index, subIndex, "arabic", value)
+                                          }
+                                          accept="audio/*"
+                                          placeholder="Arabic audio"
+                                          className="text-xs"
                                         />
                                       </div>
                                     </div>
-                                  )
-                                )}
-                                <Button
-                                  type="button"
-                                  onClick={() => addChildMaterial(index)}
-                                  variant="outline"
-                                  size="sm"
-                                  className="w-full mt-3"
-                                >
-                                  <Plus className="h-4 w-4 mr-2" />
-                                  Add Material
-                                </Button>
-                              </div>
-                            </div>
-
-                            <div className="space-y-4">
-                              <Label className="text-sm font-medium text-gray-700">
-                                Audio Files
-                              </Label>
-                              <div className="space-y-4">
-                                <div className="space-y-2">
-                                  <Label className="text-xs font-medium text-gray-600">
-                                    English Audio
-                                  </Label>
-                                  <FileUpload
-                                    value={child.audio_urls?.english || ""}
-                                    onChange={(value) =>
-                                      handleChildAudioChange(
-                                        index,
-                                        "english",
-                                        value
-                                      )
-                                    }
-                                    accept="audio/*"
-                                    placeholder="Upload English audio"
-                                  />
+                                  </div>
                                 </div>
-                                <div className="space-y-2">
-                                  <Label className="text-xs font-medium text-gray-600">
-                                    Hindi Audio
-                                  </Label>
-                                  <FileUpload
-                                    value={child.audio_urls?.hindi || ""}
-                                    onChange={(value) =>
-                                      handleChildAudioChange(
-                                        index,
-                                        "hindi",
-                                        value
-                                      )
-                                    }
-                                    accept="audio/*"
-                                    placeholder="Upload Hindi audio"
-                                  />
-                                </div>
-                                <div className="space-y-2">
-                                  <Label className="text-xs font-medium text-gray-600">
-                                    Arabic Audio
-                                  </Label>
-                                  <FileUpload
-                                    value={child.audio_urls?.arabic || ""}
-                                    onChange={(value) =>
-                                      handleChildAudioChange(
-                                        index,
-                                        "arabic",
-                                        value
-                                      )
-                                    }
-                                    accept="audio/*"
-                                    placeholder="Upload Arabic audio"
-                                  />
-                                </div>
-                              </div>
+                              ))}
                             </div>
                           </AccordionContent>
                         </AccordionItem>
@@ -1031,55 +1060,46 @@ export default function EditSession() {
           </div>
 
           {/* Sidebar */}
-          {(!sessionData.child_sessions ||
-            sessionData.child_sessions.length === 0) && (
-            <div className="space-y-8">
-              {/* Languages Card */}
-              <Card className="bg-white/90 backdrop-blur-lg border-0 shadow-xl rounded-2xl overflow-hidden">
-                <CardHeader className="bg-gradient-to-r from-orange-50 to-amber-50 border-b border-gray-100">
-                  <CardTitle className="text-lg font-semibold text-gray-800 flex items-center">
-                    <div className="w-3 h-3 bg-orange-500 rounded-full mr-3"></div>
-                    Languages
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-6">
-                  <div className="grid grid-cols-1 gap-3">
-                    {availableLanguages.map((lang) => (
-                      <div
-                        key={lang.value}
-                        className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+          <div className="space-y-8">
+            {/* Languages Card */}
+            <Card className="bg-white/90 backdrop-blur-lg border-0 shadow-xl rounded-2xl overflow-hidden">
+              <CardHeader className="bg-gradient-to-r from-orange-50 to-amber-50 border-b border-gray-100">
+                <CardTitle className="text-lg font-semibold text-gray-800 flex items-center">
+                  <div className="w-3 h-3 bg-orange-500 rounded-full mr-3"></div>
+                  Languages
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-6">
+                <div className="grid grid-cols-1 gap-3">
+                  {availableLanguages.map((lang) => (
+                    <div
+                      key={lang.value}
+                      className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                    >
+                      <Checkbox
+                        id={lang.value}
+                        checked={sessionData.languages.includes(lang.value)}
+                        onCheckedChange={() =>
+                          handleLanguageToggle(lang.value)
+                        }
+                        className="data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600 data-[state=checked]:text-white [&>span>svg]:text-white"
+                      />
+                      <Label
+                        htmlFor={lang.value}
+                        className="text-sm font-medium text-gray-700 cursor-pointer"
                       >
-                        <Checkbox
-                          id={lang.value}
-                          checked={sessionData.languages.includes(lang.value)}
-                          onCheckedChange={() =>
-                            handleLanguageToggle(lang.value)
-                          }
-                          className="data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600 data-[state=checked]:text-white [&>span>svg]:text-white"
-                        />
-                        <Label
-                          htmlFor={lang.value}
-                          className="text-sm font-medium text-gray-700 cursor-pointer"
-                        >
-                          {lang.label}
-                        </Label>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          )}
+                        {lang.label}
+                      </Label>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
 
         {/* Save Actions */}
-        <div
-          className={`mt-8 ${
-            sessionData.child_sessions && sessionData.child_sessions.length > 0
-              ? "mx-8 xl:mx-16"
-              : ""
-          }`}
-        >
+        <div className="mt-8">
           <Card className="bg-white/90 backdrop-blur-lg border-0 shadow-xl rounded-2xl">
             <CardContent className="p-6">
               <div className="flex justify-end space-x-4">

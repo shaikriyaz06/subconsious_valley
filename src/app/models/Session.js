@@ -1,7 +1,11 @@
 import mongoose from 'mongoose';
 
-// Child session schema for embedded sessions
-const childSessionSchema = new mongoose.Schema({
+// Sub-child session schema for nested sessions
+const subChildSessionSchema = new mongoose.Schema({
+  _id: {
+    type: mongoose.Schema.Types.ObjectId,
+    default: () => new mongoose.Types.ObjectId()
+  },
   title: {
     type: String,
     required: true
@@ -37,6 +41,49 @@ const childSessionSchema = new mongoose.Schema({
   }
 });
 
+// Child session schema for embedded sessions
+const childSessionSchema = new mongoose.Schema({
+  _id: {
+    type: mongoose.Schema.Types.ObjectId,
+    default: () => new mongoose.Types.ObjectId()
+  },
+  title: {
+    type: String,
+    required: true
+  },
+  description: {
+    type: String
+  },
+  // duration: {
+  //   type: Number,
+  //   default: 25
+  // },
+  // audio_urls: {
+  //   hindi: String,
+  //   english: String,
+  //   arabic: String
+  // },
+  image_url: {
+    type: String
+  },
+  // materials: [{
+  //   name: {
+  //     type: String,
+  //     required: true
+  //   },
+  //   link: {
+  //     type: String,
+  //     required: true
+  //   }
+  // }],
+  // order: {
+  //   type: Number,
+  //   default: 1
+  // },
+  // Add sub-children support
+  sub_sessions: [subChildSessionSchema]
+});
+
 const sessionSchema = new mongoose.Schema({
   title: {
     type: String,
@@ -49,32 +96,32 @@ const sessionSchema = new mongoose.Schema({
     type: String,
     enum: ['anxiety', 'confidence', 'sleep', 'focus', 'healing', 'success']
   },
-  duration: {
-    type: Number,
-    default: 25
-  },
+  // duration: {
+  //   type: Number,
+  //   default: 25
+  // },
   languages: [{
     type: String,
     enum: ['english', 'indian_english', 'hindi', 'arabic', 'tagalog', 'chinese']
   }],
-  audio_urls: {
-    hindi: String,
-    english: String,
-    arabic: String
-  },
-  materials: [{
-    name: {
-      type: String,
-      required: true
-    },
-    link: {
-      type: String,
-      required: true
-    }
-  }],
-  preview_url: {
-    type: String
-  },
+  // audio_urls: {
+  //   hindi: String,
+  //   english: String,
+  //   arabic: String
+  // },
+  // materials: [{
+  //   name: {
+  //     type: String,
+  //     required: true
+  //   },
+  //   link: {
+  //     type: String,
+  //     required: true
+  //   }
+  // }],
+  // preview_url: {
+  //   type: String
+  // },
   required_plan: {
     type: String,
     enum: ['free', 'basic', 'premium', 'pro']

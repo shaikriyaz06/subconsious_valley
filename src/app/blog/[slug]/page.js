@@ -125,21 +125,74 @@ export default function BlogPost() {
 
               <article className="prose prose-lg max-w-none prose-teal">
                 <div>
-                  {getTranslated(post, 'content').split('\n').map((paragraph, index) => {
-                    if (paragraph.startsWith('## ')) {
-                      return <h2 key={index} className="text-2xl font-bold mt-8 mb-4 text-slate-800">{paragraph.replace('## ', '')}</h2>;
+                  {(() => {
+                    const lines = getTranslated(post, 'content').split('\n');
+                    const elements = [];
+                    let currentList = [];
+                    
+                    lines.forEach((line, index) => {
+                      if (line.startsWith('- ')) {
+                        const renderText = (text) => {
+                          const parts = text.split(/\*\*(.+?)\*\*/);
+                          return parts.map((part, i) => 
+                            i % 2 === 1 ? <strong key={i}>{part}</strong> : part
+                          );
+                        };
+                        
+                        currentList.push(
+                          <li key={index} className="mb-2">
+                            {renderText(line.replace('- ', ''))}
+                          </li>
+                        );
+                      } else {
+                        if (currentList.length > 0) {
+                          elements.push(
+                            <ul key={`list-${index}`} className="list-disc pl-6 mb-6">
+                              {currentList}
+                            </ul>
+                          );
+                          currentList = [];
+                        }
+                        
+                        if (line.startsWith('## ')) {
+                          elements.push(
+                            <h2 key={index} className="text-2xl font-bold mt-8 mb-4 text-slate-800">
+                              {line.replace('## ', '')}
+                            </h2>
+                          );
+                        } else if (line.startsWith('**') && line.endsWith('**')) {
+                          elements.push(
+                            <p key={index} className="font-bold mb-4">
+                              {line.replace(/\*\*/g, '')}
+                            </p>
+                          );
+                        } else if (line.trim()) {
+                          const renderText = (text) => {
+                            const parts = text.split(/\*\*(.+?)\*\*/);
+                            return parts.map((part, i) => 
+                              i % 2 === 1 ? <strong key={i}>{part}</strong> : part
+                            );
+                          };
+                          
+                          elements.push(
+                            <p key={index} className="mb-4 text-slate-700 leading-relaxed">
+                              {renderText(line)}
+                            </p>
+                          );
+                        }
+                      }
+                    });
+                    
+                    if (currentList.length > 0) {
+                      elements.push(
+                        <ul key="final-list" className="list-disc pl-6 mb-6">
+                          {currentList}
+                        </ul>
+                      );
                     }
-                    if (paragraph.startsWith('**') && paragraph.endsWith('**')) {
-                      return <p key={index} className="font-bold mb-4">{paragraph.replace(/\*\*/g, '')}</p>;
-                    }
-                    if (paragraph.startsWith('* ')) {
-                      return <li key={index} className="mb-2">{paragraph.replace('* ', '')}</li>;
-                    }
-                    if (paragraph.trim()) {
-                      return <p key={index} className="mb-4 text-slate-700 leading-relaxed">{paragraph}</p>;
-                    }
-                    return null;
-                  })}
+                    
+                    return elements;
+                  })()}
                 </div>
               </article>
             </CardContent>

@@ -24,6 +24,8 @@ const languageNames = {
 function SessionPlayerContent() {
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session");
+  const childId = searchParams.get("child");
+  const subId = searchParams.get("sub");
   const { status } = useSession();
 
   const [sessionData, setSessionData] = useState(null);
@@ -45,71 +47,129 @@ function SessionPlayerContent() {
       }
 
       try {
-        // Check if sessionId is a parent or child session
-        const sessionsRes = await fetch("/api/sessions?" + new Date().getTime(), {
+        console.log("URL parameters:", { sessionId, childId, subId });
+        console.log("Current URL:", window.location.href);
+        
+        // First check if we have any sessions at all
+        const allSessionsRes = await fetch('/api/sessions');
+        const allSessions = await allSessionsRes.json();
+        console.log("All sessions in database:", allSessions.length, allSessions.map(s => ({ id: s._id, title: s.title })));
+        
+        // Fetch the parent session
+        const sessionRes = await fetch(`/api/sessions/${sessionId}?` + new Date().getTime(), {
           cache: 'no-store',
           headers: {
             'Cache-Control': 'no-cache'
           }
         });
-        const sessions = await sessionsRes.json();
-        console.log("Fetched sessions from API:", sessions.length, "sessions");
         
-        let foundSession = null;
-        let parentSession = null;
+        console.log("Session fetch response status:", sessionRes.status);
         
-        // First check if it's a parent session
-        foundSession = sessions.find(s => s._id === sessionId);
-        
-        if (!foundSession) {
-          // Check if it's a child session ID
-          for (const session of sessions) {
-            if (session.child_sessions) {
-              const childSession = session.child_sessions.find(child => child._id === sessionId);
-              if (childSession) {
-                foundSession = childSession;
-                parentSession = session;
-                break;
-              }
-            }
-          }
-        }
-        
-        if (!foundSession) {
+        if (!sessionRes.ok) {
+          console.error("Failed to fetch session:", sessionRes.status, await sessionRes.text());
           setIsLoading(false);
           return;
         }
         
-        console.log("Found session:", foundSession);
-        console.log("Session ID from URL:", sessionId);
-        console.log("Is parent session:", !parentSession);
-        console.log("Parent session:", parentSession);
+        const parentSession = await sessionRes.json();
+        console.log("Fetched parent session:", parentSession);
+        console.log("Child sessions structure:", parentSession.child_sessions?.map(child => ({ title: child.title, _id: child._id, sub_sessions_count: child.sub_sessions?.length })));
         
-        // Double-check by fetching the parent session directly
-        if (parentSession) {
-          const directRes = await fetch(`/api/sessions/${parentSession._id}?` + new Date().getTime(), {
-            cache: 'no-store'
-          });
-          const directSession = await directRes.json();
-          console.log("Direct parent session fetch:", directSession);
-          const directChild = directSession.child_sessions?.find(child => child._id === sessionId);
-          console.log("Direct child session:", directChild);
+        let foundSession = null;
+        
+        if (subId && childId) {
+          // Playing a specific sub-session
+          const childSession = parentSession.child_sessions?.find(child => child._id?.toString() === childId);
+          console.log("Found child session:", childSession);
+          foundSession = childSession?.sub_sessions?.find(sub => sub._id?.toString() === subId);
+          console.log("Found sub-session:", foundSession);
+        } else if (childId) {
+          // Playing a child session
+          const childSession = parentSession.child_sessions?.find(child => child._id?.toString() === childId);
+          if (childSession) {
+            if (childSession.sub_sessions?.length > 0) {
+              foundSession = childSession.sub_sessions[0];
+              console.log("Using first sub-session of child:", foundSession);
+            } else {
+              foundSession = childSession;
+              console.log("Using child session directly:", foundSession);
+            }
+          }
+        } else {
+          // Playing parent session - use first available
+          if (parentSession.child_sessions?.length > 0) {
+            const firstChild = parentSession.child_sessions[0];
+            if (firstChild.sub_sessions?.length > 0) {
+              foundSession = firstChild.sub_sessions[0];
+              console.log("Using first sub-session:", foundSession);
+            } else {
+              foundSession = firstChild;
+              console.log("Using first child session:", foundSession);
+            }
+          } else {
+            foundSession = parentSession;
+            console.log("Using parent session:", foundSession);
+          }
+        }
+        
+        // If specific IDs not found, fallback to first available session
+        if (!foundSession && parentSession.child_sessions?.length > 0) {
+          const firstChild = parentSession.child_sessions[0];
+          if (firstChild.sub_sessions?.length > 0) {
+            foundSession = firstChild.sub_sessions[0];
+            console.log("Fallback: Using first sub-session:", foundSession);
+          } else {
+            foundSession = firstChild;
+            console.log("Fallback: Using first child session:", foundSession);
+          }
+        }
+        
+        if (!foundSession) {
+          console.error("Session not found:", { sessionId, childId, subId, parentSession });
+          setIsLoading(false);
+          return;
+        }
+        
+        // Generate audio URLs if not present
+        if (!foundSession.audio_urls && foundSession.title) {
+          // Find the actual array indices for proper URL generation
+          let childIndex = 0;
+          let subIndex = 0;
+          
+          if (childId) {
+            childIndex = parentSession.child_sessions?.findIndex(child => child._id?.toString() === childId) || 0;
+          }
+          
+          if (subId && childId) {
+            const childSession = parentSession.child_sessions?.find(child => child._id?.toString() === childId);
+            subIndex = childSession?.sub_sessions?.findIndex(sub => sub._id?.toString() === subId) || 0;
+          } else {
+            subIndex = (foundSession.order - 1) || 0;
+          }
+          
+          const baseUrl = "https://cdn.subconsciousvalley.workers.dev/";
+          const sessionTitle = foundSession.title.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+          
+          foundSession.audio_urls = {
+            english: `${baseUrl}session-${sessionId}-child-${childIndex}-english-${sessionTitle}.mp3`,
+            hindi: `${baseUrl}session-${sessionId}-child-${childIndex}-hindi-${sessionTitle}.mp3`,
+            arabic: `${baseUrl}session-${sessionId}-child-${childIndex}-arabic-${sessionTitle}.mp3`
+          };
+          
+          console.log("Generated audio URLs with indices:", { childIndex, subIndex, urls: foundSession.audio_urls });
         }
         
         setSessionData(foundSession);
 
-        // Check if user has purchased this session (check parent if it's a child)
+        // Check if user has purchased this session (always check parent)
         const purchasesRes = await fetch("/api/purchases");
         const purchases = await purchasesRes.json();
         
-        const checkSessionId = parentSession ? parentSession._id : sessionId;
-        const sessionPrice = parentSession ? parentSession.price : foundSession.price;
-        
         const hasPurchased = purchases.some(
-          (p) => p.session_id === checkSessionId && p.payment_status === "completed" && p.access_granted === true
+          (p) => p.session_id === sessionId && p.payment_status === "completed" && p.access_granted === true
         );
 
-        if (sessionPrice === 0 || foundSession.is_sample || hasPurchased) {
+        if (parentSession.price === 0 || parentSession.is_sample || hasPurchased) {
           setHasAccess(true);
           
           // Get available languages and set the first one
@@ -218,10 +278,10 @@ function SessionPlayerContent() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-teal-50 py-12">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-4">
-          <Link href="/dashboard">
+          <Link href={childId ? `/collection?session=${sessionId}` : "/sessions"}>
             <Button variant="ghost" size="sm" className="cursor-pointer">
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Dashboard
+              {childId ? "Back to Collection" : "Back to Sessions"}
             </Button>
           </Link>
         </div>

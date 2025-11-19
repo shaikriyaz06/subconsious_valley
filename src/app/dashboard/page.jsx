@@ -25,12 +25,20 @@ export default function Dashboard() {
   const [purchases, setPurchases] = useState([]);
   const [siteSettings, setSiteSettings] = useState({});
   const [expandedSessions, setExpandedSessions] = useState({});
+  const [expandedChildSessions, setExpandedChildSessions] = useState({});
   const isLoading = status === "loading";
 
   const toggleExpanded = (purchaseId) => {
     setExpandedSessions(prev => ({
       ...prev,
       [purchaseId]: !prev[purchaseId]
+    }));
+  };
+
+  const toggleChildExpanded = (childId) => {
+    setExpandedChildSessions(prev => ({
+      ...prev,
+      [childId]: !prev[childId]
     }));
   };
 
@@ -202,21 +210,63 @@ export default function Dashboard() {
                           initial={{ opacity: 0, height: 0 }}
                           animate={{ opacity: 1, height: 'auto' }}
                           exit={{ opacity: 0, height: 0 }}
-                          className="ml-4 space-y-2"
+                          className="ml-4 space-y-3"
                         >
-                          <h5 className="text-sm font-medium text-slate-600">Individual Sessions:</h5>
-                          {purchase.session.child_sessions.map((childSession, index) => (
-                            <div key={index} className="p-3 bg-slate-50 rounded-lg flex justify-between items-center">
-                              <div>
-                                <p className="text-sm font-medium text-slate-700">{childSession.title}</p>
-                                <p className="text-xs text-slate-500">{childSession.duration || 25} minutes</p>
+                          <h5 className="text-sm font-medium text-slate-600">Program Sessions:</h5>
+                          {purchase.session.child_sessions.map((childSession, childIndex) => (
+                            <div key={childIndex} className="p-3 bg-slate-50 rounded-lg">
+                              <div className="flex justify-between items-center">
+                                <div>
+                                  <p className="text-sm font-medium text-slate-700">{childSession.title}</p>
+                                  <p className="text-xs text-slate-500">{childSession.description}</p>
+                                </div>
+                                {childSession.sub_sessions && childSession.sub_sessions.length > 0 ? (
+                                  <Button 
+                                    onClick={() => toggleChildExpanded(childSession._id)}
+                                    variant="ghost"
+                                    size="sm"
+                                    className="cursor-pointer"
+                                  >
+                                    {expandedChildSessions[childSession._id] ? (
+                                      <ChevronDown className="h-4 w-4" />
+                                    ) : (
+                                      <ChevronRight className="h-4 w-4" />
+                                    )}
+                                  </Button>
+                                ) : (
+                                  <Link href={`/session-player?session=${purchase.session_id}&child=${childSession._id}`}>
+                                    <Button size="sm" variant="outline" className="cursor-pointer">
+                                      <Play className="h-3 w-3 mr-1" />
+                                      Start Program
+                                    </Button>
+                                  </Link>
+                                )}
                               </div>
-                              <Link href={`/session-player?session=${childSession._id}`}>
-                                <Button size="sm" variant="outline" className="cursor-pointer">
-                                  <Play className="h-3 w-3 mr-1" />
-                                  Start Session
-                                </Button>
-                              </Link>
+                              
+                              {/* Sub-sessions - Collapsible */}
+                              {childSession.sub_sessions && childSession.sub_sessions.length > 0 && expandedChildSessions[childSession._id] && (
+                                <motion.div
+                                  initial={{ opacity: 0, height: 0 }}
+                                  animate={{ opacity: 1, height: 'auto' }}
+                                  exit={{ opacity: 0, height: 0 }}
+                                  className="ml-3 mt-3 space-y-2"
+                                >
+                                  {childSession.sub_sessions.map((subSession, subIndex) => (
+                                    <div key={subIndex} className="p-2 bg-white rounded border flex justify-between items-center">
+                                      <div>
+                                        <p className="text-xs font-medium text-slate-600">{subSession.title}</p>
+                                        {/* <p className="text-xs text-slate-400">{subSession.duration || 25} minutes</p> */}
+                                      </div>
+                                      <Link href={`/session-player?session=${purchase.session_id}&child=${childSession._id}&sub=${subSession._id}`}>
+                                        <Button size="sm" variant="outline" className="cursor-pointer text-xs px-2 py-1">
+                                          <Play className="h-3 w-3 mr-1" />
+                                          Play
+                                        </Button>
+                                      </Link>
+                                    </div>
+                                  ))}
+                                </motion.div>
+                              )}
                             </div>
                           ))}
                         </motion.div>

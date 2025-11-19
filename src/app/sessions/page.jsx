@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Play, Lock, Star, Clock, Globe, Filter, X, Edit } from "lucide-react";
+import { Play, Lock, Star, Clock, Globe, Filter, X, Edit, ChevronDown, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/components/LanguageProvider";
 import { useCurrency } from "@/components/CurrencyConverter";
@@ -55,6 +55,8 @@ export default function Sessions() {
   const [selectedLanguage, setSelectedLanguage] = useState("all");
   const [isLoading, setIsLoading] = useState(true);
   const [dynamicCategories, setDynamicCategories] = useState({});
+  const [expandedSessions, setExpandedSessions] = useState({});
+  const [expandedChildren, setExpandedChildren] = useState({});
 
   // Use API cache for sessions
   const { data: sessionsData, loading: sessionsLoading } = useApiCache('/api/sessions');
@@ -120,8 +122,8 @@ export default function Sessions() {
     if (hasAccess(session)) {
       // Check if this is a parent session with child sessions
       if (session.child_sessions && session.child_sessions.length > 0) {
-        // Redirect to dashboard to see individual sessions
-        router.push("/dashboard");
+        // Redirect to collection page to see child sessions
+        router.push(`/collection?session=${session._id}`);
       } else {
         // Single session - go to player
         router.push(`/session-player?session=${session._id}`);
@@ -154,6 +156,20 @@ export default function Sessions() {
   const getTranslated = useCallback((item, field) => {
     return item[`${field}_${currentLanguage}`] || item[field];
   }, [currentLanguage]);
+
+  const toggleSessionExpansion = useCallback((sessionId) => {
+    setExpandedSessions(prev => ({
+      ...prev,
+      [sessionId]: !prev[sessionId]
+    }));
+  }, []);
+
+  const toggleChildExpansion = useCallback((childId) => {
+    setExpandedChildren(prev => ({
+      ...prev,
+      [childId]: !prev[childId]
+    }));
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-teal-50 py-12">
@@ -342,6 +358,8 @@ export default function Sessions() {
                         )}
                       </div>
                     </div>
+
+
 
                     <div className="space-y-2">
                       <Button
