@@ -50,3 +50,21 @@ export async function PUT(request, { params }) {
     return NextResponse.json({ error: 'Failed to update session' }, { status: 500 });
   }
 }
+
+export async function DELETE(request, { params }) {
+  try {
+    await dbConnect();
+    const { id } = await params;
+    
+    const deletedSession = await Session.findByIdAndDelete(id);
+    
+    if (!deletedSession) {
+      return NextResponse.json({ error: 'Session not found' }, { status: 404 });
+    }
+    
+    return NextResponse.json({ message: 'Session deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting session:', error);
+    return NextResponse.json({ error: 'Failed to delete session' }, { status: 500 });
+  }
+}

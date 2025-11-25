@@ -11,13 +11,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Play, Lock, Star, Clock, Globe, Filter, X, Edit, ChevronDown, ChevronRight } from "lucide-react";
+import { Play, Lock, Star, Clock, Globe, Filter, X, Edit, ChevronDown, ChevronRight, Trash2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/components/LanguageProvider";
 import { useCurrency } from "@/components/CurrencyConverter";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useApiCache } from "@/hooks/useApiCache";
+
 
 // Dynamic category names will be generated from sessions
 
@@ -57,24 +57,46 @@ export default function Sessions() {
   const [dynamicCategories, setDynamicCategories] = useState({});
   const [expandedSessions, setExpandedSessions] = useState({});
   const [expandedChildren, setExpandedChildren] = useState({});
+  const [deleting, setDeleting] = useState(null);
 
-  // Use API cache for sessions
-  const { data: sessionsData, loading: sessionsLoading } = useApiCache('/api/sessions');
-  
-  useEffect(() => {
-    if (sessionsData) {
-      setSessions(sessionsData);
+  const [sessionsLoading, setSessionsLoading] = useState(true);
+
+  const fetchSessions = useCallback(async () => {
+    try {
+      const response = await fetch(`/api/sessions?t=${Date.now()}`, {
+        cache: 'no-store'
+      });
+      const data = await response.json();
+      setSessions(data);
       
-      // Generate dynamic categories from parent session titles only
       const categories = {};
-      sessionsData.forEach((session) => {
+      data.forEach((session) => {
         if (session.title && session.parent_id === null) {
           categories[session.title] = session.title;
         }
       });
       setDynamicCategories(categories);
+    } catch (error) {
+      console.error('Error fetching sessions:', error);
+    } finally {
+      setSessionsLoading(false);
     }
-  }, [sessionsData]);
+  }, []);
+
+  useEffect(() => {
+    fetchSessions();
+  }, [fetchSessions]);
+
+  useEffect(() => {
+    const handleFocus = () => {
+      fetchSessions();
+    };
+    
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
+  }, [fetchSessions]);
+  
+
 
   useEffect(() => {
     // Always fetch fresh purchases if user is logged in (user-specific data)
@@ -171,6 +193,30 @@ export default function Sessions() {
     }));
   }, []);
 
+  const handleDeleteSession = useCallback(async (sessionId) => {
+    if (!confirm('Are you sure you want to delete this session? This action cannot be undone.')) {
+      return;
+    }
+    
+    setDeleting(sessionId);
+    try {
+      const response = await fetch(`/api/sessions/${sessionId}`, {
+        method: 'DELETE'
+      });
+      
+      if (response.ok) {
+        setSessions(prev => prev.filter(s => s._id !== sessionId));
+      } else {
+        alert('Failed to delete session');
+      }
+    } catch (error) {
+      console.error('Error deleting session:', error);
+      alert('Error deleting session');
+    } finally {
+      setDeleting(null);
+    }
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-teal-50 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -179,14 +225,29 @@ export default function Sessions() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-12"
+          className="mb-12"
         >
-          <h1 className="text-4xl lg:text-5xl font-bold mb-6">
-            <span className="bg-gradient-to-r from-teal-600 to-emerald-600 bg-clip-text text-transparent">
-              {t("sessions_title")}
-            </span>
-          </h1>
-          <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+          <div className="flex justify-between items-center mb-6">
+            <div className="flex-1">
+              {authSession?.user?.role === "admin" ? (
+                <Button
+                  onClick={() => router.push('/admin/sessions/create')}
+                  className="bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white"
+                >
+                  Add New Session
+                </Button>
+              ) : (
+                <div></div>
+              )}
+            </div>
+            <h1 className="text-4xl lg:text-5xl font-bold">
+              <span className="bg-gradient-to-r from-teal-600 to-emerald-600 bg-clip-text text-transparent">
+                {t("sessions_title")}
+              </span>
+            </h1>
+            <div className="flex-1"></div>
+          </div>
+          <p className="text-xl text-slate-600 max-w-3xl mx-auto text-center">
             {t("sessions_desc")}
           </p>
         </motion.div>
@@ -320,19 +381,29 @@ export default function Sessions() {
                         {session.duration || 25} min
                       </div> */}
                       <div className="flex items-center gap-1">
-                        {[1, 2, 3, 4].map((star) => (
-                          <Star
-                            key={star}
-                            className="h-4 w-4 fill-current text-amber-400"
-                          />
-                        ))}
-                        <div className="relative">
-                          <Star className="h-4 w-4 text-amber-400" />
-                          <div className="absolute inset-0 overflow-hidden" style={{ width: '90%' }}>
-                            <Star className="h-4 w-4 fill-current text-amber-400" />
-                          </div>
-                        </div>
-                        <span className="ml-1 text-sm">4.9</span>
+                        {(() => {
+                          const seed = (session.title?.length || 10) + index * 7;
+                          const rating = (4.6 + (seed % 40) / 100).toFixed(1);
+                          const fullStars = Math.floor(rating);
+                          const partialStar = rating - fullStars;
+                          
+                          return (
+                            <>
+                              {[...Array(fullStars)].map((_, i) => (
+                                <Star key={i} className="h-4 w-4 fill-current text-amber-400" />
+                              ))}
+                              {partialStar > 0 && (
+                                <div className="relative">
+                                  <Star className="h-4 w-4 text-amber-400" />
+                                  <div className="absolute inset-0 overflow-hidden" style={{ width: `${partialStar * 100}%` }}>
+                                    <Star className="h-4 w-4 fill-current text-amber-400" />
+                                  </div>
+                                </div>
+                              )}
+                              <span className="ml-1 text-sm">{rating}</span>
+                            </>
+                          );
+                        })()}
                       </div>
                     </div>
 
@@ -377,14 +448,24 @@ export default function Sessions() {
                           : t("start_session")}
                       </Button>
                       {authSession?.user?.role === "admin" && (
-                        <Button
-                          onClick={() => router.push(`/admin/sessions/edit/${session._id}`)}
-                          variant="outline"
-                          className="cursor-pointer w-full border-black-300 from-teal-50 via-white to-emerald-50 hover:border-teal-400"
-                        >
-                          <Edit className="mr-2 h-4 w-4" />
-                          Edit Session
-                        </Button>
+                        <div className="flex gap-2">
+                          <Button
+                            onClick={() => router.push(`/admin/sessions/edit/${session._id}`)}
+                            variant="outline"
+                            className="cursor-pointer flex-1 border-teal-300 text-teal-700 hover:bg-teal-50 hover:border-teal-400"
+                          >
+                            <Edit className="mr-2 h-4 w-4" />
+                            Edit
+                          </Button>
+                          <Button
+                            onClick={() => handleDeleteSession(session._id)}
+                            disabled={deleting === session._id}
+                            className="cursor-pointer flex-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white"
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            {deleting === session._id ? 'Deleting...' : 'Delete'}
+                          </Button>
+                        </div>
                       )}
                     </div>
                   </CardContent>

@@ -165,6 +165,19 @@ export default function Home() {
     }
   }, []);
 
+  // Disable scroll when popup is open
+  useEffect(() => {
+    if (showSubscriptionPopup) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [showSubscriptionPopup]);
+
   // Cleanup timeout on unmount
   useEffect(() => {
     return () => {
@@ -280,7 +293,7 @@ export default function Home() {
       {/* Sticky Progress Bar and Tabs (appear when scrolling) */}
       {isSticky && (
         <>
-          <div className="fixed top-0 w-full z-[100] bg-white/95 shadow-sm transition-all duration-700 ease-out transform">
+          <div className="fixed top-0 w-full z-[50] bg-white/95 shadow-sm transition-all duration-700 ease-out transform">
             <CustomProgress
               percent={progress}
               showInfo={false}

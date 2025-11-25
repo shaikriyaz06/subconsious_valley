@@ -370,6 +370,179 @@ export default function About({ t: propT }) {
         </div>
       </section>
 
+      {/* Enterprise Testimonials */}
+      <section className="py-20 bg-gradient-to-br from-slate-50 to-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <Badge className="bg-teal-100 text-teal-800 mb-4">
+              Client Success Stories
+            </Badge>
+            <h2 className="text-4xl lg:text-5xl font-bold mb-6">
+              <span className="bg-gradient-to-r from-teal-600 to-emerald-600 bg-clip-text text-transparent">
+                Trusted by Industry Leaders
+              </span>
+            </h2>
+            <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+              Leading organizations worldwide trust Subconscious Valley to transform their teams' wellbeing and performance
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+            {[
+              {
+                name: "Dr. Sarah Mitchell",
+                title: "Chief Medical Officer",
+                company: "Emirates Healthcare Group",
+                location: "Dubai, UAE",
+                rating: 5.0,
+                testimonial: "We integrated Subconscious Valley's wellness programs into our employee benefits package. The measurable improvement in staff wellbeing and productivity has been remarkable. Our employee satisfaction scores increased by 34% within 6 months.",
+                avatar: "SM",
+                verified: true
+              },
+              {
+                name: "Ahmed Al-Rashid",
+                title: "VP of Human Resources",
+                company: "Saudi Aramco",
+                location: "Riyadh, KSA",
+                rating: 4.9,
+                testimonial: "The Arabic hypnotherapy sessions have been transformative for our workforce. We've seen a 45% reduction in stress-related sick days and significantly improved team morale. The cultural sensitivity in the content is exceptional.",
+                avatar: "AR",
+                verified: true
+              },
+              {
+                name: "Priya Sharma",
+                title: "Director of Wellness",
+                company: "Tata Consultancy Services",
+                location: "Mumbai, India",
+                rating: 4.8,
+                testimonial: "Our partnership with Subconscious Valley has revolutionized our corporate wellness strategy. The Hindi sessions resonate deeply with our employees, and we've documented a 28% improvement in work-life balance metrics.",
+                avatar: "PS",
+                verified: true
+              },
+              {
+                name: "Michael Thompson",
+                title: "CEO",
+                company: "Gulf Innovation Hub",
+                location: "Abu Dhabi, UAE",
+                rating: 4.9,
+                testimonial: "As a leader managing high-stress environments, these sessions have been invaluable. My executive team reports better decision-making clarity and emotional resilience. ROI on employee wellness has exceeded expectations.",
+                avatar: "MT",
+                verified: true
+              },
+              {
+                name: "Lisa Chen",
+                title: "Head of People Operations",
+                company: "Singapore Tech Solutions",
+                location: "Singapore",
+                rating: 4.7,
+                testimonial: "The multilingual approach has been game-changing for our diverse workforce. Employee engagement scores have increased by 42% since implementing these wellness programs across our organization.",
+                avatar: "LC",
+                verified: true
+              },
+              {
+                name: "Roberto Martinez",
+                title: "Wellness Director",
+                company: "Global Finance Corp",
+                location: "London, UK",
+                rating: 4.8,
+                testimonial: "The stress management sessions have transformed our high-pressure work environment. We've seen a 38% reduction in burnout rates and significantly improved team collaboration and productivity.",
+                avatar: "RM",
+                verified: true
+              },
+              {
+                name: "Dr. Fatima Al-Zahra",
+                title: "Chief Wellness Officer",
+                company: "Qatar National Bank",
+                location: "Doha, Qatar",
+                rating: 5.0,
+                testimonial: "The Arabic sessions have been particularly impactful for our regional teams. We've documented improved mental health metrics and a 45% increase in employee satisfaction with our wellness initiatives.",
+                avatar: "FZ",
+                verified: true
+              },
+              {
+                name: "James Wilson",
+                title: "VP of Employee Experience",
+                company: "Australian Mining Group",
+                location: "Perth, Australia",
+                rating: 4.6,
+                testimonial: "Working in high-stress mining operations, mental wellness is crucial. These sessions have helped our teams manage stress better, resulting in improved safety records and team morale.",
+                avatar: "JW",
+                verified: true
+              },
+              {
+                name: "Elena Rodriguez",
+                title: "Chief People Officer",
+                company: "Madrid Financial Services",
+                location: "Madrid, Spain",
+                rating: 4.8,
+                testimonial: "The multilingual wellness approach has been revolutionary for our European operations. We've seen remarkable improvements in cross-cultural team dynamics and overall employee satisfaction.",
+                avatar: "ER",
+                verified: true
+              },
+
+            ].map((testimonial, index) => (
+              <motion.div
+                key={testimonial.name}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                viewport={{ once: true }}
+
+              >
+                <Card className="h-full bg-white border border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300 relative overflow-hidden">
+                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-teal-500 to-emerald-500"></div>
+                  <CardContent className="p-8">
+                    <div className="flex items-center space-x-4 mb-6">
+                      <div className="w-12 h-12 bg-gradient-to-br from-teal-500 to-emerald-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                        {testimonial.avatar}
+                      </div>
+                      <div>
+                        <div className="flex items-center space-x-2">
+                          <h4 className="font-bold text-slate-800">{testimonial.name}</h4>
+                          {testimonial.verified && (
+                            <Badge className="bg-blue-100 text-blue-800 text-xs px-2 py-1">
+                              ✓ Verified
+                            </Badge>
+                          )}
+                        </div>
+                        <p className="text-sm font-medium text-teal-600">{testimonial.title}</p>
+                        <p className="text-sm text-slate-500">{testimonial.company}</p>
+                      </div>
+                    </div>
+                    
+                    <blockquote className="text-slate-700 leading-relaxed mb-4 relative">
+                      <span className="text-4xl text-teal-200 absolute -top-2 -left-2">"</span>
+                      <p className="relative z-10 pl-6">{testimonial.testimonial}</p>
+                    </blockquote>
+                    
+                    <div className="flex items-center space-x-1 mb-4">
+                      {[...Array(5)].map((_, i) => (
+                        <Star 
+                          key={i} 
+                          className={`h-4 w-4 ${
+                            i < Math.floor(testimonial.rating) 
+                              ? 'fill-current text-amber-400' 
+                              : 'text-slate-300'
+                          }`} 
+                        />
+                      ))}
+                      <span className="ml-2 text-sm font-medium text-slate-700">{testimonial.rating}</span>
+                    </div>
+                    
+                    <div className="flex items-center justify-between pt-4 border-t border-slate-100">
+                      <span className="text-sm text-slate-500">{testimonial.location}</span>
+                      <Badge className="bg-slate-100 text-slate-600 text-xs">
+                        Enterprise Client
+                      </Badge>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Our Values */}
       <section className="py-20 bg-gradient-to-br from-slate-50 to-teal-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

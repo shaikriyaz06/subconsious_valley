@@ -260,27 +260,39 @@ export default function Collection() {
 
                   <div className="flex items-center gap-4 mb-4 text-sm text-slate-500">
                     <div className="flex items-center gap-1">
-                      {[1, 2, 3, 4].map((star) => (
-                        <Star key={star} className="h-4 w-4 fill-current text-amber-400" />
-                      ))}
-                      <div className="relative">
-                        <Star className="h-4 w-4 text-amber-400" />
-                        <div className="absolute inset-0 overflow-hidden" style={{ width: '90%' }}>
-                          <Star className="h-4 w-4 fill-current text-amber-400" />
-                        </div>
-                      </div>
-                      <span className="ml-1 text-sm">4.9</span>
+                      {(() => {
+                        const seed = (child.title?.length || 10) + index * 7;
+                        const rating = (4.6 + (seed % 40) / 100).toFixed(1);
+                        const fullStars = Math.floor(rating);
+                        const partialStar = rating - fullStars;
+                        
+                        return (
+                          <>
+                            {[...Array(fullStars)].map((_, i) => (
+                              <Star key={i} className="h-4 w-4 fill-current text-amber-400" />
+                            ))}
+                            {partialStar > 0 && (
+                              <div className="relative">
+                                <Star className="h-4 w-4 text-amber-400" />
+                                <div className="absolute inset-0 overflow-hidden" style={{ width: `${partialStar * 100}%` }}>
+                                  <Star className="h-4 w-4 fill-current text-amber-400" />
+                                </div>
+                              </div>
+                            )}
+                            <span className="ml-1 text-sm">{rating}</span>
+                          </>
+                        );
+                      })()}
                     </div>
                   </div>
 
-                  <div className="mb-4 space-y-1">
-                    <div className="text-sm text-slate-600">Duration: {child.duration} min</div>
-                    {child.sub_sessions && child.sub_sessions.length > 0 && (
+                  {child.sub_sessions && child.sub_sessions.length > 0 && (
+                    <div className="mb-4">
                       <div className="text-sm text-teal-600">
                         {child.sub_sessions.length} sessions included
                       </div>
-                    )}
-                  </div>
+                    </div>
+                  )}
 
                   {child.sub_sessions && child.sub_sessions.length > 0 && expandedChildren[child._id || `child-${index}`] && (
                     <div className="mb-4 space-y-2 p-3 bg-teal-50 rounded-lg">

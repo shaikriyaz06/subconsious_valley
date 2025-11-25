@@ -148,7 +148,7 @@ export default function Register() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <div className="flex items-center gap-2">
-                  <Label htmlFor="name">Name</Label>
+                  <Label htmlFor="name" style={{ opacity: 1, color: '#000000' }}>Name</Label>
                   <div className="group relative">
                     <HelpCircle className="h-4 w-4 text-slate-400 cursor-help" />
                     <div className="absolute bottom-6 left-0 bg-slate-800 text-white text-xs p-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
@@ -165,6 +165,7 @@ export default function Register() {
                     value={formData.name}
                     onChange={(e) => handleInputChange('name', e.target.value)}
                     className={`pl-10 ${errors.name ? 'border-red-500' : ''}`}
+                    style={{ opacity: 1, color: '#000000' }}
                     required
                   />
                 </div>
@@ -177,7 +178,7 @@ export default function Register() {
               </div>
               
               <div>
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email" style={{ opacity: 1, color: '#000000' }}>Email</Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
                   <Input
@@ -187,6 +188,7 @@ export default function Register() {
                     value={formData.email}
                     onChange={(e) => handleInputChange('email', e.target.value)}
                     className={`pl-10 ${errors.email ? 'border-red-500' : ''}`}
+                    style={{ opacity: 1, color: '#000000' }}
                     required
                   />
                 </div>
@@ -200,7 +202,7 @@ export default function Register() {
               
               <div>
                 <div className="flex items-center gap-2">
-                  <Label htmlFor="password">Password</Label>
+                  <Label htmlFor="password" style={{ opacity: 1, color: '#000000' }}>Password</Label>
                   <div className="group relative">
                     <HelpCircle className="h-4 w-4 text-slate-400 cursor-help" />
                     <div className="absolute bottom-6 left-0 bg-slate-800 text-white text-xs p-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
@@ -217,6 +219,7 @@ export default function Register() {
                     value={formData.password}
                     onChange={(e) => handleInputChange('password', e.target.value)}
                     className={`pl-10 ${errors.password ? 'border-red-500' : ''}`}
+                    style={{ opacity: 1, color: '#000000' }}
                     required
                   />
                 </div>

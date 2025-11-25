@@ -134,6 +134,8 @@ function LayoutContent({ children, currentPageName }) {
                       variant="ghost"
                       size="sm"
                       className="flex items-center space-x-2"
+                      disabled={false}
+                      style={{ opacity: 1, color: '#000000' }}
                     >
                       <Globe className="h-4 w-4" />
                       <span className="text-sm">
@@ -170,6 +172,7 @@ function LayoutContent({ children, currentPageName }) {
                           variant="ghost"
                           size="sm"
                           className="flex items-center space-x-2 cursor-pointer"
+                          style={{ opacity: 1, color: '#000000' }}
                         >
                           <div className="h-6 w-6 rounded-full bg-gradient-to-r from-teal-500 to-emerald-600 flex items-center justify-center">
                             <User className="h-4 w-4 text-white" />
@@ -254,6 +257,7 @@ function LayoutContent({ children, currentPageName }) {
                         <Button
                           variant="outline"
                           className="w-full justify-start"
+                          style={{ opacity: 1, color: '#000000' }}
                         >
                           <Globe className="mr-2 h-4 w-4" />
                           {
@@ -405,7 +409,7 @@ function LayoutContent({ children, currentPageName }) {
                     </Link>
                   </li>
                   <li>
-                    <Link href="AdminLogin" className="hover:text-teal-400">
+                    <Link href="/admin" className="hover:text-teal-400">
                       {t("admin")}
                     </Link>
                   </li>

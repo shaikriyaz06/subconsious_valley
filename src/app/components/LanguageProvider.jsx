@@ -161,6 +161,10 @@ const translations = {
     ready_to_begin_desc:
       "Join a community using subconscious reprogramming to reduce anxiety, increase focus, and follow through-without therapy waitlists. Start in your native language.",
 
+    // Testimonials
+    what_our_clients_say: "What Our Clients Say",
+    testimonials_desc: "Real stories from people who transformed their lives with Subconscious Valley",
+
     // Sessions Page
     sessions_title: "Hypnosis Sessions",
     sessions_desc:
@@ -440,6 +444,10 @@ const translations = {
     ready_to_begin_desc:
       "انضم إلى مجتمع يستخدم إعادة برمجة اللاوعي لتخفيف القلق، وزيادة التركيز، ومتابعة العلاج - دون الحاجة إلى قوائم انتظار. ابدأ بلغتك الأم.",
 
+    // Testimonials
+    what_our_clients_say: "ماذا يقول عملاؤنا",
+    testimonials_desc: "قصص حقيقية من أشخاص غيروا حياتهم مع وادي اللاوعي",
+
     // Sessions Page
     sessions_title: "جلسات التنويم المغناطيسي",
     sessions_desc:
@@ -718,6 +726,10 @@ const translations = {
     ready_to_begin: "क्या आप अपना परिवर्तन शुरू करने के लिए तैयार हैं?",
     ready_to_begin_desc:
       "चिंता कम करने, ध्यान केंद्रित करने और बिना किसी प्रतीक्षा सूची के थेरेपी का पालन करने के लिए अवचेतन पुनर्प्रोग्रामिंग का उपयोग करने वाले समुदाय में शामिल हों। अपनी मातृभाषा से शुरुआत करें।",
+
+    // Testimonials
+    what_our_clients_say: "हमारे ग्राहक क्या कहते हैं",
+    testimonials_desc: "उन लोगों की वास्तविक कहानियां जिन्होंने सबकॉन्शस वैली के साथ अपने जीवन को बदला",
 
     // Sessions Page
     sessions_title: "सम्मोहन सत्र",

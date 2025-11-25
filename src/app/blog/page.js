@@ -5,16 +5,21 @@ import { createPageUrl } from "@/utils";
 // import { BlogPost } from "@/api/entities";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Clock, ArrowRight } from "lucide-react";
+import { Calendar, Clock, ArrowRight, Edit, ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
 import { format } from "date-fns";
 import { useLanguage } from "@/components/LanguageProvider";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 
 export default function Blog() {
   const [posts, setPosts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedPost, setSelectedPost] = useState(null);
   const { t, currentLanguage } = useLanguage();
+  const { data: authSession } = useSession();
+  const router = useRouter();
 
   useEffect(() => {
     loadPosts();
@@ -22,7 +27,11 @@ export default function Blog() {
 
   const loadPosts = async () => {
     try {
-      const response = await fetch('/api/blog-posts');
+      const response = await fetch(`/api/blog-posts?t=${Date.now()}`, {
+        headers: {
+          'Cache-Control': 'no-cache'
+        }
+      });
       const blogPosts = await response.json();
       setPosts(blogPosts);
     } catch (error) {
@@ -125,11 +134,26 @@ export default function Blog() {
           transition={{ duration: 0.8 }}
           className="text-center mb-12"
         >
-          <h1 className="text-4xl lg:text-5xl font-bold mb-6">
-            <span className="bg-gradient-to-r from-teal-600 to-emerald-600 bg-clip-text text-transparent">
-              {t('blog_title')}
-            </span>
-          </h1>
+          <div className="flex justify-between items-center mb-6">
+            <div className="flex-1">
+              {authSession?.user?.role === "admin" ? (
+                <Button
+                  onClick={() => router.push('/admin/blog/create')}
+                  className="bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white"
+                >
+                  Create New Blog
+                </Button>
+              ) : (
+                <div></div>
+              )}
+            </div>
+            <h1 className="text-4xl lg:text-5xl font-bold">
+              <span className="bg-gradient-to-r from-teal-600 to-emerald-600 bg-clip-text text-transparent">
+                {t('blog_title')}
+              </span>
+            </h1>
+            <div className="flex-1"></div>
+          </div>
           <p className="text-xl text-slate-600 max-w-3xl mx-auto">
             {t('blog_desc')}
           </p>
@@ -146,11 +170,17 @@ export default function Blog() {
             <Card className="overflow-hidden shadow-2xl bg-white/80 backdrop-blur-sm border-0">
               <div className="grid lg:grid-cols-2">
                 <div className="aspect-video lg:aspect-auto">
-                  <img 
-                    src={posts[0].featured_image}
-                    alt={getTranslated(posts[0], 'title')}
-                    className="w-full h-full object-contain"
-                  />
+                  {posts[0].featured_image ? (
+                    <img 
+                      src={posts[0].featured_image}
+                      alt={getTranslated(posts[0], 'title')}
+                      className="w-full h-full object-contain"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-teal-100 to-emerald-100 flex items-center justify-center">
+                      <div className="text-teal-600 opacity-50">No Image</div>
+                    </div>
+                  )}
                 </div>
                 <CardContent className="p-8 flex flex-col justify-center">
                   <Badge className="bg-teal-100 text-teal-800 w-fit mb-4">{t('featured_article')}</Badge>
@@ -170,12 +200,23 @@ export default function Blog() {
                       {posts[0].read_time || 5} {t('min_read')}
                     </div>
                   </div>
-                  <Link href={`/blog/${posts[0].slug}`}>
-                    <div className="inline-flex items-center text-teal-600 hover:text-teal-700 font-medium group">
-                      {t('read_full_article')}
-                      <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                    </div>
-                  </Link>
+                  <div className="flex items-center justify-between">
+                    <Link href={`/blog/${posts[0].slug}`}>
+                      <div className="inline-flex items-center text-teal-600 hover:text-teal-700 font-medium group">
+                        {t('read_full_article')}
+                        <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                      </div>
+                    </Link>
+                    {authSession?.user?.role === "admin" && (
+                      <Button
+                        onClick={() => router.push(`/admin/blog/edit/${posts[0]._id}`)}
+                        variant="outline"
+                        size="sm"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
                 </CardContent>
               </div>
             </Card>
@@ -203,11 +244,17 @@ export default function Blog() {
                 <Card className="h-full hover:shadow-xl transition-all duration-300 border-0 bg-white/80 backdrop-blur-sm group">
                   <CardHeader className="p-0">
                     <div className="aspect-video overflow-hidden rounded-t-2xl">
-                      <img 
-                        src={post.featured_image}
-                        alt={getTranslated(post, 'title')}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
+                      {post.featured_image ? (
+                        <img 
+                          src={post.featured_image}
+                          alt={getTranslated(post, 'title')}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-teal-100 to-emerald-100 flex items-center justify-center">
+                          <div className="text-teal-600 opacity-50">No Image</div>
+                        </div>
+                      )}
                     </div>
                   </CardHeader>
                   <CardContent className="p-6">
@@ -239,12 +286,24 @@ export default function Blog() {
                       </div>
                     )}
 
-                    <Link href={`/blog/${post.slug}`}>
-                      <div className="inline-flex items-center text-teal-600 hover:text-teal-700 font-medium group">
-                        {t('read_more')}
-                        <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                      </div>
-                    </Link>
+                    <div className="flex items-center justify-between">
+                      <Link href={`/blog/${post.slug}`}>
+                        <div className="inline-flex items-center text-teal-600 hover:text-teal-700 font-medium group">
+                          {t('read_more')}
+                          <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                        </div>
+                      </Link>
+                      {authSession?.user?.role === "admin" && (
+                        <Button
+                          onClick={() => router.push(`/admin/blog/edit/${post._id}`)}
+                          variant="outline"
+                          size="sm"
+                          className="ml-2"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
                   </CardContent>
                 </Card>
               </motion.div>
