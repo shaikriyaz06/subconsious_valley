@@ -302,7 +302,7 @@ export default function Collection() {
                           <div className="flex justify-between items-center">
                             <span className="text-sm font-medium">{subSession.title}</span>
                             <div className="flex items-center gap-2">
-                              <span className="text-xs text-gray-500">{subSession.duration} min</span>
+                              {/* <span className="text-xs text-gray-500">{subSession.duration} min</span> */}
                               {hasAccess(parentSession) && (
                                 <Button
                                   onClick={() => handleSubSessionAction(child, subSession)}

@@ -103,7 +103,7 @@ const translations = {
     about_hero_title: "Healing That Speaks",
     about_hero_title_2: "to Your Subconscious",
     about_hero_desc:
-      "True change sticks when you reprogram the subconscious mindmthe layer that drives habits, emotions, and automatic decisions. Subconscious Valley delivers science based hypnotherapy, NLP, and guided audio sessions that install calmer defaults, stronger focus, and consistent action.",
+      "True change sticks when you reprogram the subconscious mind and the layer that drives habits, emotions, and automatic decisions. Subconscious Valley delivers science based hypnotherapy, NLP, and guided audio sessions that install calmer defaults, stronger focus, and consistent action.",
     story_behind_title: "The Story Behind Subconscious Valley",
     story_behind_desc: "Every transformation begins with a story. Here's mine.",
     founder_about_quote:
