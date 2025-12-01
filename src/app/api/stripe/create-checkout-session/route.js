@@ -38,6 +38,7 @@ export async function POST(request) {
     // Validate price
     const price = sessionData.price || 0;
     if (price <= 0) {
+      console.log('Invalid price detected:', price);
       return NextResponse.json({ error: 'Invalid session price' }, { status: 400 });
     }
 
@@ -66,9 +67,6 @@ export async function POST(request) {
       mode: 'payment',
       success_url: `${successUrl}&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: cancelUrl,
-      allowed_source_origins: process.env.NODE_ENV === 'production' 
-        ? [process.env.NEXT_PUBLIC_APP_URL || 'https://subconsciousvalley.com']
-        : undefined,
       expires_at: Math.floor(Date.now() / 1000) + (30 * 60), // 30 minutes
       metadata: {
         sessionId: sessionId,
@@ -113,7 +111,11 @@ export async function POST(request) {
     }
     
     if (error.type === 'StripeInvalidRequestError') {
-      return NextResponse.json({ error: 'Invalid payment request' }, { status: 400 });
+      return NextResponse.json({ 
+        error: 'Invalid payment request',
+        details: error.message,
+        code: error.code
+      }, { status: 400 });
     }
     
     return NextResponse.json(
