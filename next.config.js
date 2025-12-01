@@ -1,18 +1,20 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  async headers() {
+  async redirects() {
     return [
       {
-        source: '/(.*)',
-        headers: [
+        source: '/:path*',
+        has: [
           {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
+            type: 'host',
+            value: 'www.subconsciousvalley.com',
           },
         ],
+        destination: 'https://subconsciousvalley.com/:path*',
+        permanent: true,
       },
-    ];
+    ]
   },
-};
+}
 
-module.exports = nextConfig;
+module.exports = nextConfig

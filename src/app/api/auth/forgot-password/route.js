@@ -49,8 +49,9 @@ export async function POST(request) {
       }
     });
 
-    // Reset URL
-    const resetUrl = `${process.env.NEXTAUTH_URL}/reset-password?token=${resetToken}`;
+    // Reset URL - use environment variable
+    const baseUrl = process.env.NEXTAUTH_URL || 'https://subconsciousvalley.com';
+    const resetUrl = `${baseUrl}/reset-password?token=${resetToken}`;
 
     // Email content
     const mailOptions = {
@@ -65,6 +66,7 @@ export async function POST(request) {
           <a href="${resetUrl}" style="display: inline-block; background-color: #0d9488; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 16px 0;">Reset Password</a>
           <p>Or copy and paste this link in your browser:</p>
           <p style="word-break: break-all; color: #666;">${resetUrl}</p>
+
           <p style="color: #666; font-size: 14px;">This link will expire in 15 minutes.</p>
           <p style="color: #666; font-size: 14px;">If you didn't request this reset, please ignore this email.</p>
         </div>

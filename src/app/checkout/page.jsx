@@ -184,7 +184,6 @@ function CheckoutContent() {
                       <p><strong>Email:</strong> {purchaseData.customerEmail}</p>
                       <p><strong>Payment ID:</strong> {purchaseData.paymentIntent}</p>
                       <p><strong>Status:</strong> {purchaseData.paymentStatus}</p>
-                      <p><strong>Saved to DB:</strong> ✅ Yes</p>
                     </div>
                   </div>
                 )}
