@@ -47,52 +47,49 @@ function SessionPlayerContent() {
       }
 
       try {
-        console.log("URL parameters:", { sessionId, childId, subId });
-        console.log("Current URL:", window.location.href);
-        
         // First check if we have any sessions at all
-        const allSessionsRes = await fetch('/api/sessions');
+        const allSessionsRes = await fetch("/api/sessions");
         const allSessions = await allSessionsRes.json();
-        console.log("All sessions in database:", allSessions.length, allSessions.map(s => ({ id: s._id, title: s.title })));
-        
+
         // Fetch the parent session
-        const sessionRes = await fetch(`/api/sessions/${sessionId}?` + new Date().getTime(), {
-          cache: 'no-store',
-          headers: {
-            'Cache-Control': 'no-cache'
+        const sessionRes = await fetch(
+          `/api/sessions/${sessionId}?` + new Date().getTime(),
+          {
+            cache: "no-store",
+            headers: {
+              "Cache-Control": "no-cache",
+            },
           }
-        });
-        
-        console.log("Session fetch response status:", sessionRes.status);
-        
+        );
+
         if (!sessionRes.ok) {
-          console.error("Failed to fetch session:", sessionRes.status, await sessionRes.text());
           setIsLoading(false);
           return;
         }
-        
+
         const parentSession = await sessionRes.json();
-        console.log("Fetched parent session:", parentSession);
-        console.log("Child sessions structure:", parentSession.child_sessions?.map(child => ({ title: child.title, _id: child._id, sub_sessions_count: child.sub_sessions?.length })));
-        
+
         let foundSession = null;
-        
+
         if (subId && childId) {
           // Playing a specific sub-session
-          const childSession = parentSession.child_sessions?.find(child => child._id?.toString() === childId);
-          console.log("Found child session:", childSession);
-          foundSession = childSession?.sub_sessions?.find(sub => sub._id?.toString() === subId);
-          console.log("Found sub-session:", foundSession);
+          const childSession = parentSession.child_sessions?.find(
+            (child) => child._id?.toString() === childId
+          );
+
+          foundSession = childSession?.sub_sessions?.find(
+            (sub) => sub._id?.toString() === subId
+          );
         } else if (childId) {
           // Playing a child session
-          const childSession = parentSession.child_sessions?.find(child => child._id?.toString() === childId);
+          const childSession = parentSession.child_sessions?.find(
+            (child) => child._id?.toString() === childId
+          );
           if (childSession) {
             if (childSession.sub_sessions?.length > 0) {
               foundSession = childSession.sub_sessions[0];
-              console.log("Using first sub-session of child:", foundSession);
             } else {
               foundSession = childSession;
-              console.log("Using child session directly:", foundSession);
             }
           }
         } else {
@@ -101,91 +98,112 @@ function SessionPlayerContent() {
             const firstChild = parentSession.child_sessions[0];
             if (firstChild.sub_sessions?.length > 0) {
               foundSession = firstChild.sub_sessions[0];
-              console.log("Using first sub-session:", foundSession);
             } else {
               foundSession = firstChild;
-              console.log("Using first child session:", foundSession);
             }
           } else {
             foundSession = parentSession;
-            console.log("Using parent session:", foundSession);
           }
         }
-        
+
         // If specific IDs not found, fallback to first available session
         if (!foundSession && parentSession.child_sessions?.length > 0) {
           const firstChild = parentSession.child_sessions[0];
           if (firstChild.sub_sessions?.length > 0) {
             foundSession = firstChild.sub_sessions[0];
-            console.log("Fallback: Using first sub-session:", foundSession);
           } else {
             foundSession = firstChild;
-            console.log("Fallback: Using first child session:", foundSession);
           }
         }
-        
+
         if (!foundSession) {
-          console.error("Session not found:", { sessionId, childId, subId, parentSession });
+          console.error("Session not found:", {
+            sessionId,
+            childId,
+            subId,
+            parentSession,
+          });
           setIsLoading(false);
           return;
         }
-        
+
         // Generate audio URLs if not present
         if (!foundSession.audio_urls && foundSession.title) {
           // Find the actual array indices for proper URL generation
           let childIndex = 0;
           let subIndex = 0;
-          
+
           if (childId) {
-            childIndex = parentSession.child_sessions?.findIndex(child => child._id?.toString() === childId) || 0;
+            childIndex =
+              parentSession.child_sessions?.findIndex(
+                (child) => child._id?.toString() === childId
+              ) || 0;
           }
-          
+
           if (subId && childId) {
-            const childSession = parentSession.child_sessions?.find(child => child._id?.toString() === childId);
-            subIndex = childSession?.sub_sessions?.findIndex(sub => sub._id?.toString() === subId) || 0;
+            const childSession = parentSession.child_sessions?.find(
+              (child) => child._id?.toString() === childId
+            );
+            subIndex =
+              childSession?.sub_sessions?.findIndex(
+                (sub) => sub._id?.toString() === subId
+              ) || 0;
           } else {
-            subIndex = (foundSession.order - 1) || 0;
+            subIndex = foundSession.order - 1 || 0;
           }
-          
+
           const baseUrl = "https://cdn.subconsciousvalley.workers.dev/";
-          const sessionTitle = foundSession.title.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
-          
+          const sessionTitle = foundSession.title
+            .toLowerCase()
+            .replace(/[^a-z0-9]/g, "-")
+            .replace(/-+/g, "-")
+            .replace(/^-|-$/g, "");
+
           foundSession.audio_urls = {
             english: `${baseUrl}session-${sessionId}-child-${childIndex}-english-${sessionTitle}.mp3`,
             hindi: `${baseUrl}session-${sessionId}-child-${childIndex}-hindi-${sessionTitle}.mp3`,
-            arabic: `${baseUrl}session-${sessionId}-child-${childIndex}-arabic-${sessionTitle}.mp3`
+            arabic: `${baseUrl}session-${sessionId}-child-${childIndex}-arabic-${sessionTitle}.mp3`,
           };
-          
-          console.log("Generated audio URLs with indices:", { childIndex, subIndex, urls: foundSession.audio_urls });
         }
-        
+
         setSessionData(foundSession);
 
         // Check if user has purchased this session (always check parent)
         const purchasesRes = await fetch("/api/purchases");
         const purchases = await purchasesRes.json();
-        
+
         const hasPurchased = purchases.some(
-          (p) => p.session_id === sessionId && p.payment_status === "completed" && p.access_granted === true
+          (p) =>
+            p.session_id === sessionId &&
+            p.payment_status === "completed" &&
+            p.access_granted === true
         );
 
-        if (parentSession.price === 0 || parentSession.is_sample || hasPurchased) {
+        if (
+          parentSession.price === 0 ||
+          parentSession.is_sample ||
+          hasPurchased
+        ) {
           setHasAccess(true);
-          
+
           // Get available languages and set the first one
-          const availableLanguages = foundSession.audio_urls ? Object.keys(foundSession.audio_urls).filter(lang => foundSession.audio_urls[lang]) : [];
+          const availableLanguages = foundSession.audio_urls
+            ? Object.keys(foundSession.audio_urls).filter(
+                (lang) => foundSession.audio_urls[lang]
+              )
+            : [];
           const firstLanguage = availableLanguages[0] || "english";
           setSelectedLanguage(firstLanguage);
-          
+
           // Get audio URL for the first available language
           let audioUrl = "";
-          if (foundSession.audio_urls && foundSession.audio_urls[firstLanguage]) {
+          if (
+            foundSession.audio_urls &&
+            foundSession.audio_urls[firstLanguage]
+          ) {
             audioUrl = foundSession.audio_urls[firstLanguage];
           }
-          
-          console.log("Initial language:", firstLanguage);
-          console.log("Initial audio URL:", audioUrl);
-          console.log("All audio URLs:", foundSession.audio_urls);
+
           setCurrentAudioUrl(audioUrl);
         } else {
           setHasAccess(false);
@@ -200,27 +218,22 @@ function SessionPlayerContent() {
     checkAccessAndLoad();
   }, [sessionId, status]);
 
-
-
   const handleLanguageChange = (lang) => {
-    console.log("Language changed to:", lang);
-    console.log("Session data audio URLs:", sessionData?.audio_urls);
     setSelectedLanguage(lang);
     if (sessionData && sessionData.audio_urls) {
       let audioUrl = sessionData.audio_urls[lang] || "";
-      console.log("Selected audio URL:", audioUrl);
       setCurrentAudioUrl(audioUrl);
     } else {
       console.log("No audio URLs found in session data");
     }
   };
 
-
-
   // Get available languages from audio_urls
   const getAvailableLanguages = () => {
     if (!sessionData?.audio_urls) return [];
-    return Object.keys(sessionData.audio_urls).filter(lang => sessionData.audio_urls[lang]);
+    return Object.keys(sessionData.audio_urls).filter(
+      (lang) => sessionData.audio_urls[lang]
+    );
   };
 
   if (isLoading) {
@@ -278,7 +291,9 @@ function SessionPlayerContent() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-teal-50 py-12">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-4">
-          <Link href={childId ? `/collection?session=${sessionId}` : "/sessions"}>
+          <Link
+            href={childId ? `/collection?session=${sessionId}` : "/sessions"}
+          >
             <Button variant="ghost" size="sm" className="cursor-pointer">
               <ArrowLeft className="h-4 w-4 mr-2" />
               {childId ? "Back to Collection" : "Back to Sessions"}
@@ -318,11 +333,13 @@ function SessionPlayerContent() {
                           ))}
                         </select>
                       ) : (
-                        <span>{languageNames[getAvailableLanguages()[0]] || "English"}</span>
+                        <span>
+                          {languageNames[getAvailableLanguages()[0]] ||
+                            "English"}
+                        </span>
                       )}
                     </div>
                   </div>
-
 
                   {currentAudioUrl ? (
                     <audio
@@ -357,7 +374,8 @@ function SessionPlayerContent() {
 
                   <div className="bg-blue-50 px-4 rounded-lg text-blue-800 text-sm">
                     <p>
-                      <strong>Your Feedback Matters:</strong> Let us know how you felt after this session. 
+                      <strong>Your Feedback Matters:</strong> Let us know how
+                      you felt after this session.
                       <button
                         onClick={() => setShowFeedback(true)}
                         className="text-blue-600 hover:text-blue-700 underline font-medium cursor-pointer ml-1"
@@ -388,7 +406,8 @@ function SessionPlayerContent() {
                             variant="outline"
                             className="w-full justify-start gap-2 cursor-pointer"
                           >
-                            <FileText className="h-4 w-4 Upper"  /> {material.name.toUpperCase()}
+                            <FileText className="h-4 w-4 Upper" />{" "}
+                            {material.name.toUpperCase()}
                           </Button>
                         </a>
                       ))}
@@ -404,8 +423,8 @@ function SessionPlayerContent() {
           </Card>
         </div>
       </div>
-      
-      <FeedbackPopup 
+
+      <FeedbackPopup
         isOpen={showFeedback}
         onClose={() => setShowFeedback(false)}
         sessionTitle={sessionData?.title}
@@ -416,11 +435,13 @@ function SessionPlayerContent() {
 
 export default function SessionPlayer() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-teal-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600"></div>
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 to-teal-50 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600"></div>
+        </div>
+      }
+    >
       <SessionPlayerContent />
     </Suspense>
   );

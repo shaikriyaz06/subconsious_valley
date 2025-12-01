@@ -18,10 +18,7 @@ const handler = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        console.log('Login attempt:', { email: credentials?.email, password: '***' });
-        
         if (!credentials?.email || !credentials?.password) {
-          console.log('Missing credentials');
           return null;
         }
 
@@ -29,17 +26,15 @@ const handler = NextAuth({
           await dbConnect();
 
           const user = await User.findOne({
-            email: credentials.email,
-            provider: "credentials",
+            email: credentials.email.toLowerCase(),
+            provider: { $in: ["credentials", "mixed"] },
           });
 
-          console.log('User found:', user ? 'Yes' : 'No');
-          if (user) {
-            console.log('User provider:', user.provider);
+          if (!user) {
+            return null;
           }
 
-          if (!user) {
-            console.log('No user found with email:', credentials.email);
+          if (!user.password) {
             return null;
           }
 
@@ -48,21 +43,16 @@ const handler = NextAuth({
             user.password
           );
 
-          console.log('Password valid:', isPasswordValid);
-
           if (!isPasswordValid) {
-            console.log('Invalid password for user:', credentials.email);
             return null;
           }
 
-          console.log('Login successful for:', credentials.email);
           return {
             id: user._id.toString(),
             email: user.email,
             name: user.full_name,
           };
         } catch (error) {
-          console.error("Auth error:", error);
           return null;
         }
       },
@@ -74,11 +64,11 @@ const handler = NextAuth({
   },
   session: {
     strategy: "jwt",
-    maxAge: 30 * 24 * 60 * 60, // 30 days
-    updateAge: 24 * 60 * 60, // 24 hours
+    maxAge: 24 * 60 * 60, // 24 hours
+    updateAge: 2 * 60 * 60, // 2 hours
   },
   jwt: {
-    maxAge: 30 * 24 * 60 * 60, // 30 days
+    maxAge: 7 * 24 * 60 * 60, // 7 days
   },
   callbacks: {
     async signIn({ user, account, profile }) {
@@ -99,7 +89,6 @@ const handler = NextAuth({
           }
           return true;
         } catch (error) {
-          console.error("Error saving user:", error);
           return false;
         }
       }
@@ -126,7 +115,7 @@ const handler = NextAuth({
             token.role = dbUser.role;
           }
         } catch (error) {
-          console.error('Error fetching user role:', error);
+          // Silent error handling
         }
       }
       
@@ -140,11 +129,7 @@ const handler = NextAuth({
     },
   },
   debug: process.env.NODE_ENV === "development",
-  events: {
-    async signOut(message) {
-      console.log("User signed out:", message);
-    },
-  },
+
   
 });
 

@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema({
   },
   provider: {
     type: String,
-    enum: ['google', 'credentials'],
+    enum: ['google', 'credentials', 'mixed'],
     default: 'credentials'
   },
   googleId: {

@@ -23,11 +23,13 @@ import {
 import { ArrowLeft, Save, Plus, Trash2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { FileUpload } from "@/components/ui/file-upload";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function EditSession() {
   const router = useRouter();
   const params = useParams();
   const { data: session } = useSession();
+  const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -428,7 +430,11 @@ export default function EditSession() {
     const validationErrors = validateForm();
 
     if (validationErrors.length > 0) {
-      alert("Please fix the following errors:\n" + validationErrors.join("\n"));
+      toast({
+        title: "Validation Error",
+        description: "Please fix the following errors:\n" + validationErrors.join("\n"),
+        variant: "destructive",
+      });
       return;
     }
 
@@ -507,13 +513,24 @@ export default function EditSession() {
       });
 
       if (response.ok) {
+        toast({
+          title: "Success",
+          description: "Session updated successfully.",
+        });
         router.push("/sessions");
       } else {
-        alert("Failed to update session");
+        toast({
+          title: "Error",
+          description: "Failed to update session.",
+          variant: "destructive",
+        });
       }
     } catch (error) {
-      console.error("Error saving session:", error);
-      alert("Error saving session");
+      toast({
+        title: "Error",
+        description: "Error saving session.",
+        variant: "destructive",
+      });
     }
     setIsSaving(false);
   };

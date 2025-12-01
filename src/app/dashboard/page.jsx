@@ -16,7 +16,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { motion } from "framer-motion";
-import { useSession, signOut } from "next-auth/react";
+import { useSession, signOut, getSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 export default function Dashboard() {
@@ -26,6 +26,7 @@ export default function Dashboard() {
   const [siteSettings, setSiteSettings] = useState({});
   const [expandedSessions, setExpandedSessions] = useState({});
   const [expandedChildSessions, setExpandedChildSessions] = useState({});
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const isLoading = status === "loading";
 
   const toggleExpanded = (purchaseId) => {
@@ -42,15 +43,29 @@ export default function Dashboard() {
     }));
   };
 
-  const loadDashboardData = useCallback(async () => {
-    if (!session?.user?.email) return;
+  const loadDashboardData = useCallback(async (userEmail) => {
+    if (!userEmail) return;
 
+    
+    
     try {
-      // Fetch user purchases
-      const purchasesResponse = await fetch('/api/purchases');
+      // Fetch user purchases with cache busting
+      const timestamp = new Date().getTime();
+      const purchasesResponse = await fetch(`/api/purchases?t=${timestamp}&user=${encodeURIComponent(userEmail)}`, {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        }
+      });
       if (purchasesResponse.ok) {
         const purchasesData = await purchasesResponse.json();
+        
         setPurchases(purchasesData);
+      } else {
+        console.error('Failed to fetch purchases:', purchasesResponse.status);
+        setPurchases([]);
       }
 
       setSiteSettings({
@@ -58,20 +73,50 @@ export default function Dashboard() {
       });
     } catch (error) {
       console.error("Error loading dashboard data:", error);
+      setPurchases([]);
     }
-  }, [session]);
+  }, []);
 
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/login");
       return;
     }
-    if (session) {
-      loadDashboardData();
+    
+    // Check if session is expired
+    if (session?.expires && new Date(session.expires) < new Date()) {
+      
+      signOut({ callbackUrl: '/login' });
+      return;
     }
-  }, [session, status, router, loadDashboardData]);
+    
+    if (session?.user?.email) {
+      loadDashboardData(session.user.email);
+    } else {
+      // Clear purchases when no session
+      setPurchases([]);
+    }
+  }, [session?.user?.email, session?.expires, status, router, loadDashboardData]);
+
+  // Clear data when user changes
+  useEffect(() => {
+    if (session?.user?.email) {
+      // Clear all state immediately when user changes
+      
+      setPurchases([]);
+      setExpandedSessions({});
+      setExpandedChildSessions({});
+      // Force session refresh and reload data
+      getSession().then(() => {
+        setTimeout(() => loadDashboardData(session.user.email), 100);
+      });
+    }
+  }, [session?.user?.email, loadDashboardData]);
 
   const handleLogout = async () => {
+    setIsLoggingOut(true);
+    // Small delay to ensure overlay is visible
+    await new Promise(resolve => setTimeout(resolve, 100));
     await signOut({ callbackUrl: "/" });
   };
 
@@ -84,7 +129,15 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-teal-50 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-teal-50 py-8 relative">
+      {isLoggingOut && (
+        <div className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50 flex items-center justify-center">
+          <div className="bg-white rounded-lg p-6 shadow-xl flex items-center gap-3">
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-teal-600"></div>
+            <span className="text-slate-700 font-medium">Signing Out...</span>
+          </div>
+        </div>
+      )}
       <SessionChecker />
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
@@ -105,6 +158,7 @@ export default function Dashboard() {
             onClick={handleLogout}
             variant="outline"
             className="cursor-pointer"
+            disabled={isLoggingOut}
           >
             <LogOut className="h-4 w-4 mr-2" />
             Logout

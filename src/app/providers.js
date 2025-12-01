@@ -4,8 +4,9 @@ import { SessionProvider } from "next-auth/react";
 export function Providers({ children }) {
   return (
     <SessionProvider
-      refetchInterval={5 * 60} // Refetch every 5 minutes
-      refetchOnWindowFocus={false} // Disable refetch on window focus
+      refetchInterval={60} // Refetch every 60 seconds
+      refetchOnWindowFocus={true} // Enable refetch on window focus
+      refetchWhenOffline={false} // Don't refetch when offline
     >
       {children}
     </SessionProvider>

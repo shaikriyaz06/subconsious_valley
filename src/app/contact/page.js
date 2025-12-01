@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/components/ui/use-toast";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,6 +31,7 @@ export default function ContactPage({ t: propT }) {
   const { t: hookT } = useLanguage();
   const t = propT || hookT; // Use prop if provided, fallback to hook
   const router = useRouter();
+  const { toast } = useToast();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -77,8 +79,11 @@ export default function ContactPage({ t: propT }) {
         throw new Error("Failed to send message");
       }
     } catch (error) {
-      console.error("Error submitting contact form:", error);
-      alert("Failed to send message. Please try again.");
+      toast({
+        title: "Error",
+        description: "Failed to send message. Please try again.",
+        variant: "destructive",
+      });
     }
 
     setIsSubmitting(false);

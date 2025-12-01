@@ -72,14 +72,14 @@ export default function Collection() {
   }, [authSession?.user, purchases, parentSession]);
 
   const toggleChildExpansion = useCallback((childId) => {
-    console.log('Toggling expansion for:', childId);
-    console.log('Current expanded state:', expandedChildren);
+    
+    
     setExpandedChildren(prev => {
       const newState = {
         ...prev,
         [childId]: !prev[childId]
       };
-      console.log('New expanded state:', newState);
+      
       return newState;
     });
   }, [expandedChildren]);

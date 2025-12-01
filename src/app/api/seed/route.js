@@ -702,9 +702,9 @@ export async function GET() {
       // }
     ];
     
-    console.log('Sample session data:', JSON.stringify(sessionData[0], null, 2));
+    
     const sessions = await Session.insertMany(sessionData);
-    console.log('First created session:', JSON.stringify(sessions[0], null, 2));
+    
 
     // Create purchases for parent sessions
     await Purchase.insertMany([

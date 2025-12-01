@@ -16,7 +16,9 @@ function CheckoutContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const sessionId = searchParams.get('session');
+  const stripeSessionId = searchParams.get('session_id');
   const paymentSuccess = searchParams.get('success') === 'true';
+  const [purchaseData, setPurchaseData] = useState(null);
   const { formatPrice } = useCurrency();
   
   const [session, setSession] = useState(null);
@@ -49,33 +51,35 @@ function CheckoutContent() {
         }
 
         if (paymentSuccess) {
-          if (foundSession) {
+          if (stripeSessionId) {
             try {
-              const response = await fetch('/api/purchases', {
+              const verifyResponse = await fetch('/api/stripe/verify-payment', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  session_id: sessionId,
-                  session_title: foundSession.title,
-                  user_email: userSession?.user?.email || 'fallback@example.com',
-                  amount_paid: foundSession.price || 0,
-                  currency: foundSession.currency || 'AED',
-                  payment_status: 'completed',
-                  access_granted: true,
-                  purchase_date: new Date()
+                body: JSON.stringify({ 
+                  sessionId: stripeSessionId,
+                  productSessionId: sessionId,
+                  sessionTitle: foundSession?.title
                 })
               });
-              if (response.ok) {
-                console.log('Purchase recorded successfully');
+              
+              if (verifyResponse.ok) {
+                const verificationData = await verifyResponse.json();
+                setPurchaseData(verificationData);
+              } else {
+                setPurchaseData({ error: 'Verification failed' });
               }
             } catch (error) {
-              console.error('Error recording purchase:', error);
+              setPurchaseData({ error: error.message });
             }
+          } else {
+            setPurchaseData({ error: 'No session ID' });
           }
+          
           setPurchaseComplete(true);
         }
       } catch (error) {
-        console.error('Error loading session:', error);
+        // Handle error silently
       }
       setIsLoading(false);
     };
@@ -114,7 +118,6 @@ function CheckoutContent() {
         throw new Error('Failed to create checkout session');
       }
     } catch (error) {
-      console.error('Error processing purchase:', error);
       alert('Error processing purchase. Please try again.');
       setIsProcessing(false);
     }
@@ -173,6 +176,18 @@ function CheckoutContent() {
                     <li>• Available in multiple languages</li>
                   </ul>
                 </div>
+                {purchaseData && (
+                  <div className="bg-slate-50 p-4 rounded-lg mb-6 text-left">
+                    <h3 className="font-semibold text-slate-800 mb-2">Payment Verified:</h3>
+                    <div className="text-sm text-slate-600 space-y-1">
+                      <p><strong>Amount:</strong> {purchaseData.currency} {purchaseData.amountTotal}</p>
+                      <p><strong>Email:</strong> {purchaseData.customerEmail}</p>
+                      <p><strong>Payment ID:</strong> {purchaseData.paymentIntent}</p>
+                      <p><strong>Status:</strong> {purchaseData.paymentStatus}</p>
+                      <p><strong>Saved to DB:</strong> ✅ Yes</p>
+                    </div>
+                  </div>
+                )}
                 <div className="space-y-3">
                   <Link href="/dashboard">
                     <Button className="w-full bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white">

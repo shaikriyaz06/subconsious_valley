@@ -17,6 +17,7 @@ import { useLanguage } from "@/components/LanguageProvider";
 import { useCurrency } from "@/components/CurrencyConverter";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/components/ui/use-toast";
 
 
 // Dynamic category names will be generated from sessions
@@ -49,6 +50,7 @@ export default function Sessions() {
   const { formatPrice } = useCurrency();
   const { data: authSession } = useSession();
   const router = useRouter();
+  const { toast } = useToast();
   const [sessions, setSessions] = useState([]);
   const [purchases, setPurchases] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -206,12 +208,23 @@ export default function Sessions() {
       
       if (response.ok) {
         setSessions(prev => prev.filter(s => s._id !== sessionId));
+        toast({
+          title: "Success",
+          description: "Session deleted successfully.",
+        });
       } else {
-        alert('Failed to delete session');
+        toast({
+          title: "Error",
+          description: "Failed to delete session.",
+          variant: "destructive",
+        });
       }
     } catch (error) {
-      console.error('Error deleting session:', error);
-      alert('Error deleting session');
+      toast({
+        title: "Error",
+        description: "Error deleting session.",
+        variant: "destructive",
+      });
     } finally {
       setDeleting(null);
     }

@@ -19,7 +19,8 @@ export default function Register() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    password: ''
+    password: '',
+    confirmPassword: ''
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -60,6 +61,11 @@ export default function Register() {
       newErrors.password = 'Password must be at least 8 characters long';
     } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*])/.test(formData.password)) {
       newErrors.password = 'Password must contain uppercase, lowercase and special character';
+    }
+    
+    // Confirm password validation
+    if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = 'Passwords do not match';
     }
     
     setErrors(newErrors);
@@ -133,7 +139,7 @@ export default function Register() {
                 <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
                 <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
               </svg>
-              Sign up with Google
+              Continue with Google
             </Button>
 
             <div className="relative">
@@ -227,6 +233,29 @@ export default function Register() {
                   <div className="flex items-center gap-1 text-red-500 text-sm mt-1">
                     <AlertCircle className="h-4 w-4" />
                     {errors.password}
+                  </div>
+                )}
+              </div>
+              
+              <div>
+                <Label htmlFor="confirmPassword" style={{ opacity: 1, color: '#000000' }}>Confirm Password</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                  <Input
+                    id="confirmPassword"
+                    type="password"
+                    placeholder="Confirm your password"
+                    value={formData.confirmPassword}
+                    onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+                    className={`pl-10 ${errors.confirmPassword ? 'border-red-500' : ''}`}
+                    style={{ opacity: 1, color: '#000000' }}
+                    required
+                  />
+                </div>
+                {errors.confirmPassword && (
+                  <div className="flex items-center gap-1 text-red-500 text-sm mt-1">
+                    <AlertCircle className="h-4 w-4" />
+                    {errors.confirmPassword}
                   </div>
                 )}
               </div>

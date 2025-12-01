@@ -49,17 +49,14 @@ export default function SubscriptionPopup({ isOpen, onClose }) {
       });
 
       const result = await response.json();
-      console.log('API Response:', { response: response.ok, result });
       
       if (response.ok && result.success) {
-        console.log('Showing success toast');
         toast({
           title: "Success!",
           description: "Thank you for subscribing!",
         });
         onClose();
       } else {
-        console.log('Showing error toast');
         toast({
           title: "Error",
           description: result.error || "Failed to subscribe. Please try again.",
@@ -67,7 +64,6 @@ export default function SubscriptionPopup({ isOpen, onClose }) {
         });
       }
     } catch (error) {
-      console.error("Subscription error:", error);
       toast({
         title: "Error",
         description: "Failed to subscribe. Please try again.",

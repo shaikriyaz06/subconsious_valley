@@ -15,7 +15,10 @@ const currencies = [
 const exchangeRates = {
   USD: { AED: 3.67, INR: 83.12, SAR: 3.75, EUR: 0.85, GBP: 0.79 },
   AED: { USD: 0.27, INR: 22.64, SAR: 1.02, EUR: 0.23, GBP: 0.21 },
-  INR: { USD: 0.012, AED: 0.044, SAR: 0.045, EUR: 0.010, GBP: 0.009 }
+  INR: { USD: 0.012, AED: 0.044, SAR: 0.045, EUR: 0.010, GBP: 0.009 },
+  SAR: { USD: 0.27, AED: 0.98, INR: 22.17, EUR: 0.23, GBP: 0.21 },
+  EUR: { USD: 1.18, AED: 4.33, INR: 98.05, SAR: 4.42, GBP: 0.93 },
+  GBP: { USD: 1.27, AED: 4.66, INR: 105.53, SAR: 4.76, EUR: 1.08 }
 };
 
 // Create context first
@@ -23,13 +26,46 @@ const CurrencyContext = React.createContext();
 
 export const CurrencyProvider = ({ children }) => {
   const [selectedCurrency, setSelectedCurrency] = useState('AED');
+  const [rates, setRates] = useState(exchangeRates);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchRates = async () => {
+      if (process.env.NODE_ENV === 'production') {
+        setLoading(true);
+        try {
+          // Option 1: Free API (exchangerate-api.com)
+          const response = await fetch('https://api.exchangerate-api.com/v4/latest/AED');
+          const data = await response.json();
+          
+          // Convert to our format
+          const productionRates = {
+            AED: data.rates,
+            USD: {}, // Would need separate calls for each base currency
+            // Or use a paid API that supports multiple base currencies
+          };
+          
+          setRates(productionRates);
+        } catch (error) {
+          console.error('Failed to fetch exchange rates:', error);
+          // Fallback to mock rates
+        }
+        setLoading(false);
+      }
+    };
+    
+    fetchRates();
+    // Refresh rates every hour
+    const interval = setInterval(fetchRates, 3600000);
+    return () => clearInterval(interval);
+  }, []);
 
   const convertPrice = (amount, fromCurrency = 'AED') => {
     if (selectedCurrency === fromCurrency) {
       return amount;
     }
     
-    const rate = exchangeRates[fromCurrency]?.[selectedCurrency] || 1;
+    const rate = rates[fromCurrency]?.[selectedCurrency] || 1;
     return Math.round(amount * rate * 100) / 100;
   };
 

@@ -5,10 +5,8 @@ import bcrypt from "bcryptjs";
 export async function POST(request) {
   try {
     const { name, email, password } = await request.json();
-    console.log('Registration attempt:', { name, email, password: '***' });
 
     if (!name || !email || !password) {
-      console.log('Missing fields:', { name: !!name, email: !!email, password: !!password });
       return Response.json(
         { error: "All fields are required" },
         { status: 400 }
@@ -17,16 +15,17 @@ export async function POST(request) {
 
     // Validate name (only alphabets and spaces, minimum 2 characters)
     if (!/^[a-zA-Z\s]{2,}$/.test(name.trim())) {
-      console.log('Name validation failed:', name);
       return Response.json(
-        { error: "Name should contain only alphabets and spaces (minimum 2 characters)" },
+        {
+          error:
+            "Name should contain only alphabets and spaces (minimum 2 characters)",
+        },
         { status: 400 }
       );
     }
 
     // Validate email
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      console.log('Email validation failed:', email);
       return Response.json(
         { error: "Please enter a valid email address" },
         { status: 400 }
@@ -64,8 +63,11 @@ export async function POST(request) {
 
     await dbConnect();
 
+    // Convert email to lowercase for consistency
+    const normalizedEmail = email.toLowerCase();
+
     // Check if user already exists
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ email: normalizedEmail });
     if (existingUser) {
       return Response.json({ error: "User already exists" }, { status: 400 });
     }
@@ -76,7 +78,7 @@ export async function POST(request) {
     // Create user with hashed password
     const user = await User.create({
       full_name: name,
-      email,
+      email: normalizedEmail,
       password: hashedPassword,
       provider: "credentials",
       role: "user",
