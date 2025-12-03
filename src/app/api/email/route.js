@@ -101,8 +101,7 @@ async function handleFeedback(data) {
 }
 
 async function handleSubscription(data) {
-  const { name, email, phone } = data;
-  console.log(name,email,phone,process.env.SMTP_HOST,process.env.SMTP_PORT,process.env.SMTP_USER,process.env.SMTP_PASS)
+  const { name, email, phone } = data;  
   const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST,
     port: parseInt(process.env.SMTP_PORT),

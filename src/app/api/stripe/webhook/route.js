@@ -1,48 +1,39 @@
-import { NextResponse } from 'next/server';
-import Stripe from 'stripe';
-import nodemailer from 'nodemailer';
-import dbConnect from '@/lib/mongodb';
-import Purchase from '@/models/Purchase';
-import Session from '@/models/Session';
+import { NextResponse } from "next/server";
+import Stripe from "stripe";
+import nodemailer from "nodemailer";
+import dbConnect from "@/lib/mongodb";
+import Purchase from "@/models/Purchase";
+import Session from "@/models/Session";
 
 if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error('STRIPE_SECRET_KEY is not set');
+  throw new Error("STRIPE_SECRET_KEY is not set");
 }
 
 if (!process.env.STRIPE_WEBHOOK_SECRET) {
-  throw new Error('STRIPE_WEBHOOK_SECRET is not set');
+  throw new Error("STRIPE_WEBHOOK_SECRET is not set");
 }
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: '2023-10-16',
+  apiVersion: "2023-10-16",
 });
 
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
 // Disable body parsing for webhooks
-export const runtime = 'nodejs';
+export const runtime = "nodejs";
 
 export async function POST(request) {
-  console.log('🔥 WEBHOOK CALLED!');
-  console.log('Request URL:', request.url);
-  console.log('Request method:', request.method);
-  console.log('All headers:', Object.fromEntries(request.headers.entries()));
-  
   const body = await request.text();
-  const sig = request.headers.get('stripe-signature');
-  console.log('Webhook signature:', sig);
-  console.log('Webhook secret:', process.env.STRIPE_WEBHOOK_SECRET);
-  console.log('Body length:', body.length);
-  console.log('Body content:', body);
+  const sig = request.headers.get("stripe-signature");
 
   let event;
 
   try {
     event = stripe.webhooks.constructEvent(body, sig, endpointSecret);
   } catch (err) {
-    console.error('Webhook verification error:', err.message);
+    console.error("Webhook verification error:", err.message);
     return NextResponse.json(
-      { error: 'Webhook signature verification failed' }, 
+      { error: "Webhook signature verification failed" },
       { status: 400 }
     );
   }
@@ -51,37 +42,36 @@ export async function POST(request) {
     await dbConnect();
 
     switch (event.type) {
-      case 'checkout.session.completed':
+      case "checkout.session.completed":
         await handleCheckoutCompleted(event.data.object);
         break;
-        
-      case 'payment_intent.succeeded':
+
+      case "payment_intent.succeeded":
         await handlePaymentSucceeded(event.data.object);
         break;
-        
-      case 'payment_intent.payment_failed':
+
+      case "payment_intent.payment_failed":
         await handlePaymentFailed(event.data.object);
         break;
-        
-      case 'invoice.payment_succeeded':
+
+      case "invoice.payment_succeeded":
         // Handle subscription payments if needed
         break;
-        
-      case 'customer.subscription.created':
-      case 'customer.subscription.updated':
-      case 'customer.subscription.deleted':
+
+      case "customer.subscription.created":
+      case "customer.subscription.updated":
+      case "customer.subscription.deleted":
         // Handle subscription events if needed
         break;
-        
+
       default:
-        // Unhandled event type
+      // Unhandled event type
     }
 
     return NextResponse.json({ received: true, processed: true });
-    
   } catch (error) {
     return NextResponse.json(
-      { error: 'Webhook processing failed', eventId: event.id },
+      { error: "Webhook processing failed", eventId: event.id },
       { status: 500 }
     );
   }
@@ -91,24 +81,29 @@ async function handleCheckoutCompleted(session) {
   try {
     // Check if purchase already exists to prevent duplicates
     const existingPurchase = await Purchase.findOne({
-      stripe_payment_intent_id: session.payment_intent
+      stripe_payment_intent_id: session.payment_intent,
     });
-    
+
     if (existingPurchase) {
       return;
     }
 
     // Get detailed payment information
-    const paymentIntent = await stripe.paymentIntents.retrieve(session.payment_intent);
-    const paymentMethod = paymentIntent.charges?.data[0]?.payment_method_details;
-    
+    const paymentIntent = await stripe.paymentIntents.retrieve(
+      session.payment_intent
+    );
+    const paymentMethod =
+      paymentIntent.charges?.data[0]?.payment_method_details;
+
     // Get transaction fee details
-    const stripeFee = paymentIntent.charges?.data[0]?.balance_transaction 
-      ? await stripe.balanceTransactions.retrieve(paymentIntent.charges.data[0].balance_transaction)
+    const stripeFee = paymentIntent.charges?.data[0]?.balance_transaction
+      ? await stripe.balanceTransactions.retrieve(
+          paymentIntent.charges.data[0].balance_transaction
+        )
       : null;
-    
+
     const transactionFee = stripeFee ? stripeFee.fee / 100 : 0;
-    const netAmount = (session.amount_total / 100) - transactionFee;
+    const netAmount = session.amount_total / 100 - transactionFee;
 
     const purchaseData = {
       session_id: session.metadata?.sessionId || session.id,
@@ -117,13 +112,14 @@ async function handleCheckoutCompleted(session) {
       user_name: session.metadata?.userName || session.customer_details?.name,
       amount_paid: session.amount_total / 100,
       currency: session.currency?.toUpperCase(),
-      payment_status: 'completed',
+      payment_status: "completed",
       stripe_payment_intent_id: session.payment_intent,
       stripe_checkout_session_id: session.id,
       payment_method: paymentMethod?.type,
       transaction_fee: transactionFee,
       net_amount: netAmount,
-      customer_ip: paymentIntent.charges?.data[0]?.outcome?.network_status || null,
+      customer_ip:
+        paymentIntent.charges?.data[0]?.outcome?.network_status || null,
       billing_address: {
         country: session.customer_details?.address?.country,
         postal_code: session.customer_details?.address?.postal_code,
@@ -144,33 +140,32 @@ async function handleCheckoutCompleted(session) {
     };
 
     await Purchase.create(purchaseData);
-    
+
     // Send purchase confirmation email
     await sendPurchaseConfirmationEmail(session, purchaseData);
-    
+
     // Send purchase notification to owner
     await sendOwnerPurchaseNotification(session, purchaseData);
-    
   } catch (error) {
     // Log error to purchase record if possible
     try {
       await Purchase.findOneAndUpdate(
         { stripe_payment_intent_id: session.payment_intent },
-        { 
+        {
           $set: {
             error_details: {
-              error_code: error.code || 'WEBHOOK_ERROR',
+              error_code: error.code || "WEBHOOK_ERROR",
               error_message: error.message,
-              error_date: new Date()
-            }
-          }
+              error_date: new Date(),
+            },
+          },
         },
         { upsert: false }
       );
     } catch (logError) {
       // Silent fail for error logging
     }
-    
+
     throw error;
   }
 }
@@ -179,15 +174,14 @@ async function handlePaymentSucceeded(paymentIntent) {
   try {
     // Update purchase status if it exists
     const purchase = await Purchase.findOne({
-      stripe_payment_intent_id: paymentIntent.id
+      stripe_payment_intent_id: paymentIntent.id,
     });
-    
-    if (purchase && purchase.payment_status !== 'completed') {
-      purchase.payment_status = 'completed';
+
+    if (purchase && purchase.payment_status !== "completed") {
+      purchase.payment_status = "completed";
       purchase.access_granted = true;
       await purchase.save();
     }
-    
   } catch (error) {
     throw error;
   }
@@ -199,24 +193,24 @@ async function handlePaymentFailed(paymentIntent) {
     const failureCode = paymentIntent.last_payment_error?.code;
     const failureMessage = paymentIntent.last_payment_error?.message;
     const declineCode = paymentIntent.last_payment_error?.decline_code;
-    
+
     // Update or create purchase record with failure details
     const purchaseUpdate = {
-      payment_status: 'failed',
+      payment_status: "failed",
       access_granted: false,
       error_details: {
-        error_code: failureCode || declineCode || 'PAYMENT_FAILED',
-        error_message: failureMessage || 'Payment failed',
-        error_date: new Date()
-      }
+        error_code: failureCode || declineCode || "PAYMENT_FAILED",
+        error_message: failureMessage || "Payment failed",
+        error_date: new Date(),
+      },
     };
-    
+
     const purchase = await Purchase.findOneAndUpdate(
       { stripe_payment_intent_id: paymentIntent.id },
       { $set: purchaseUpdate },
       { new: true, upsert: false }
     );
-    
+
     if (!purchase) {
       // Create failed purchase record if it doesn't exist
       const failedPurchaseData = {
@@ -226,23 +220,22 @@ async function handlePaymentFailed(paymentIntent) {
         user_name: paymentIntent.metadata?.userName,
         amount_paid: paymentIntent.amount / 100,
         currency: paymentIntent.currency?.toUpperCase(),
-        payment_status: 'failed',
+        payment_status: "failed",
         stripe_payment_intent_id: paymentIntent.id,
         access_granted: false,
         error_details: {
-          error_code: failureCode || declineCode || 'PAYMENT_FAILED',
-          error_message: failureMessage || 'Payment failed',
-          error_date: new Date()
+          error_code: failureCode || declineCode || "PAYMENT_FAILED",
+          error_message: failureMessage || "Payment failed",
+          error_date: new Date(),
         },
         purchase_date: new Date(paymentIntent.created * 1000),
       };
-      
+
       await Purchase.create(failedPurchaseData);
     }
-    
+
     // Send payment failure email
     await sendPaymentFailureEmail(paymentIntent, failureCode, failureMessage);
-    
   } catch (error) {
     throw error;
   }
@@ -252,7 +245,7 @@ async function sendPurchaseConfirmationEmail(session, purchaseData) {
   try {
     // Only send email if we have a valid user email
     if (!purchaseData.user_email) {
-      console.log('No user email found, skipping purchase confirmation email');
+      console.log("No user email found, skipping purchase confirmation email");
       return;
     }
 
@@ -269,15 +262,19 @@ async function sendPurchaseConfirmationEmail(session, purchaseData) {
     const emailHtml = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #4F46E5;">Thank you for your purchase!</h2>
-        <p>Dear ${purchaseData.user_name || 'Customer'},</p>
+        <p>Dear ${purchaseData.user_name || "Customer"},</p>
         <p>Your purchase has been confirmed. Here are the details:</p>
         
         <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
           <h3 style="margin-top: 0;">Purchase Details</h3>
           <p><strong>Session:</strong> ${purchaseData.session_title}</p>
-          <p><strong>Amount:</strong> ${purchaseData.amount_paid} ${purchaseData.currency}</p>
+          <p><strong>Amount:</strong> ${purchaseData.amount_paid} ${
+      purchaseData.currency
+    }</p>
           <p><strong>Payment ID:</strong> ${session.payment_intent}</p>
-          <p><strong>Purchase Date:</strong> ${new Date(purchaseData.purchase_date).toLocaleDateString()}</p>
+          <p><strong>Purchase Date:</strong> ${new Date(
+            purchaseData.purchase_date
+          ).toLocaleDateString()}</p>
         </div>
         
         <p>You can now access your session in your dashboard at <a href="https://subconsciousvalley.com/dashboard">subconsciousvalley.com/dashboard</a></p>
@@ -291,25 +288,31 @@ async function sendPurchaseConfirmationEmail(session, purchaseData) {
     const mailOptions = {
       from: process.env.SMTP_USER,
       to: purchaseData.user_email,
-      subject: 'Purchase Confirmation - Subconscious Valley',
+      subject: "Purchase Confirmation - Subconscious Valley",
       html: emailHtml,
     };
 
     await transporter.sendMail(mailOptions);
-    console.log('Purchase confirmation email sent to:', purchaseData.user_email);
-    
+    console.log(
+      "Purchase confirmation email sent to:",
+      purchaseData.user_email
+    );
   } catch (error) {
-    console.error('Error sending purchase confirmation email:', error);
+    console.error("Error sending purchase confirmation email:", error);
   }
 }
 
-async function sendPaymentFailureEmail(paymentIntent, failureCode, failureMessage) {
+async function sendPaymentFailureEmail(
+  paymentIntent,
+  failureCode,
+  failureMessage
+) {
   try {
     const userEmail = paymentIntent.metadata?.userEmail;
-    
+
     // Only send email if we have a valid user email
     if (!userEmail) {
-      console.log('No user email found, skipping payment failure email');
+      console.log("No user email found, skipping payment failure email");
       return;
     }
 
@@ -323,9 +326,9 @@ async function sendPaymentFailureEmail(paymentIntent, failureCode, failureMessag
       },
     });
 
-    const userName = paymentIntent.metadata?.userName || 'Customer';
+    const userName = paymentIntent.metadata?.userName || "Customer";
     const sessionTitle = paymentIntent.metadata?.sessionTitle;
-    
+
     const emailHtml = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #DC2626;">Payment Failed - Subconscious Valley</h2>
@@ -335,8 +338,12 @@ async function sendPaymentFailureEmail(paymentIntent, failureCode, failureMessag
         <div style="background-color: #fef2f2; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #DC2626;">
           <h3 style="margin-top: 0; color: #DC2626;">Payment Details</h3>
           <p><strong>Session:</strong> ${sessionTitle}</p>
-          <p><strong>Amount:</strong> ${paymentIntent.amount / 100} ${paymentIntent.currency?.toUpperCase()}</p>
-          <p><strong>Reason:</strong> ${failureMessage || 'Payment declined'}</p>
+          <p><strong>Amount:</strong> ${
+            paymentIntent.amount / 100
+          } ${paymentIntent.currency?.toUpperCase()}</p>
+          <p><strong>Reason:</strong> ${
+            failureMessage || "Payment declined"
+          }</p>
         </div>
         
         <p>Please try again with a different payment method or contact your bank if the issue persists.</p>
@@ -352,15 +359,14 @@ async function sendPaymentFailureEmail(paymentIntent, failureCode, failureMessag
     const mailOptions = {
       from: process.env.SMTP_USER,
       to: userEmail,
-      subject: 'Payment Failed - Subconscious Valley',
+      subject: "Payment Failed - Subconscious Valley",
       html: emailHtml,
     };
 
     await transporter.sendMail(mailOptions);
-    console.log('Payment failure email sent to:', userEmail);
-    
+    console.log("Payment failure email sent to:", userEmail);
   } catch (error) {
-    console.error('Error sending payment failure email:', error);
+    console.error("Error sending payment failure email:", error);
   }
 }
 
@@ -383,17 +389,31 @@ async function sendOwnerPurchaseNotification(session, purchaseData) {
         
         <div style="background-color: #f0fdf4; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #059669;">
           <h3 style="margin-top: 0; color: #059669;">Purchase Details</h3>
-          <p><strong>Customer:</strong> ${purchaseData.user_name} (${purchaseData.user_email})</p>
+          <p><strong>Customer:</strong> ${purchaseData.user_name} (${
+      purchaseData.user_email
+    })</p>
           <p><strong>Session:</strong> ${purchaseData.session_title}</p>
-          <p><strong>Amount:</strong> ${purchaseData.amount_paid} ${purchaseData.currency}</p>
-          <p><strong>Net Amount:</strong> ${purchaseData.net_amount} ${purchaseData.currency}</p>
-          <p><strong>Transaction Fee:</strong> ${purchaseData.transaction_fee} ${purchaseData.currency}</p>
-          <p><strong>Payment Method:</strong> ${purchaseData.payment_method || 'card'}</p>
+          <p><strong>Amount:</strong> ${purchaseData.amount_paid} ${
+      purchaseData.currency
+    }</p>
+          <p><strong>Net Amount:</strong> ${purchaseData.net_amount} ${
+      purchaseData.currency
+    }</p>
+          <p><strong>Transaction Fee:</strong> ${
+            purchaseData.transaction_fee
+          } ${purchaseData.currency}</p>
+          <p><strong>Payment Method:</strong> ${
+            purchaseData.payment_method || "card"
+          }</p>
           <p><strong>Payment ID:</strong> ${session.payment_intent}</p>
-          <p><strong>Purchase Date:</strong> ${new Date(purchaseData.purchase_date).toLocaleString()}</p>
+          <p><strong>Purchase Date:</strong> ${new Date(
+            purchaseData.purchase_date
+          ).toLocaleString()}</p>
         </div>
         
-        <p>Customer billing address: ${purchaseData.billing_address?.city}, ${purchaseData.billing_address?.country}</p>
+        <p>Customer billing address: ${purchaseData.billing_address?.city}, ${
+      purchaseData.billing_address?.country
+    }</p>
         
         <p>Best regards,<br><strong>Subconscious Valley System</strong></p>
       </div>
@@ -401,15 +421,16 @@ async function sendOwnerPurchaseNotification(session, purchaseData) {
 
     const mailOptions = {
       from: process.env.SMTP_USER,
-      to: 'hello@subconsciousvalley.com',
+      to: "hello@subconsciousvalley.com",
       subject: `New Purchase: ${purchaseData.session_title} - ${purchaseData.amount_paid} ${purchaseData.currency}`,
       html: emailHtml,
     };
 
     await transporter.sendMail(mailOptions);
-    console.log('Owner purchase notification sent to: hello@subconsciousvalley.com');
-    
+    console.log(
+      "Owner purchase notification sent to: hello@subconsciousvalley.com"
+    );
   } catch (error) {
-    console.error('Error sending owner purchase notification:', error);
+    console.error("Error sending owner purchase notification:", error);
   }
 }

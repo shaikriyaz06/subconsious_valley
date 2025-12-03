@@ -37,8 +37,7 @@ export async function POST(request) {
 
     // Validate price
     const price = sessionData.price || 0;
-    if (price <= 0) {
-      console.log('Invalid price detected:', price);
+    if (price <= 0) {      
       return NextResponse.json({ error: 'Invalid session price' }, { status: 400 });
     }
 
