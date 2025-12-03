@@ -22,11 +22,7 @@ export default function Home() {
   const section2Ref = useRef(null);
   const section3Ref = useRef(null);
 
-  // Memoize static sections array
-  const sections = useMemo(() => [
-    { id: "2", ref: section2Ref },
-    { id: "3", ref: section3Ref },
-  ], []);
+
 
   // Memoize tab items
   const tabItems = useMemo(() => [
@@ -335,7 +331,6 @@ export default function Home() {
         isOpen={showSubscriptionPopup}
         onClose={() => setShowSubscriptionPopup(false)}
       />
-      <Toaster />
     </>
   );
 }

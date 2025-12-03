@@ -19,9 +19,8 @@ import {
   Send,
   Instagram,
   Youtube,
-  Facebook,
   ChevronDown,
-} from "lucide-react"; // Removed Phone, MessageCircle
+} from "lucide-react"; // Removed Phone, MessageCircle, Facebook
 import { motion } from "framer-motion";
 import { useLanguage } from "@/components/LanguageProvider";
 import { useRouter } from "next/navigation";

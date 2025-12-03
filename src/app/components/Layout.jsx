@@ -62,13 +62,7 @@ function LayoutContent({ children, currentPageName }) {
     // { name: t('contact'), href: "/contact" }
   ];
 
-  const socialIcons = [
-    { key: "facebook_url", icon: Facebook, color: "hover:text-blue-600" },
-    { key: "instagram_url", icon: Instagram, color: "hover:text-pink-600" },
-    { key: "twitter_url", icon: Twitter, color: "hover:text-blue-400" },
-    { key: "youtube_url", icon: Youtube, color: "hover:text-red-600" },
-    { key: "linkedin_url", icon: Linkedin, color: "hover:text-blue-700" },
-  ];
+
 
   return (
     <CurrencyProvider>

@@ -24,18 +24,7 @@ const languageNames = {
   chinese: "中文",
 };
 
-// Helper function to create page URLs
-const createPageUrl = (pageName) => {
-  switch (pageName) {
-    case "checkout":
-      return "/checkout";
-    case "SessionPlayer":
-      return "/session-player";
-    // Add more cases for other page names if needed
-    default:
-      return `/${pageName.toLowerCase()}`;
-  }
-};
+
 
 export default function Sessions() {
   const { t, currentLanguage } = useLanguage();
@@ -494,7 +483,6 @@ export default function Sessions() {
             <Button
               onClick={() => {
                 setSelectedCategory("all");
-                setSelectedLanguage("all");
               }}
               variant="outline"
               className="mt-4"
