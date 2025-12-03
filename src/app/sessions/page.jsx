@@ -1,17 +1,9 @@
 "use client";
 import React, { useState, useEffect, useMemo, useCallback } from "react";
-// import { Session, User, Purchase } from "@/api/entities";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Play, Lock, Star, Clock, Globe, Filter, X, Edit, ChevronDown, ChevronRight, Trash2 } from "lucide-react";
+import { Play, Lock, Star, Filter, X, Edit, Trash2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/components/LanguageProvider";
 import { useCurrency } from "@/components/CurrencyConverter";
@@ -54,11 +46,8 @@ export default function Sessions() {
   const [sessions, setSessions] = useState([]);
   const [purchases, setPurchases] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("all");
-  const [selectedLanguage, setSelectedLanguage] = useState("all");
   const [isLoading, setIsLoading] = useState(true);
   const [dynamicCategories, setDynamicCategories] = useState({});
-  const [expandedSessions, setExpandedSessions] = useState({});
-  const [expandedChildren, setExpandedChildren] = useState({});
   const [deleting, setDeleting] = useState(null);
 
   const [sessionsLoading, setSessionsLoading] = useState(true);
@@ -89,38 +78,66 @@ export default function Sessions() {
     fetchSessions();
   }, [fetchSessions]);
 
+  // Refresh data on window focus (debounced)
   useEffect(() => {
+    let focusTimeout;
+    
     const handleFocus = () => {
-      fetchSessions();
+      clearTimeout(focusTimeout);
+      focusTimeout = setTimeout(() => {
+        if (authSession?.user?.role === "admin") {
+          // Admin: refresh sessions
+          fetchSessions();
+        } else if (authSession?.user) {
+          // Non-admin: refresh purchases only
+          const refreshPurchases = async () => {
+            try {
+              const purchasesResponse = await fetch("/api/purchases");
+              if (purchasesResponse.ok) {
+                const purchasesData = await purchasesResponse.json();
+                setPurchases(purchasesData);
+              }
+            } catch (error) {
+              console.error("Error refreshing purchases:", error);
+            }
+          };
+          refreshPurchases();
+        }
+      }, 1000); // 1 second debounce
     };
     
-    window.addEventListener('focus', handleFocus);
-    return () => window.removeEventListener('focus', handleFocus);
-  }, [fetchSessions]);
+    if (authSession?.user) {
+      window.addEventListener('focus', handleFocus);
+      return () => {
+        window.removeEventListener('focus', handleFocus);
+        clearTimeout(focusTimeout);
+      };
+    }
+  }, [authSession?.user?.role, authSession?.user, fetchSessions]);
   
 
 
   useEffect(() => {
-    // Always fetch fresh purchases if user is logged in (user-specific data)
     const loadPurchases = async () => {
-      if (authSession?.user) {
+      if (!sessionsLoading && authSession?.user) {
         try {
           const purchasesResponse = await fetch("/api/purchases");
           if (purchasesResponse.ok) {
             const purchasesData = await purchasesResponse.json();
             setPurchases(purchasesData);
           }
-        } catch (purchaseError) {
-          console.error("Error loading purchases:", purchaseError);
+        } catch (error) {
+          console.error("Error loading purchases:", error);
+        } finally {
+          setIsLoading(false);
         }
+      } else if (!sessionsLoading) {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     };
     
-    if (!sessionsLoading) {
-      loadPurchases();
-    }
-  }, [authSession?.user, sessionsLoading]);
+    loadPurchases();
+  }, [sessionsLoading, authSession?.user]);
 
   // Check access based on session price and user purchases
   const hasAccess = useCallback((sessionItem) => {
@@ -166,12 +183,9 @@ export default function Sessions() {
       const categoryMatch =
         selectedCategory === "all" ||
         session.title === selectedCategory;
-      const languageMatch =
-        selectedLanguage === "all" ||
-        session.languages?.includes(selectedLanguage);
-      return isParent && categoryMatch && languageMatch;
+      return isParent && categoryMatch;
     });
-  }, [sessions, selectedCategory, selectedLanguage]);
+  }, [sessions, selectedCategory]);
 
   const selectCategory = useCallback((category) => {
     setSelectedCategory(category === selectedCategory ? "all" : category);
@@ -180,20 +194,6 @@ export default function Sessions() {
   const getTranslated = useCallback((item, field) => {
     return item[`${field}_${currentLanguage}`] || item[field];
   }, [currentLanguage]);
-
-  const toggleSessionExpansion = useCallback((sessionId) => {
-    setExpandedSessions(prev => ({
-      ...prev,
-      [sessionId]: !prev[sessionId]
-    }));
-  }, []);
-
-  const toggleChildExpansion = useCallback((childId) => {
-    setExpandedChildren(prev => ({
-      ...prev,
-      [childId]: !prev[childId]
-    }));
-  }, []);
 
   const handleDeleteSession = useCallback(async (sessionId) => {
     if (!confirm('Are you sure you want to delete this session? This action cannot be undone.')) {

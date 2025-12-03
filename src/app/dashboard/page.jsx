@@ -2,32 +2,28 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import SessionChecker from '@/components/SessionChecker'
 import Link from "next/link";
 import {
   Play,
-  Settings,
   LogOut,
   Headphones,
-  FileText,
-  Download,
   Facebook,
   ChevronDown,
   ChevronRight,
 } from "lucide-react";
 import { motion } from "framer-motion";
-import { useSession, signOut, getSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 export default function Dashboard() {
-  const { data: session, status } = useSession();
   const router = useRouter();
+  const [session, setSession] = useState(null);
   const [purchases, setPurchases] = useState([]);
   const [siteSettings, setSiteSettings] = useState({});
   const [expandedSessions, setExpandedSessions] = useState({});
   const [expandedChildSessions, setExpandedChildSessions] = useState({});
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-  const isLoading = status === "loading";
+  const [isLoading, setIsLoading] = useState(true);
 
   const toggleExpanded = (purchaseId) => {
     setExpandedSessions(prev => ({
@@ -46,22 +42,12 @@ export default function Dashboard() {
   const loadDashboardData = useCallback(async (userEmail) => {
     if (!userEmail) return;
 
-    
-    
     try {
-      // Fetch user purchases with cache busting
-      const timestamp = new Date().getTime();
-      const purchasesResponse = await fetch(`/api/purchases?t=${timestamp}&user=${encodeURIComponent(userEmail)}`, {
-        cache: 'no-store',
-        headers: {
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0'
-        }
+      const purchasesResponse = await fetch(`/api/purchases?user=${encodeURIComponent(userEmail)}`, {
+        cache: 'no-store'
       });
       if (purchasesResponse.ok) {
         const purchasesData = await purchasesResponse.json();
-        
         setPurchases(purchasesData);
       } else {
         console.error('Failed to fetch purchases:', purchasesResponse.status);
@@ -78,40 +64,29 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/login");
-      return;
-    }
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/api/auth/session');
+        if (response.ok) {
+          const sessionData = await response.json();
+          if (sessionData?.user) {
+            setSession(sessionData);
+            loadDashboardData(sessionData.user.email);
+          } else {
+            router.push("/login");
+          }
+        } else {
+          router.push("/login");
+        }
+      } catch (error) {
+        router.push("/login");
+      } finally {
+        setIsLoading(false);
+      }
+    };
     
-    // Check if session is expired
-    if (session?.expires && new Date(session.expires) < new Date()) {
-      
-      signOut({ callbackUrl: '/login' });
-      return;
-    }
-    
-    if (session?.user?.email) {
-      loadDashboardData(session.user.email);
-    } else {
-      // Clear purchases when no session
-      setPurchases([]);
-    }
-  }, [session?.user?.email, session?.expires, status, router, loadDashboardData]);
-
-  // Clear data when user changes
-  useEffect(() => {
-    if (session?.user?.email) {
-      // Clear all state immediately when user changes
-      
-      setPurchases([]);
-      setExpandedSessions({});
-      setExpandedChildSessions({});
-      // Force session refresh and reload data
-      getSession().then(() => {
-        setTimeout(() => loadDashboardData(session.user.email), 100);
-      });
-    }
-  }, [session?.user?.email, loadDashboardData]);
+    checkAuth();
+  }, [router, loadDashboardData]);
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
@@ -138,7 +113,7 @@ export default function Dashboard() {
           </div>
         </div>
       )}
-      <SessionChecker />
+
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div

@@ -1,9 +1,7 @@
 "use client";
 import Link from "next/link";
-import React, { useState, useEffect, Suspense } from "react";
-import { usePathname, useSearchParams } from "next/navigation";
-// import { Link, useLocation } from "react-router-dom";
-
+import React, { useState, Suspense } from "react";
+import { usePathname } from "next/navigation";
 import {
   Menu,
   X,
@@ -11,16 +9,13 @@ import {
   ChevronDown,
   User,
   LogOut,
-  Facebook,
   Instagram,
-  Twitter,
   Youtube,
   Linkedin,
   DollarSign,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-import { LanguageProvider, useLanguage } from "@/components/LanguageProvider";
+import { useLanguage } from "@/components/LanguageProvider";
 import {
   CurrencyProvider,
   CurrencySelector,
@@ -31,8 +26,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { signOut } from "next-auth/react";
-import { ConditionalAuth } from "./ConditionalAuth";
+import { signOut, useSession } from "next-auth/react";
 
 const languages = [
   { code: "en", name: "English", flag: "🇺🇸" },
@@ -43,12 +37,12 @@ const languages = [
 function LayoutContent({ children, currentPageName }) {
   const pathname = usePathname();
   const isHomePage = pathname === '/';
-
-
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-
   const { currentLanguage, changeLanguage, t, isRTL } = useLanguage();
+  
+  // Single session call for entire layout
+  const { data: session, status } = useSession();
+  const isLoading = status === "loading";
 
 
 
@@ -162,55 +156,50 @@ function LayoutContent({ children, currentPageName }) {
                 </DropdownMenu>
 
                 {/* User Menu */}
-                <ConditionalAuth>
-                  {({ session, status }) => {
-                    const isLoading = status === "loading";
-                    return !isLoading && (session ? (
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="flex items-center space-x-2 cursor-pointer"
-                          style={{ opacity: 1, color: '#000000' }}
+                {!isLoading && (session ? (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="flex items-center space-x-2 cursor-pointer"
+                        style={{ opacity: 1, color: '#000000' }}
+                      >
+                        <div className="h-6 w-6 rounded-full bg-gradient-to-r from-teal-500 to-emerald-600 flex items-center justify-center">
+                          <User className="h-4 w-4 text-white" />
+                        </div>
+                        <span className="text-sm hidden sm:block">
+                          {session.user.name}
+                        </span>
+                        <ChevronDown className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem asChild>
+                        <Link
+                          href="/dashboard"
+                          className="flex items-center w-full cursor-pointer hover:bg-teal-50 hover:text-teal-700"
                         >
-                          <div className="h-6 w-6 rounded-full bg-gradient-to-r from-teal-500 to-emerald-600 flex items-center justify-center">
-                            <User className="h-4 w-4 text-white" />
-                          </div>
-                          <span className="text-sm hidden sm:block">
-                            {session.user.name}
-                          </span>
-                          <ChevronDown className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem asChild>
-                          <Link
-                            href="/dashboard"
-                            className="flex items-center w-full cursor-pointer hover:bg-teal-50 hover:text-teal-700"
-                          >
-                            <User className="mr-2 h-4 w-4" />
-                            {t("dashboard")}
-                          </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={handleLogout} className="cursor-pointer hover:bg-teal-50 hover:text-teal-700">
-                          <LogOut className="mr-2 h-4 w-4" />
-                          {t("logout")}
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                    ) : (
-                      <Link href="/login" className="cursor-pointer">
-                        <Button
-                          size="sm"
-                          className="cursor-pointer bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white"
-                        >
-                          {t("login")}
-                        </Button>
-                      </Link>
-                    ));
-                  }}
-                </ConditionalAuth>
+                          <User className="mr-2 h-4 w-4" />
+                          {t("dashboard")}
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={handleLogout} className="cursor-pointer hover:bg-teal-50 hover:text-teal-700">
+                        <LogOut className="mr-2 h-4 w-4" />
+                        {t("logout")}
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                ) : (
+                  <Link href="/login" className="cursor-pointer">
+                    <Button
+                      size="sm"
+                      className="cursor-pointer bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white"
+                    >
+                      {t("login")}
+                    </Button>
+                  </Link>
+                ))}
 
                 {/* Mobile menu button */}
                 <Button
@@ -284,22 +273,18 @@ function LayoutContent({ children, currentPageName }) {
                     </DropdownMenu>
                   </div>
 
-                  <ConditionalAuth>
-                    {({ session }) => (
-                      !session && (
-                        <div className="mt-6 px-5">
-                          <Link href="/login">
-                            <Button
-                              className="w-full bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white"
-                              onClick={() => setIsMenuOpen(false)}
-                            >
-                              {t("login")}
-                            </Button>
-                          </Link>
-                        </div>
-                      )
-                    )}
-                  </ConditionalAuth>
+                  {!session && (
+                    <div className="mt-6 px-5">
+                      <Link href="/login">
+                        <Button
+                          className="w-full bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          {t("login")}
+                        </Button>
+                      </Link>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -376,6 +361,14 @@ function LayoutContent({ children, currentPageName }) {
                       <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
                     </svg>
                   </a>
+                  <a
+                    href="https://www.linkedin.com/in/vanita-pande-343032165"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-slate-300 hover:text-blue-400 transition-colors"
+                  >
+                    <Linkedin className="h-5 w-5" />
+                  </a>
                 </div>
               </div>
 
@@ -432,14 +425,12 @@ function LayoutContent({ children, currentPageName }) {
 
 export default function Layout({ children, currentPageName }) {
   return (
-    <LanguageProvider>
-      <Suspense fallback={
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 to-teal-50 flex items-center justify-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600"></div>
-        </div>
-      }>
-        <LayoutContent children={children} currentPageName={currentPageName} />
-      </Suspense>
-    </LanguageProvider>
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-teal-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600"></div>
+      </div>
+    }>
+      <LayoutContent children={children} currentPageName={currentPageName} />
+    </Suspense>
   );
 }

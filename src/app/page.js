@@ -6,22 +6,18 @@ import About from "./about/page";
 import Contact from "./contact/page";
 import { useLanguage } from "./components/LanguageProvider";
 import SubscriptionPopup from "@/components/SubscriptionPopup";
-import { Toaster } from "@/components/ui/toaster";
-import { useToast } from "@/components/ui/use-toast";
+
 export default function Home() {
   const videoRef = useRef(null);
   const popupVideoRef = useRef(null);
   const [showPopup, setShowPopup] = useState(false);
   const [showSubscriptionPopup, setShowSubscriptionPopup] = useState(false);
   const { t, isRTL } = useLanguage();
-  const { toast } = useToast();
   const [isSticky, setIsSticky] = useState(false);
   const [progress, setProgress] = useState(20);
   const [activeTab, setActiveTab] = useState("2");
-  const activeTabRef = useRef("2");
   const progressRef = useRef(20);
   const timeoutRef = useRef(null);
-  const scrollTimeoutRef = useRef(null);
   const tabsRef = useRef(null);
   const section2Ref = useRef(null);
   const section3Ref = useRef(null);
@@ -68,124 +64,67 @@ export default function Home() {
   }, [refs, progressValues]);
 
   useEffect(() => {
+    let ticking = false;
+    
     const handleScroll = () => {
-      // Throttle scroll events for better performance
-      if (scrollTimeoutRef.current) return;
-      
-      scrollTimeoutRef.current = setTimeout(() => {
-        scrollTimeoutRef.current = null;
-        
-        const scrollTop = window.scrollY;
-
-      // Check if we should make tabs sticky
-      const firstSection = section2Ref.current;
-      // const lastSection = section4Ref.current;
-
-      let shouldBeSticky = false;
-
-      if (firstSection) {
-        const firstSectionTop = firstSection.offsetTop - 120;
-
-        // Make sticky when we reach the first section, hide when scrolling back up
-        shouldBeSticky = scrollTop >= firstSectionTop;
-      }
-
-      setIsSticky(shouldBeSticky);
-
-      let currentTab = "2";
-      let totalProgress = 20;
-
-      for (let i = 0; i < sections.length; i++) {
-        const section = sections[i];
-        if (section.ref.current) {
-          const sectionTop = section.ref.current.offsetTop - 120;
-          const sectionHeight = section.ref.current.offsetHeight;
-
-          if (
-            scrollTop >= sectionTop &&
-            scrollTop < sectionTop + sectionHeight
-          ) {
-            currentTab = section.id;
-            // Calculate progress within the section
-            const sectionProgress = (scrollTop - sectionTop) / sectionHeight;
-            // Map to our progress values: 20 -> 100
-            const progressValues = [20, 100];
-            if (i < progressValues.length - 1) {
-              totalProgress =
-                progressValues[i] +
-                sectionProgress * (progressValues[i + 1] - progressValues[i]);
-            } else {
-              totalProgress = progressValues[i];
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          const scrollTop = window.scrollY;
+          const firstSection = section2Ref.current;
+          
+          if (firstSection) {
+            const shouldBeSticky = scrollTop >= firstSection.offsetTop - 120;
+            
+            if (shouldBeSticky !== isSticky) {
+              setIsSticky(shouldBeSticky);
             }
-            break;
-          } else if (scrollTop >= sectionTop + sectionHeight) {
-            // Past this section
-            const progressValues = [20, 100];
-            totalProgress = progressValues[i];
-            currentTab = section.id;
+            
+            // Simplified progress calculation
+            const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+            const scrollPercent = Math.min(scrollTop / maxScroll, 1);
+            const newProgress = 20 + (scrollPercent * 80); // 20 to 100
+            
+            if (Math.abs(newProgress - progressRef.current) > 2) {
+              progressRef.current = newProgress;
+              setProgress(newProgress);
+            }
           }
-        }
-      }
-
-        // Batch state updates to reduce re-renders
-        const newProgress = Math.min(Math.max(totalProgress, 20), 100);
-        if (currentTab !== activeTabRef.current || newProgress !== progressRef.current) {
-          activeTabRef.current = currentTab;
-          progressRef.current = newProgress;
-          setActiveTab(currentTab);
-          setProgress(newProgress);
-        }
-      }, 16); // ~60fps
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      if (scrollTimeoutRef.current) {
-        clearTimeout(scrollTimeoutRef.current);
+          
+          ticking = false;
+        });
+        ticking = true;
       }
     };
-  }, []); // No dependencies - runs once on mount
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isSticky]);
 
 
 
   // Show subscription popup after 5 seconds (only once per session)
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
     const hasShownPopup = sessionStorage.getItem('subscriptionPopupShown');
     
     if (!hasShownPopup) {
       const subscriptionTimer = setTimeout(() => {
         setShowSubscriptionPopup(true);
         sessionStorage.setItem('subscriptionPopupShown', 'true');
-      }, 5000);
+      }, 8000); // Increased to 8 seconds to reduce immediate impact
 
-      return () => {
-        clearTimeout(subscriptionTimer);
-      };
+      return () => clearTimeout(subscriptionTimer);
     }
   }, []);
 
   // Disable scroll when popup is open
   useEffect(() => {
-    if (showSubscriptionPopup) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-
+    document.body.style.overflow = showSubscriptionPopup ? 'hidden' : 'unset';
     return () => {
       document.body.style.overflow = 'unset';
     };
   }, [showSubscriptionPopup]);
-
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    };
-  }, []);
 
   const handleWatchTrailer = useCallback(() => {
     setShowPopup(true);
@@ -221,6 +160,7 @@ export default function Home() {
           autoPlay
           loop
           muted
+          playsInline
           preload="auto"
           poster="https://cdn.subconsciousvalley.workers.dev/main_banner.jpeg"
         >
@@ -278,7 +218,7 @@ export default function Home() {
                   ref={popupVideoRef}
                   className="w-full h-auto rounded"
                   controls
-                  preload="metadata"
+                  preload="auto"
                   poster="https://cdn.subconsciousvalley.workers.dev/main_banner.jpeg"
                 >
                   <source src="https://cdn.subconsciousvalley.workers.dev/hero_video.mp4" type="video/mp4" />

@@ -1,6 +1,5 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { LanguageProvider } from "./components/LanguageProvider";
 import Layout from "./components/Layout";
 import { Providers } from "./providers";
 
@@ -26,11 +25,9 @@ export default function RootLayout({ children }) {
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Providers>
-          <LanguageProvider>
-            <Layout>
-              {children}
-            </Layout>
-          </LanguageProvider>
+          <Layout>
+            {children}
+          </Layout>
         </Providers>
       </body>
     </html>

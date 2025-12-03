@@ -1,31 +1,24 @@
 "use client"
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { createPageUrl } from "@/utils";
-// import { BlogPost } from "@/api/entities";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Clock, ArrowRight, Edit, ArrowLeft } from "lucide-react";
+import { Calendar, Clock, ArrowRight, Edit } from "lucide-react";
 import { motion } from "framer-motion";
 import { format } from "date-fns";
 import { useLanguage } from "@/components/LanguageProvider";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
 export default function Blog() {
   const [posts, setPosts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedPost, setSelectedPost] = useState(null);
   const { t, currentLanguage } = useLanguage();
-  const { data: authSession } = useSession();
+  const [authSession, setAuthSession] = useState(null);
+  const [sessionChecked, setSessionChecked] = useState(false);
   const router = useRouter();
 
-  useEffect(() => {
-    loadPosts();
-  }, []);
-
-  const loadPosts = async () => {
+  const loadPosts = React.useCallback(async () => {
     try {
       const response = await fetch(`/api/blog-posts?t=${Date.now()}`, {
         headers: {
@@ -38,91 +31,41 @@ export default function Blog() {
       console.error('Error loading blog posts:', error);
     }
     setIsLoading(false);
+  }, []);
+
+  useEffect(() => {
+    loadPosts();
+  }, [loadPosts]);
+
+  // Load session data only when admin button is clicked
+  const loadSessionForAdmin = async () => {
+    if (!sessionChecked) {
+      try {
+        const sessionResponse = await fetch('/api/auth/session');
+        if (sessionResponse.ok) {
+          const sessionData = await sessionResponse.json();
+          setAuthSession(sessionData);
+          if (sessionData?.user?.role === 'admin') {
+            router.push('/admin/blog/create');
+          }
+        }
+      } catch (error) {
+        console.error('Error loading session:', error);
+      }
+      setSessionChecked(true);
+    } else if (authSession?.user?.role === 'admin') {
+      router.push('/admin/blog/create');
+    }
   };
+
+
   
   const getTranslated = (item, field) => {
     const langField = `${field}_${currentLanguage}`;
     return item[langField] || item[field];
   };
 
-  if (selectedPost) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-teal-50 py-12">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            <button 
-              onClick={() => setSelectedPost(null)} 
-              className="inline-flex items-center text-teal-600 hover:text-teal-700 mb-8"
-            >
-              <ArrowRight className="h-4 w-4 mr-2 rotate-180" />
-              Back to Blog
-            </button>
 
-            <article className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl overflow-hidden">
-              {selectedPost.featured_image && (
-                <div className="aspect-video">
-                  <img 
-                    src={selectedPost.featured_image}
-                    alt={selectedPost.title}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              )}
-              
-              <div className="p-8">
-                <div className="flex items-center gap-4 text-sm text-slate-500 mb-6">
-                  <div className="flex items-center gap-1">
-                    <Calendar className="h-4 w-4" />
-                    {selectedPost?.createdAt ? format(new Date(selectedPost.createdAt), "MMM d, yyyy") : "Recent"}
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Clock className="h-4 w-4" />
-                    {selectedPost.read_time || 5} min read
-                  </div>
-                </div>
-
-                <h1 className="text-3xl lg:text-4xl font-bold text-slate-800 mb-6 leading-tight">
-                  {selectedPost.title}
-                </h1>
-
-                {selectedPost.tags && selectedPost.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mb-8">
-                    {selectedPost.tags.map((tag) => (
-                      <Badge key={tag} variant="outline" className="text-sm">
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                )}
-
-                <div className="prose prose-lg max-w-none">
-                  {selectedPost.content.split('\n').map((paragraph, index) => {
-                    if (paragraph.startsWith('## ')) {
-                      return <h2 key={index} className="text-2xl font-bold mt-8 mb-4 text-slate-800">{paragraph.replace('## ', '')}</h2>;
-                    }
-                    if (paragraph.startsWith('**') && paragraph.endsWith('**')) {
-                      return <p key={index} className="font-bold mb-4">{paragraph.replace(/\*\*/g, '')}</p>;
-                    }
-                    if (paragraph.startsWith('* ')) {
-                      return <li key={index} className="mb-2">{paragraph.replace('* ', '')}</li>;
-                    }
-                    if (paragraph.trim()) {
-                      return <p key={index} className="mb-4 text-slate-700 leading-relaxed">{paragraph}</p>;
-                    }
-                    return null;
-                  })}
-                </div>
-              </div>
-            </article>
-          </motion.div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-teal-50 py-12">
@@ -136,16 +79,12 @@ export default function Blog() {
         >
           <div className="flex justify-between items-center mb-6">
             <div className="flex-1">
-              {authSession?.user?.role === "admin" ? (
-                <Button
-                  onClick={() => router.push('/admin/blog/create')}
-                  className="bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white"
-                >
-                  Create New Blog
-                </Button>
-              ) : (
-                <div></div>
-              )}
+              <Button
+                onClick={loadSessionForAdmin}
+                className="bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white"
+              >
+                Create New Blog
+              </Button>
             </div>
             <h1 className="text-4xl lg:text-5xl font-bold">
               <span className="bg-gradient-to-r from-teal-600 to-emerald-600 bg-clip-text text-transparent">
@@ -175,6 +114,8 @@ export default function Blog() {
                       src={posts[0].featured_image}
                       alt={getTranslated(posts[0], 'title')}
                       className="w-full h-full object-contain"
+                      loading="eager"
+                      fetchPriority="high"
                     />
                   ) : (
                     <div className="w-full h-full bg-gradient-to-br from-teal-100 to-emerald-100 flex items-center justify-center">
@@ -249,6 +190,8 @@ export default function Blog() {
                           src={post.featured_image}
                           alt={getTranslated(post, 'title')}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          loading={index < 2 ? "eager" : "lazy"}
+                          fetchPriority={index < 2 ? "high" : "low"}
                         />
                       ) : (
                         <div className="w-full h-full bg-gradient-to-br from-teal-100 to-emerald-100 flex items-center justify-center">
